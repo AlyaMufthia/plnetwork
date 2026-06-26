@@ -88,23 +88,9 @@
             margin-bottom:10px;
         }
 
-        .label-row{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:6px;
-        }
-
         label{
             font-size:14px;
             color:#222;
-        }
-
-        .forgot{
-            font-size:13px;
-            font-weight:600;
-            color:#222;
-            text-decoration:none;
         }
 
         input{
@@ -159,17 +145,6 @@
 
         .btn:hover{
             opacity:0.95;
-        }
-
-        .register-link{
-            text-align:center;
-            margin-top:10px;
-            font-size:14px;
-        }
-
-        .register-link a{
-            color:#447693;
-            text-decoration:none;
         }
 
         .footer{
@@ -239,7 +214,6 @@
 
                 <div class="form-group">
                     <label>Email Pengguna</label>
-
                     <div class="input-wrapper">
                         <img src="{{ asset('images/email.svg') }}" class="input-icon">
                         <input type="email" placeholder="123@gmail.com">
@@ -247,14 +221,10 @@
                 </div>
 
                 <div class="form-group">
-                <label>Kata Sandi</label>
-
-                 <div class="password-wrapper"></div>
-
+                    <label>Kata Sandi</label>
                     <div class="password-wrapper">
                         <img src="{{ asset('images/password.svg') }}" class="input-icon">
                         <input type="password" id="password" placeholder="**********">
-
                         <span class="eye-icon" id="togglePassword">
                             <svg id="eyeIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22.4133 11.6867C20.1667 7.53334 16.2267 5.02 11.8667 5.02C7.50667 5.02 3.56 7.53334 1.33333 11.6867L1.14667 12L1.32 12.32C3.56667 16.4733 7.50667 18.9867 11.8667 18.9867C16.2267 18.9867 20.1733 16.5067 22.4133 12.32L22.5867 12L22.4133 11.6867Z" fill="#7E7E7E"/>
@@ -269,7 +239,6 @@
                 </button>
 
             </form>
-
 
             <!-- FOOTER -->
             <div class="footer">
@@ -308,25 +277,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ✅ Validasi 1 akun statis
     document.querySelector('form').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const email = document.querySelector('input[type="email"]').value;
-        const password = document.getElementById('password').value;
+        const pwd = document.getElementById('password').value;
 
-        const akunValid = [
-            { email: 'admin@plnetwork.com', password: 'Admin123!' },
-            { email: 'alya25mufthia@gmail.com', password: 'Alyamfth1.' },
-        ];
-
-        const cocok = akunValid.find(a => a.email === email && a.password === password);
-
-        if (cocok) {
+        if (email === 'admin@plnetwork.com' && pwd === 'admin123') {
             window.location.href = '/dashboard';
         } else {
             alert('Email atau kata sandi salah!');
         }
     });
+
 });
 </script>
 

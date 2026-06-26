@@ -36,7 +36,7 @@
         .nav-item.active{ background:#173a84; color:#fff; }
         .nav-item svg{ width:18px; height:18px; flex-shrink:0; }
 
-        .main{ margin-left:230px; flex:1; display:flex; flex-direction:column; min-height:100vh; justify-content:space-between; }
+        .main{ margin-left:230px; flex:1; display:flex; flex-direction:column; min-height:100vh; }
 
         .topbar{
             height:64px; background:#fff; border-bottom:1px solid #e5e7eb;
@@ -65,10 +65,14 @@
 
         .icon-btn svg{ width:18px; height:18px; color:#6b7280; }
 
+        /* TOMBOL LAPORAN BARU → pakai <a> agar redirect ke /laporan */
         .btn-laporan{
             background:#173a84; color:#fff; border:none; border-radius:10px;
-            padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;
+            padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer;
+            white-space:nowrap; text-decoration:none; display:inline-flex; align-items:center;
+            transition: background 0.2s;
         }
+        .btn-laporan:hover{ background:#1e4ba8; }
 
         .content{ padding:28px; flex:1; }
 
@@ -84,7 +88,12 @@
 
         .status-dot{ width:8px; height:8px; border-radius:50%; background:#22c55e; }
 
-        .grid-2{
+        .grid-top{
+            display:grid; grid-template-columns:1fr 1fr;
+            gap:20px; margin-bottom:20px; align-items:stretch;
+        }
+
+        .grid-bottom{
             display:grid; grid-template-columns:1fr 1fr;
             gap:20px; margin-bottom:20px; align-items:stretch;
         }
@@ -98,14 +107,10 @@
 
         .card-sub{ font-size:12px; color:#9ca3af; margin-bottom:18px; }
 
-        /* --- ALARM SECTION REVAMPED --- */
-        .alarm-inner{
-            display:flex; align-items:center; gap:28px;
-        }
+        /* --- ALARM SECTION --- */
+        .alarm-inner{ display:flex; align-items:center; gap:28px; }
 
-        .donut-wrap{
-            position:relative; width:190px; height:190px; flex-shrink:0;
-        }
+        .donut-wrap{ position:relative; width:190px; height:190px; flex-shrink:0; }
 
         .donut-center{
             position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;
@@ -163,88 +168,127 @@
         .alarm-summary-item .s-num{ font-size:22px; font-weight:700; line-height:1; }
         .alarm-summary-item .s-lbl{ font-size:11px; color:#9ca3af; margin-top:3px; }
 
-        .chart-wrap{ position:relative; height:300px; }
+        /* --- REKAPAN GANGGUAN UP --- */
+        .rekapan-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; }
 
-        .gangguan-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; }
-
-        .gangguan-header{
+        .rekapan-header{
             background:#173a84; padding:14px 20px;
             display:flex; align-items:center; justify-content:space-between;
         }
 
-        .gangguan-header h2{ font-size:13px; font-weight:700; color:#fff; letter-spacing:0.3px; }
+        .rekapan-header h2{ font-size:13px; font-weight:700; color:#fff; letter-spacing:0.3px; }
 
-        .gangguan-count{
+        .rekapan-count{
             background:rgba(255,255,255,0.2); color:#fff;
             font-size:12px; font-weight:600; padding:4px 12px; border-radius:999px;
         }
 
-        .gangguan-body{ padding:16px; }
+        .rekapan-body{ padding:16px; }
 
-        .gangguan-item{
+        .rekapan-item{
             border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px;
             margin-bottom:10px; display:flex; align-items:flex-start; gap:10px;
         }
 
-        .gangguan-item:last-child{ margin-bottom:0; }
+        .rekapan-item:last-child{ margin-bottom:0; }
 
-        .gangguan-bar{ width:4px; border-radius:4px; background:#22c55e; align-self:stretch; flex-shrink:0; }
+        .rekapan-bar{ width:4px; border-radius:4px; background:#22c55e; align-self:stretch; flex-shrink:0; }
+        .rekapan-bar.down{ background:#dc2626; }
 
-        .gangguan-info{ flex:1; }
-        .gangguan-info strong{ font-size:13px; font-weight:600; color:#111827; display:block; margin-bottom:4px; }
-        .gangguan-info p{ font-size:12px; color:#6b7280; line-height:1.7; }
+        .rekapan-info{ flex:1; }
+        .rekapan-info strong{ font-size:13px; font-weight:600; color:#111827; display:block; margin-bottom:4px; }
+        .rekapan-info p{ font-size:12px; color:#6b7280; line-height:1.7; }
 
         .edit-btn{ background:none; border:none; cursor:pointer; color:#9ca3af; padding:2px; }
         .edit-btn:hover{ color:#374151; }
 
-        /* --- LOKASI SECTION --- */
-        .lokasi-header{
-            display:flex; align-items:center; gap:8px;
-            font-size:14px; font-weight:600; color:#111827; margin-bottom:14px;
+        /* --- TABEL REKAPAN PENYEBAB GANGGUAN --- */
+        .tabel-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px; }
+
+        .tabel-title{
+            font-size:14px; font-weight:700; color:#111827; margin-bottom:16px;
+            text-align:center; letter-spacing:0.2px;
         }
 
-        .lokasi-item{
-            display:flex; align-items:center; gap:12px;
-            padding:10px 0; border-bottom:1px solid #f3f4f6;
+        .tabel-filters{ display:flex; gap:10px; margin-bottom:16px; }
+
+        .filter-search{ flex:1; position:relative; }
+
+        .filter-search input{
+            width:100%; padding:8px 12px 8px 34px; border:1px solid #e5e7eb;
+            border-radius:8px; font-size:12px; color:#374151; outline:none; background:#fff;
         }
 
-        .lokasi-item:last-child{ border-bottom:none; }
-
-        .lokasi-badge{
-            width:40px; height:40px; border-radius:10px; background:#173a84;
-            color:#fff; font-size:10px; font-weight:700;
-            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        .filter-search svg{
+            position:absolute; left:10px; top:50%; transform:translateY(-50%);
+            width:14px; height:14px; color:#9ca3af;
         }
 
-        .lokasi-badge.gi{ background:#0f766e; }
-        .lokasi-badge.spv{ background:#7c3aed; }
-
-        .lokasi-info{ flex:1; }
-        .lokasi-info strong{ font-size:13px; font-weight:600; color:#111827; display:block; }
-        .lokasi-info span{ font-size:11px; color:#9ca3af; }
-
-        .lokasi-meta{ text-align:right; }
-
-        .lokasi-tag{
-            display:inline-block; padding:3px 10px; border-radius:999px;
-            font-size:11px; font-weight:600; margin-bottom:3px;
+        .filter-select{
+            padding:8px 32px 8px 12px; border:1px solid #e5e7eb;
+            border-radius:8px; font-size:12px; color:#374151; outline:none;
+            background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;
+            appearance:none; cursor:pointer; min-width:140px;
         }
 
-        .tag-red{ background:#fef2f2; color:#dc2626; }
-        .tag-olive{ background:#f0fdf4; color:#15803d; }
-        .tag-blue{ background:#eff6ff; color:#1d4ed8; }
-        .tag-purple{ background:#faf5ff; color:#7c3aed; }
-        .tag-orange{ background:#fff7ed; color:#ea580c; }
+        .penyebab-table{ width:100%; border-collapse:collapse; }
 
-        .lokasi-time{ font-size:11px; color:#9ca3af; display:block; }
+        .penyebab-table th{
+            font-size:11px; font-weight:700; color:#6b7280; text-align:left;
+            padding:10px 12px; border-bottom:2px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;
+        }
+
+        .penyebab-table td{
+            padding:14px 12px; font-size:13px; color:#374151; border-bottom:1px solid #f9fafb;
+        }
+
+        .penyebab-table tr:last-child td{ border-bottom:none; }
+        .penyebab-table .no-col{ color:#9ca3af; font-size:12px; width:40px; }
+        .penyebab-table .penyebab-name{ font-weight:600; color:#111827; }
+        .penyebab-table .freq-col{ font-weight:600; color:#374151; }
+
+        /* Status badges tabel */
+        .status-selesai{
+            background:#dcfce7; color:#15803d; font-size:11px; font-weight:700;
+            padding:4px 12px; border-radius:999px; display:inline-block;
+        }
+
+        .status-proses{
+            background:#fef9c3; color:#a16207; font-size:11px; font-weight:700;
+            padding:4px 12px; border-radius:999px; display:inline-block;
+        }
+
+        /* Showing results info */
+        .tabel-footer{
+            margin-top:14px; padding-top:12px; border-top:1px solid #f3f4f6;
+            font-size:12px; color:#9ca3af;
+        }
+
+        /* Empty state */
+        .tabel-empty{
+            text-align:center; padding:28px 0; color:#9ca3af; font-size:13px;
+        }
+
+        /* --- CHART 24 JAM --- */
+        .chart-wrap{ position:relative; height:260px; }
+
+        .chart-card-title{
+            font-size:12px; font-weight:700; color:#111827;
+            text-align:center; margin-bottom:8px;
+        }
+
+        .grid-bottom .card{
+            display:flex; flex-direction:column;
+            align-self:flex-start;
+        }
 
         .page-footer{
-    text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af;
-    border-top:1px solid #e5e7eb; background:#fff; line-height:1.8;
-}
+            text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af;
+            border-top:1px solid #e5e7eb; background:#fff; line-height:1.8;
+        }
 
         @media(max-width:1024px){
-            .grid-2{ grid-template-columns:1fr; }
+            .grid-top, .grid-bottom{ grid-template-columns:1fr; }
         }
     </style>
 </head>
@@ -294,7 +338,8 @@
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
             </div>
-            <button class="btn-laporan">+ Laporan Baru</button>
+            <!-- TOMBOL LAPORAN BARU → redirect ke /laporan -->
+            <a href="/laporan" class="btn-laporan">+ Laporan Baru</a>
         </div>
     </header>
 
@@ -311,7 +356,8 @@
             </div>
         </div>
 
-        <div class="grid-2">
+        <!-- ROW 1: Alarm + Rekapan Gangguan UP -->
+        <div class="grid-top">
 
             <!-- ALARM SAAT INI -->
             <div class="card">
@@ -364,7 +410,6 @@
                     </div>
                 </div>
 
-                <!-- Summary boxes -->
                 <div class="alarm-summary">
                     <div class="alarm-summary-item" style="background:#fef2f2;">
                         <div class="s-num" style="color:#dc2626;">5</div>
@@ -385,34 +430,34 @@
                 </div>
             </div>
 
-            <!-- GANGGUAN DIPERBAIKI -->
-            <div class="gangguan-card">
-                <div class="gangguan-header">
-                    <h2>GANGGUAN YANG SUDAH DIPERBAIKI</h2>
-                    <span class="gangguan-count">3 Teratas</span>
+            <!-- REKAPAN GANGGUAN UP -->
+            <div class="rekapan-card">
+                <div class="rekapan-header">
+                    <h2>REKAPAN GANGGUAN UP</h2>
+                    <span class="rekapan-count">3 Teratas</span>
                 </div>
-                <div class="gangguan-body">
-                    <div class="gangguan-item">
-                        <div class="gangguan-bar"></div>
-                        <div class="gangguan-info">
-                            <strong>Investigasi ULP Natal New</strong>
-                            <p>Status : Down<br>IP : 10.16.218.1<br>Gangguan : Ping Timeout<br>Durasi : 6 jam 7 menit</p>
+                <div class="rekapan-body">
+                    <div class="rekapan-item">
+                        <div class="rekapan-bar"></div>
+                        <div class="rekapan-info">
+                            <strong>Perbaikan ULP Natal New</strong>
+                            <p>Status : UP<br>IP : 10.16.218.1<br>Status : Normal<br>Durasi : 1 jam 22 menit</p>
                         </div>
                         <button class="edit-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                     </div>
-                    <div class="gangguan-item">
-                        <div class="gangguan-bar"></div>
-                        <div class="gangguan-info">
-                            <strong>Investigasi Gudang Logistik ULP Sidempuan</strong>
-                            <p>Status : Down<br>IP : 10.16.219.1<br>Gangguan : Ping Timeout<br>Durasi : 1 jam 14 menit</p>
+                    <div class="rekapan-item">
+                        <div class="rekapan-bar"></div>
+                        <div class="rekapan-info">
+                            <strong>Perbaikan Gudang Logistik ULP Sidempuan</strong>
+                            <p>Status : UP<br>IP : 10.16.219.1<br>Status : Normal<br>Durasi : 3 jam 52 menit</p>
                         </div>
                         <button class="edit-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                     </div>
-                    <div class="gangguan-item">
-                        <div class="gangguan-bar"></div>
-                        <div class="gangguan-info">
-                            <strong>Investigasi GI Labuhan Bilik</strong>
-                            <p>Status : Down<br>IP : 10.43.68.193<br>Gangguan : Ping Timeout<br>Durasi : 1 jam 22 menit</p>
+                    <div class="rekapan-item">
+                        <div class="rekapan-bar down"></div>
+                        <div class="rekapan-info">
+                            <strong>Perbaikan GI Labuhan Bilik</strong>
+                            <p>Status : Down<br>IP : 10.43.68.193<br>Gangguan : Ping Timeout<br>Durasi : 14 jam 10 menit</p>
                         </div>
                         <button class="edit-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                     </div>
@@ -421,43 +466,98 @@
 
         </div>
 
-        <div class="grid-2">
+        <!-- ROW 2: Tabel Rekapan + Chart -->
+        <div class="grid-bottom">
+
+            <!-- TABEL REKAPAN PENYEBAB GANGGUAN -->
+            <div class="tabel-card">
+                <div class="tabel-title">TABEL REKAPAN PENYEBAB GANGGUAN</div>
+                <div class="tabel-filters">
+                    <div class="filter-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Cari Penyebab Gangguan" oninput="filterTabel()">
+                    </div>
+                    <select class="filter-select" id="filterStatus" onchange="filterTabel()">
+                        <option value="">Semua Status</option>
+                        <option value="SELESAI">Selesai</option>
+                        <option value="PROSES">Proses</option>
+                    </select>
+                </div>
+                <table class="penyebab-table">
+                    <thead>
+                        <tr>
+                            <th class="no-col">NO</th>
+                            <th>PENYEBAB GANGGUAN</th>
+                            <th>FREKUENSI</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelBody">
+                        <!--
+                            Data ini nantinya dari backend (Laravel).
+                            Dikelompokkan berdasarkan penyebab_kendala + status (dari update_aktivitas).
+                            Hanya tampil status: Selesai (Resolved) & Proses (On Progress).
+                            Dipecah per kombinasi penyebab + status.
+
+                            Contoh query Laravel:
+                            DB::table('laporan')
+                              ->join('update_aktivitas', 'laporan.id', '=', 'update_aktivitas.laporan_id')
+                              ->select('laporan.penyebab_kendala', 'update_aktivitas.status', DB::raw('COUNT(*) as frekuensi'))
+                              ->whereIn('update_aktivitas.status', ['resolved', 'on_progress'])
+                              ->groupBy('laporan.penyebab_kendala', 'update_aktivitas.status')
+                              ->orderBy('frekuensi', 'desc')
+                              ->get();
+                        -->
+                        <tr data-penyebab="PING TIMEOUT" data-status="SELESAI">
+                            <td class="no-col">1.</td>
+                            <td class="penyebab-name">PING TIMEOUT</td>
+                            <td class="freq-col">30 KALI</td>
+                            <td><span class="status-selesai">SELESAI</span></td>
+                        </tr>
+                        <tr data-penyebab="PING TIMEOUT" data-status="PROSES">
+                            <td class="no-col">2.</td>
+                            <td class="penyebab-name">PING TIMEOUT</td>
+                            <td class="freq-col">15 KALI</td>
+                            <td><span class="status-proses">PROSES</span></td>
+                        </tr>
+                        <tr data-penyebab="TEGANGAN DROP" data-status="SELESAI">
+                            <td class="no-col">3.</td>
+                            <td class="penyebab-name">TEGANGAN DROP</td>
+                            <td class="freq-col">20 KALI</td>
+                            <td><span class="status-selesai">SELESAI</span></td>
+                        </tr>
+                        <tr data-penyebab="TEGANGAN DROP" data-status="PROSES">
+                            <td class="no-col">4.</td>
+                            <td class="penyebab-name">TEGANGAN DROP</td>
+                            <td class="freq-col">7 KALI</td>
+                            <td><span class="status-proses">PROSES</span></td>
+                        </tr>
+                        <tr data-penyebab="BEBAN BERLEBIH" data-status="SELESAI">
+                            <td class="no-col">5.</td>
+                            <td class="penyebab-name">BEBAN BERLEBIH</td>
+                            <td class="freq-col">12 KALI</td>
+                            <td><span class="status-selesai">SELESAI</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Showing X to Y of Z results -->
+                <div class="tabel-footer" id="showingInfo">
+                    Showing 1 to 5 of 5 results
+                </div>
+            </div>
 
             <!-- CHART 24 JAM -->
             <div class="card">
-                <div class="card-title" style="justify-content:center;">Pemantauan Alarm 24 Jam</div>
+                <div class="chart-card-title">Pemantauan Alarm 24 Jam</div>
                 <div class="chart-wrap">
                     <canvas id="lineChart"></canvas>
                 </div>
             </div>
 
-            <!-- LOKASI SERING TERJADI -->
-            <div class="card">
-                <div class="lokasi-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#173a84" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    Lokasi Sering Terjadi
-                </div>
-                <div class="lokasi-item">
-                    <div class="lokasi-badge">ULP</div>
-                    <div class="lokasi-info"><strong>ULP GLUGUR</strong><span>10.16.176.1</span></div>
-                    <div class="lokasi-meta"><span class="lokasi-tag tag-red">14 Termasuk</span><span class="lokasi-time">Terakhir : 2 Jam lalu</span></div>
-                </div>
-                <div class="lokasi-item">
-                    <div class="lokasi-badge">ULP</div>
-                    <div class="lokasi-info"><strong>ULP SIPIROK</strong><span>10.16.213.1</span></div>
-                    <div class="lokasi-meta"><span class="lokasi-tag tag-olive">14 Termasuk</span><span class="lokasi-time">Terakhir : 2 Jam lalu</span></div>
-                </div>
-                <div class="lokasi-item">
-                    <div class="lokasi-badge">ULP</div>
-                    <div class="lokasi-info"><strong>ULTG KISARAN</strong><span>10.43.61.161</span></div>
-                    <div class="lokasi-meta"><span class="lokasi-tag tag-blue">14 Termasuk</span><span class="lokasi-time">Terakhir : 2 Jam lalu</span></div>
-                </div>
-                <div class="lokasi-item">
-                    <div class="lokasi-badge gi">GI</div>
-                    <div class="lokasi-info"><strong>GI LABUHAN BILIK</strong><span>10.43.68.193</span></div>
-                    <div class="lokasi-meta"><span class="lokasi-tag tag-orange">11 Termasuk</span><span class="lokasi-time">Terakhir : 3 Jam lalu</span></div>
-                </div>
-            </div>
+        </div>
 
     </div>
 
@@ -469,6 +569,7 @@
 </div>
 
 <script>
+// ── DONUT CHART ──────────────────────────────────────────────
 const donutCtx = document.getElementById('donutChart').getContext('2d');
 new Chart(donutCtx, {
     type: 'doughnut',
@@ -488,6 +589,7 @@ new Chart(donutCtx, {
     }
 });
 
+// ── LINE CHART ───────────────────────────────────────────────
 const lineCtx = document.getElementById('lineChart').getContext('2d');
 const labels = ['00:00','04:00','08:00','12:00','16:00','20:00','24:00'];
 new Chart(lineCtx, {
@@ -503,13 +605,49 @@ new Chart(lineCtx, {
     },
     options: {
         responsive:true, maintainAspectRatio:false,
-        plugins: { legend: { position:'bottom', labels:{ font:{size:10}, boxWidth:12, padding:12 } } },
+        plugins: { legend: { position:'bottom', labels:{ font:{size:10}, boxWidth:12, padding:8 } } },
         scales: {
             x:{ grid:{display:false}, ticks:{font:{size:10}} },
             y:{ grid:{color:'#f3f4f6'}, ticks:{font:{size:10}}, min:0 }
         }
     }
 });
+
+// ── FILTER TABEL ─────────────────────────────────────────────
+function filterTabel() {
+    const keyword = document.getElementById('searchInput').value.toUpperCase().trim();
+    const statusFilter = document.getElementById('filterStatus').value.toUpperCase();
+    const rows = document.querySelectorAll('#tabelBody tr');
+
+    let visibleCount = 0;
+    let rowNumber = 1;
+
+    rows.forEach(row => {
+        const penyebab = row.getAttribute('data-penyebab') || '';
+        const status   = row.getAttribute('data-status') || '';
+
+        const matchKeyword = penyebab.includes(keyword);
+        const matchStatus  = statusFilter === '' || status === statusFilter;
+
+        if (matchKeyword && matchStatus) {
+            row.style.display = '';
+            // Update nomor urut dinamis
+            row.querySelector('.no-col').textContent = rowNumber + '.';
+            rowNumber++;
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const total = rows.length;
+    const info = document.getElementById('showingInfo');
+    if (visibleCount === 0) {
+        info.textContent = 'Tidak ada hasil ditemukan';
+    } else {
+        info.textContent = `Showing 1 to ${visibleCount} of ${total} results`;
+    }
+}
 </script>
 
 </body>
