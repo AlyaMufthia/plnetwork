@@ -122,9 +122,8 @@
             padding:18px 20px; font-size:13px; color:#374151; vertical-align:middle;
         }
 
-        .td-ip{ font-weight:700; color:#111827; font-size:14px; }
+        .td-unit{ font-weight:700; color:#111827; font-size:14px; }
         .td-date{ font-size:11px; color:#9ca3af; margin-top:4px; }
-        .td-gardu{ font-weight:600; color:#111827; }
 
         .left-bar{ display:flex; gap:16px; align-items:flex-start; }
 
@@ -135,15 +134,13 @@
 
         .status-badge{
             display:inline-flex; align-items:center; gap:6px;
-            padding:5px 12px; border-radius:999px; font-size:12px; font-weight:600;
+            padding:5px 14px; border-radius:999px; font-size:12px; font-weight:600;
             background:#f3f4f6; color:#374151;
         }
 
         .status-badge svg{ width:14px; height:14px; }
         .status-badge.down{ background:#fef2f2; color:#dc2626; }
-        .status-badge.unusual{ background:#fefce8; color:#ca8a04; }
-        .status-badge.warning{ background:#fff7ed; color:#ea580c; }
-        .status-badge.normal{ background:#f0fdf4; color:#15803d; }
+        .status-badge.up{ background:#f0fdf4; color:#15803d; }
 
         .catatan{ color:#374151; font-size:13px; }
 
@@ -218,14 +215,12 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" placeholder="Cari sesuai IP ADDRESS atau Gardu Induk...">
+                <input type="text" placeholder="Cari sesuai Unit atau Gardu Induk...">
             </div>
             <select class="select-status">
                 <option>Status</option>
                 <option>Down</option>
-                <option>Unusual</option>
-                <option>Warning</option>
-                <option>Normal</option>
+                <option>Up</option>
             </select>
             <button class="btn-filter">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
@@ -241,50 +236,48 @@
             <table>
                 <thead>
                     <tr>
-                        <th>IP ADDRESS</th>
-                        <th>Gardu Induk</th>
+                        <th>Unit</th>
                         <th>Status</th>
                         <th>Catatan Perbaikan</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($gangguans as $item)
-                    {{-- ✅ seluruh baris bisa diklik menuju detail --}}
                     <tr onclick="window.location='{{ route('riwayat.show', $item->id) }}'">
                         <td>
                             <div class="left-bar">
                                 <div class="bar-line"></div>
                                 <div>
-                                    <div class="td-ip">{{ $item->ip_address }}</div>
+                                    <div class="td-unit">{{ $item->gardu_induk }}</div>
                                     <div class="td-date">{{ \Carbon\Carbon::parse($item->waktu_kejadian)->translatedFormat('d F Y') }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="td-gardu">{{ $item->gardu_induk }}</td>
                         <td>
                             @php
-                                $statusClass = match($item->status) {
-                                    'on_progress' => 'down',
-                                    'paused'      => 'warning',
-                                    'resolved'    => 'normal',
-                                    default       => 'unusual',
+                                $statusClass = match($item->jenis_gangguan) {
+                                    'DOWN' => 'down',
+                                    'UP'   => 'up',
+                                    default => 'down',
                                 };
-                                $statusLabel = match($item->status) {
-                                    'on_progress' => 'Down',
-                                    'paused'      => 'Paused',
-                                    'resolved'    => 'Normal',
-                                    default       => ucfirst($item->status),
+                                $statusLabel = match($item->jenis_gangguan) {
+                                    'DOWN' => 'Down',
+                                    'UP'   => 'Up',
+                                    default => 'Down',
                                 };
                             @endphp
                             <span class="status-badge {{ $statusClass }}">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                @if($statusClass === 'down')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                @else
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+                                @endif
                                 {{ $statusLabel }}
                             </span>
                         </td>
                         <td>
                             <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
                                 <span class="catatan">{{ $item->catatan_perbaikan ?? '-' }}</span>
-                                {{-- ✅ tombol panah juga tetap ada --}}
                                 <a href="{{ route('riwayat.show', $item->id) }}"
                                    class="chevron-btn"
                                    onclick="event.stopPropagation()">
@@ -295,7 +288,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" style="text-align:center;padding:40px;color:#9ca3af;">
+                        <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
                             Tidak ada data gangguan.
                         </td>
                     </tr>

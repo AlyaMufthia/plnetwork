@@ -65,7 +65,6 @@
 
         .icon-btn svg{ width:18px; height:18px; color:#6b7280; }
 
-        /* TOMBOL LAPORAN BARU → pakai <a> agar redirect ke /laporan */
         .btn-laporan{
             background:#173a84; color:#fff; border:none; border-radius:10px;
             padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer;
@@ -93,6 +92,7 @@
             gap:20px; margin-bottom:20px; align-items:stretch;
         }
 
+        /* ROW 2: Tabel full width kiri, chart kanan — sejajar */
         .grid-bottom{
             display:grid; grid-template-columns:1fr 1fr;
             gap:20px; margin-bottom:20px; align-items:stretch;
@@ -141,9 +141,7 @@
         }
 
         .badge-red{ background:#fef2f2; color:#dc2626; }
-        .badge-orange{ background:#fff7ed; color:#ea580c; }
-        .badge-yellow{ background:#fefce8; color:#ca8a04; }
-        .badge-blue{ background:#eff6ff; color:#2563eb; }
+        .badge-green{ background:#f0fdf4; color:#16a34a; }
 
         .badge-icon{
             width:16px; height:16px; border-radius:4px; display:inline-flex;
@@ -152,9 +150,7 @@
         }
 
         .bi-red{ background:#dc2626; }
-        .bi-orange{ background:#ea580c; }
-        .bi-yellow{ background:#ca8a04; }
-        .bi-blue{ background:#2563eb; }
+        .bi-green{ background:#16a34a; }
 
         .alarm-summary{
             margin-top:20px; padding-top:16px; border-top:1px solid #f3f4f6;
@@ -203,7 +199,7 @@
         .edit-btn:hover{ color:#374151; }
 
         /* --- TABEL REKAPAN PENYEBAB GANGGUAN --- */
-        .tabel-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px; }
+        .tabel-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px; display:flex; flex-direction:column; }
 
         .tabel-title{
             font-size:14px; font-weight:700; color:#111827; margin-bottom:16px;
@@ -247,40 +243,36 @@
         .penyebab-table .penyebab-name{ font-weight:600; color:#111827; }
         .penyebab-table .freq-col{ font-weight:600; color:#374151; }
 
-        /* Status badges tabel */
-        .status-selesai{
+        /* Status badges tabel — UP & DOWN */
+        .status-up{
             background:#dcfce7; color:#15803d; font-size:11px; font-weight:700;
             padding:4px 12px; border-radius:999px; display:inline-block;
         }
 
-        .status-proses{
-            background:#fef9c3; color:#a16207; font-size:11px; font-weight:700;
+        .status-down{
+            background:#fef2f2; color:#dc2626; font-size:11px; font-weight:700;
             padding:4px 12px; border-radius:999px; display:inline-block;
         }
 
-        /* Showing results info */
         .tabel-footer{
             margin-top:14px; padding-top:12px; border-top:1px solid #f3f4f6;
             font-size:12px; color:#9ca3af;
         }
 
-        /* Empty state */
-        .tabel-empty{
-            text-align:center; padding:28px 0; color:#9ca3af; font-size:13px;
-        }
-
         /* --- CHART 24 JAM --- */
-        .chart-wrap{ position:relative; height:260px; }
+        /* Chart card fill same height as table card */
+        .chart-card{
+            background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px;
+            display:flex; flex-direction:column;
+        }
 
         .chart-card-title{
-            font-size:12px; font-weight:700; color:#111827;
-            text-align:center; margin-bottom:8px;
+            font-size:13px; font-weight:700; color:#111827;
+            text-align:center; margin-bottom:16px;
         }
 
-        .grid-bottom .card{
-            display:flex; flex-direction:column;
-            align-self:flex-start;
-        }
+        /* Chart canvas fills remaining vertical space */
+        .chart-wrap{ flex:1; position:relative; min-height:280px; }
 
         .page-footer{
             text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af;
@@ -338,7 +330,6 @@
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
             </div>
-            <!-- TOMBOL LAPORAN BARU → redirect ke /laporan -->
             <a href="/laporan" class="btn-laporan">+ Laporan Baru</a>
         </div>
     </header>
@@ -356,19 +347,19 @@
             </div>
         </div>
 
-        <!-- ROW 1: Alarm + Rekapan Gangguan UP -->
+        <!-- ROW 1: Alarm + Rekapan Gangguan -->
         <div class="grid-top">
 
-            <!-- ALARM SAAT INI -->
+            <!-- ALARM SAAT INI — hanya UP & DOWN -->
             <div class="card">
                 <div class="card-title">🔔 ALARM SAAT INI</div>
-                <div class="card-sub">Ringkasan alarm aktif pada sistem secara real-time.</div>
+                <div class="card-sub">Ringkasan status UP dan DOWN perangkat secara real-time.</div>
                 <div class="alarm-inner">
                     <div class="donut-wrap">
                         <canvas id="donutChart"></canvas>
                         <div class="donut-center">
-                            <div class="num">15</div>
-                            <div class="lbl">Total Alarm<br>Aktif</div>
+                            <div class="num">16</div>
+                            <div class="lbl">Total<br>Perangkat</div>
                         </div>
                     </div>
                     <div class="alarm-table">
@@ -379,31 +370,17 @@
                             <tbody>
                                 <tr class="alarm-row">
                                     <td>
-                                        <span class="badge badge-red"><span class="badge-icon bi-red">!!</span>Down (Critical)</span><br>
-                                        <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Kritis</small>
-                                    </td>
-                                    <td>5</td>
-                                </tr>
-                                <tr class="alarm-row">
-                                    <td>
-                                        <span class="badge badge-orange"><span class="badge-icon bi-orange">!</span>Down (Acknowledged)</span><br>
-                                        <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Diakui</small>
-                                    </td>
-                                    <td>0</td>
-                                </tr>
-                                <tr class="alarm-row">
-                                    <td>
-                                        <span class="badge badge-yellow"><span class="badge-icon bi-yellow">W</span>Warning (Peringatan)</span><br>
-                                        <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Peringatan</small>
-                                    </td>
-                                    <td>0</td>
-                                </tr>
-                                <tr class="alarm-row">
-                                    <td>
-                                        <span class="badge badge-blue"><span class="badge-icon bi-blue">U</span>Unusual (Tidak Normal)</span><br>
-                                        <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Tidak Normal</small>
+                                        <span class="badge badge-green"><span class="badge-icon bi-green">▲</span>UP (Normal)</span><br>
+                                        <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Perangkat aktif & terhubung</small>
                                     </td>
                                     <td>11</td>
+                                </tr>
+                                <tr class="alarm-row">
+                                    <td>
+                                        <span class="badge badge-red"><span class="badge-icon bi-red">▼</span>DOWN (Gangguan)</span><br>
+                                        <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Perangkat tidak merespons</small>
+                                    </td>
+                                    <td>5</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -411,26 +388,18 @@
                 </div>
 
                 <div class="alarm-summary">
+                    <div class="alarm-summary-item" style="background:#f0fdf4;">
+                        <div class="s-num" style="color:#16a34a;">11</div>
+                        <div class="s-lbl">UP</div>
+                    </div>
                     <div class="alarm-summary-item" style="background:#fef2f2;">
                         <div class="s-num" style="color:#dc2626;">5</div>
-                        <div class="s-lbl">Kritis</div>
-                    </div>
-                    <div class="alarm-summary-item" style="background:#fff7ed;">
-                        <div class="s-num" style="color:#ea580c;">0</div>
-                        <div class="s-lbl">Diakui</div>
-                    </div>
-                    <div class="alarm-summary-item" style="background:#fefce8;">
-                        <div class="s-num" style="color:#ca8a04;">0</div>
-                        <div class="s-lbl">Peringatan</div>
-                    </div>
-                    <div class="alarm-summary-item" style="background:#eff6ff;">
-                        <div class="s-num" style="color:#2563eb;">11</div>
-                        <div class="s-lbl">Tidak Normal</div>
+                        <div class="s-lbl">DOWN</div>
                     </div>
                 </div>
             </div>
 
-            <!-- REKAPAN GANGGUAN UP -->
+            <!-- REKAPAN GANGGUAN -->
             <div class="rekapan-card">
                 <div class="rekapan-header">
                     <h2>REKAPAN GANGGUAN UP</h2>
@@ -466,7 +435,7 @@
 
         </div>
 
-        <!-- ROW 2: Tabel Rekapan + Chart -->
+        <!-- ROW 2: Tabel + Chart — sejajar & sama tinggi -->
         <div class="grid-bottom">
 
             <!-- TABEL REKAPAN PENYEBAB GANGGUAN -->
@@ -481,8 +450,8 @@
                     </div>
                     <select class="filter-select" id="filterStatus" onchange="filterTabel()">
                         <option value="">Semua Status</option>
-                        <option value="SELESAI">Selesai</option>
-                        <option value="PROSES">Proses</option>
+                        <option value="UP">UP</option>
+                        <option value="DOWN">DOWN</option>
                     </select>
                 </div>
                 <table class="penyebab-table">
@@ -495,63 +464,46 @@
                         </tr>
                     </thead>
                     <tbody id="tabelBody">
-                        <!--
-                            Data ini nantinya dari backend (Laravel).
-                            Dikelompokkan berdasarkan penyebab_kendala + status (dari update_aktivitas).
-                            Hanya tampil status: Selesai (Resolved) & Proses (On Progress).
-                            Dipecah per kombinasi penyebab + status.
-
-                            Contoh query Laravel:
-                            DB::table('laporan')
-                              ->join('update_aktivitas', 'laporan.id', '=', 'update_aktivitas.laporan_id')
-                              ->select('laporan.penyebab_kendala', 'update_aktivitas.status', DB::raw('COUNT(*) as frekuensi'))
-                              ->whereIn('update_aktivitas.status', ['resolved', 'on_progress'])
-                              ->groupBy('laporan.penyebab_kendala', 'update_aktivitas.status')
-                              ->orderBy('frekuensi', 'desc')
-                              ->get();
-                        -->
-                        <tr data-penyebab="PING TIMEOUT" data-status="SELESAI">
+                        <tr data-penyebab="PING TIMEOUT" data-status="UP">
                             <td class="no-col">1.</td>
                             <td class="penyebab-name">PING TIMEOUT</td>
                             <td class="freq-col">30 KALI</td>
-                            <td><span class="status-selesai">SELESAI</span></td>
+                            <td><span class="status-up">UP</span></td>
                         </tr>
-                        <tr data-penyebab="PING TIMEOUT" data-status="PROSES">
+                        <tr data-penyebab="PING TIMEOUT" data-status="DOWN">
                             <td class="no-col">2.</td>
                             <td class="penyebab-name">PING TIMEOUT</td>
                             <td class="freq-col">15 KALI</td>
-                            <td><span class="status-proses">PROSES</span></td>
+                            <td><span class="status-down">DOWN</span></td>
                         </tr>
-                        <tr data-penyebab="TEGANGAN DROP" data-status="SELESAI">
+                        <tr data-penyebab="TEGANGAN DROP" data-status="UP">
                             <td class="no-col">3.</td>
                             <td class="penyebab-name">TEGANGAN DROP</td>
                             <td class="freq-col">20 KALI</td>
-                            <td><span class="status-selesai">SELESAI</span></td>
+                            <td><span class="status-up">UP</span></td>
                         </tr>
-                        <tr data-penyebab="TEGANGAN DROP" data-status="PROSES">
+                        <tr data-penyebab="TEGANGAN DROP" data-status="DOWN">
                             <td class="no-col">4.</td>
                             <td class="penyebab-name">TEGANGAN DROP</td>
                             <td class="freq-col">7 KALI</td>
-                            <td><span class="status-proses">PROSES</span></td>
+                            <td><span class="status-down">DOWN</span></td>
                         </tr>
-                        <tr data-penyebab="BEBAN BERLEBIH" data-status="SELESAI">
+                        <tr data-penyebab="BEBAN BERLEBIH" data-status="UP">
                             <td class="no-col">5.</td>
                             <td class="penyebab-name">BEBAN BERLEBIH</td>
                             <td class="freq-col">12 KALI</td>
-                            <td><span class="status-selesai">SELESAI</span></td>
+                            <td><span class="status-up">UP</span></td>
                         </tr>
                     </tbody>
                 </table>
-
-                <!-- Showing X to Y of Z results -->
                 <div class="tabel-footer" id="showingInfo">
                     Showing 1 to 5 of 5 results
                 </div>
             </div>
 
-            <!-- CHART 24 JAM -->
-            <div class="card">
-                <div class="chart-card-title">Pemantauan Alarm 24 Jam</div>
+            <!-- CHART 24 JAM — hanya data DOWN, sejajar tabel -->
+            <div class="chart-card">
+                <div class="chart-card-title">Pemantauan Alarm DOWN 24 Jam</div>
                 <div class="chart-wrap">
                     <canvas id="lineChart"></canvas>
                 </div>
@@ -569,14 +521,14 @@
 </div>
 
 <script>
-// ── DONUT CHART ──────────────────────────────────────────────
+// ── DONUT CHART — hanya UP & DOWN ──────────────────────────
 const donutCtx = document.getElementById('donutChart').getContext('2d');
 new Chart(donutCtx, {
     type: 'doughnut',
     data: {
         datasets: [{
-            data: [5, 0, 0, 11],
-            backgroundColor: ['#dc2626', '#ea580c', '#ca8a04', '#2563eb'],
+            data: [11, 5],
+            backgroundColor: ['#16a34a', '#dc2626'],
             borderWidth: 0,
             hoverOffset: 4
         }]
@@ -589,26 +541,49 @@ new Chart(donutCtx, {
     }
 });
 
-// ── LINE CHART ───────────────────────────────────────────────
+// ── LINE CHART — hanya data DOWN ─────────────────────────────
 const lineCtx = document.getElementById('lineChart').getContext('2d');
-const labels = ['00:00','04:00','08:00','12:00','16:00','20:00','24:00'];
+const labels = ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00','24:00'];
 new Chart(lineCtx, {
     type: 'line',
     data: {
         labels,
         datasets: [
-            { label:'Alarm Kritis (%)', data:[3,8,15,37,28,20,5], borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.1)', fill:true, tension:0.4, borderWidth:2, pointRadius:0 },
-            { label:'Alarm Peringatan (%)', data:[2,4,6,10,8,5,2], borderColor:'#ec4899', backgroundColor:'rgba(236,72,153,0.05)', fill:true, tension:0.4, borderWidth:1.5, pointRadius:0 },
-            { label:'Ketersediaan Sistem (%)', data:[1,1,2,3,2,1,1], borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,0.05)', fill:true, tension:0.4, borderWidth:1.5, pointRadius:0 },
-            { label:'Waktu Respons Perangkat (%)', data:[0.5,1,1.5,2,1.5,1,0.5], borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.05)', fill:true, tension:0.4, borderWidth:1.5, pointRadius:0 }
+            {
+                label: 'Jumlah Perangkat DOWN',
+                data: [2, 2, 3, 4, 6, 9, 5, 7, 5, 4, 3, 3, 2],
+                borderColor: '#dc2626',
+                backgroundColor: 'rgba(220,38,38,0.12)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2.5,
+                pointRadius: 3,
+                pointBackgroundColor: '#dc2626'
+            }
         ]
     },
     options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins: { legend: { position:'bottom', labels:{ font:{size:10}, boxWidth:12, padding:8 } } },
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { font: { size: 11 }, boxWidth: 14, padding: 10 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.y} perangkat DOWN`
+                }
+            }
+        },
         scales: {
-            x:{ grid:{display:false}, ticks:{font:{size:10}} },
-            y:{ grid:{color:'#f3f4f6'}, ticks:{font:{size:10}}, min:0 }
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+            y: {
+                grid: { color: '#f3f4f6' },
+                ticks: { font: { size: 10 }, stepSize: 1 },
+                min: 0,
+                title: { display: true, text: 'Jumlah DOWN', font: { size: 10 }, color: '#9ca3af' }
+            }
         }
     }
 });
@@ -631,7 +606,6 @@ function filterTabel() {
 
         if (matchKeyword && matchStatus) {
             row.style.display = '';
-            // Update nomor urut dinamis
             row.querySelector('.no-col').textContent = rowNumber + '.';
             rowNumber++;
             visibleCount++;

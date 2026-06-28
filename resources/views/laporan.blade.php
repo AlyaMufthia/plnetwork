@@ -9,7 +9,6 @@
         *{ margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
         body{ background:#f0f2f7; display:flex; min-height:100vh; }
 
-        /* SIDEBAR */
         .sidebar{
             width:230px; min-height:100vh; background:#fff;
             border-right:1px solid #e5e7eb; display:flex;
@@ -30,10 +29,8 @@
         .nav-item.active{ background:#173a84; color:#fff; }
         .nav-item svg{ width:18px; height:18px; flex-shrink:0; }
 
-        /* MAIN */
         .main{ margin-left:230px; flex:1; display:flex; flex-direction:column; min-height:100vh; }
 
-        /* TOPBAR */
         .topbar{
             height:64px; background:#fff; border-bottom:1px solid #e5e7eb;
             display:flex; align-items:center; padding:0 28px; gap:16px;
@@ -46,16 +43,27 @@
         }
         .icon-btn svg{ width:18px; height:18px; color:#6b7280; }
 
-        /* CONTENT */
         .content{ padding:32px 28px; flex:1; }
-
         .page-title{ font-size:26px; font-weight:700; color:#111827; }
         .page-sub{ font-size:13px; color:#6b7280; margin-top:6px; margin-bottom:28px; }
 
-        /* LAYOUT: form + sidebar */
+        .alert-success{
+            display:flex; align-items:center; gap:10px;
+            background:#f0fdf4; border:1px solid #16a34a; border-radius:10px;
+            padding:12px 16px; margin-bottom:20px;
+        }
+        .alert-success svg{ flex-shrink:0; }
+        .alert-success span{ font-size:13px; font-weight:600; color:#16a34a; }
+
+        .alert-error{
+            background:#fef2f2; border:1px solid #dc2626; border-radius:10px;
+            padding:12px 16px; margin-bottom:20px;
+        }
+        .alert-error p{ font-size:13px; color:#dc2626; margin-bottom:4px; }
+        .alert-error p:last-child{ margin-bottom:0; }
+
         .layout{ display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start; }
 
-        /* FORM CARD */
         .form-card{
             background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:28px;
         }
@@ -67,20 +75,46 @@
             font-size:13px; font-weight:600; color:#374151; margin-bottom:8px; display:block;
         }
 
-        /* Search input */
-        .input-search{
-            width:100%; padding:11px 16px 11px 42px; border:1.5px solid #e5e7eb;
-            border-radius:10px; font-size:13px; color:#374151; outline:none;
-            background:#fff; transition:border-color 0.2s; font-family:inherit;
-        }
-        .input-search:focus{ border-color:#173a84; }
+        /* Combobox */
+        .combo-wrap{ position:relative; }
         .input-wrap{ position:relative; }
         .input-wrap svg{
             position:absolute; left:13px; top:50%; transform:translateY(-50%);
             width:16px; height:16px; color:#9ca3af; pointer-events:none;
         }
+        .input-search{
+            width:100%; padding:11px 40px 11px 42px; border:1.5px solid #e5e7eb;
+            border-radius:10px; font-size:13px; color:#374151; outline:none;
+            background:#fff; transition:border-color 0.2s; font-family:inherit;
+        }
+        .input-search:focus{ border-color:#173a84; }
+        .combo-clear{
+            position:absolute; right:12px; top:50%; transform:translateY(-50%);
+            width:18px; height:18px; border-radius:50%; background:#e5e7eb;
+            border:none; cursor:pointer; display:none; align-items:center;
+            justify-content:center; color:#6b7280; font-size:11px; line-height:1;
+        }
+        .combo-clear.visible{ display:flex; }
+        .combo-dropdown{
+            position:absolute; top:calc(100% + 6px); left:0; right:0;
+            background:#fff; border:1.5px solid #e5e7eb; border-radius:12px;
+            overflow:hidden; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.1);
+            display:none;
+        }
+        .combo-dropdown.open{ display:block; }
+        .dd-item{
+            padding:11px 16px; font-size:13px; color:#374151; cursor:pointer;
+            display:flex; align-items:center; justify-content:space-between; gap:8px;
+            transition:background 0.15s;
+        }
+        .dd-item:hover{ background:#f3f4f6; }
+        .dd-item-name{ font-weight:600; }
+        .dd-item-ip{
+            font-size:11px; color:#9ca3af; font-family:monospace;
+            background:#f3f4f6; padding:2px 7px; border-radius:5px;
+        }
+        .dd-empty{ padding:14px 16px; font-size:13px; color:#9ca3af; text-align:center; }
 
-        /* Regular input */
         .input-field{
             width:100%; padding:11px 14px; border:1.5px solid #e5e7eb;
             border-radius:10px; font-size:13px; color:#374151; outline:none;
@@ -89,10 +123,6 @@
         .input-field:focus{ border-color:#173a84; }
         .input-field::placeholder{ color:#b0b7c3; }
 
-        /* Row 2 col */
-        .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-
-        /* Select */
         .select-wrap{ position:relative; }
         .select-field{
             width:100%; padding:11px 40px 11px 14px; border:1.5px solid #e5e7eb;
@@ -108,7 +138,6 @@
             pointer-events:none;
         }
 
-        /* Textarea */
         .textarea-field{
             width:100%; padding:12px 14px; border:1.5px solid #e5e7eb;
             border-radius:10px; font-size:13px; color:#374151; outline:none;
@@ -118,8 +147,7 @@
         .textarea-field:focus{ border-color:#173a84; }
         .textarea-field::placeholder{ color:#b0b7c3; }
 
-        /* STATUS GANGGUAN */
-        .status-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+        .status-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
 
         .status-option{
             border:2px solid #e5e7eb; border-radius:12px; padding:14px;
@@ -127,8 +155,7 @@
         }
         .status-option:hover{ border-color:#d1d5db; background:#fafafa; }
         .status-option.selected-down{ border-color:#dc2626; background:#fff8f8; }
-        .status-option.selected-unusual{ border-color:#b45309; background:#fffbf0; }
-        .status-option.selected-paused{ border-color:#0f766e; background:#f0fdfb; }
+        .status-option.selected-up{ border-color:#16a34a; background:#f0fdf9; }
 
         .status-icon{
             width:36px; height:36px; border-radius:8px;
@@ -136,20 +163,16 @@
             font-size:18px; margin-bottom:10px;
         }
         .icon-down{ background:#fef2f2; }
-        .icon-unusual{ background:#fffbeb; }
-        .icon-paused{ background:#f0fdf4; }
+        .icon-up{ background:#f0fdf4; }
 
         .status-name{
-            font-size:13px; font-weight:700; letter-spacing:0.3px;
-            margin-bottom:4px;
+            font-size:13px; font-weight:700; letter-spacing:0.3px; margin-bottom:4px;
         }
         .status-name.down{ color:#dc2626; }
-        .status-name.unusual{ color:#b45309; }
-        .status-name.paused{ color:#0f766e; }
+        .status-name.up{ color:#16a34a; }
 
         .status-desc{ font-size:11px; color:#9ca3af; line-height:1.5; }
 
-        /* Checkmark when selected */
         .status-option .check{
             position:absolute; top:10px; right:10px;
             width:18px; height:18px; border-radius:50%;
@@ -157,10 +180,8 @@
             font-size:10px; color:#fff; opacity:0; transition:opacity 0.2s;
         }
         .status-option.selected-down .check{ background:#dc2626; opacity:1; }
-        .status-option.selected-unusual .check{ background:#b45309; opacity:1; }
-        .status-option.selected-paused .check{ background:#0f766e; opacity:1; }
+        .status-option.selected-up .check{ background:#16a34a; opacity:1; }
 
-        /* FORM FOOTER */
         .form-footer{
             display:flex; justify-content:flex-end; gap:10px;
             margin-top:24px; padding-top:20px; border-top:1px solid #f3f4f6;
@@ -182,7 +203,6 @@
         .btn-kirim:hover{ background:#1e4ba0; }
         .btn-kirim svg{ width:15px; height:15px; }
 
-        /* RIGHT SIDEBAR CARDS */
         .side-col{ display:flex; flex-direction:column; gap:16px; }
 
         .side-card{
@@ -219,7 +239,6 @@
         .btn-dispatcher:hover{ background:#111827; color:#fff; }
         .btn-dispatcher svg{ width:16px; height:16px; }
 
-        /* FOOTER */
         .page-footer{
             text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af;
             border-top:1px solid #e5e7eb; background:#fff; line-height:1.8;
@@ -281,118 +300,131 @@
         <h1 class="page-title">Buat Laporan Baru</h1>
         <p class="page-sub">Input detail gangguan atau temuan pemeliharaan unit</p>
 
+        {{-- Notif sukses --}}
+        @if(session('success'))
+        <div class="alert-success">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
+        @endif
+
+        {{-- Notif error validasi --}}
+        @if($errors->any())
+        <div class="alert-error">
+            @foreach($errors->all() as $error)
+                <p>⚠ {{ $error }}</p>
+            @endforeach
+        </div>
+        @endif
+
         <div class="layout">
 
             <!-- FORM -->
             <div class="form-card">
+                <form action="{{ route('laporan.store') }}" method="POST">
+                    @csrf
 
-                <!-- Unit / Lokasi Utama -->
-                <div class="field-group">
-                    <label class="field-label">Unit / Lokasi Utama</label>
-                    <div class="input-wrap">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        <input type="text" class="input-search" placeholder="ULP Natal New">
-                    </div>
-                </div>
+                    <!-- Hidden status input -->
+                    <input type="hidden" name="status" id="status-input" value="DOWN">
 
-                <!-- Status Gangguan -->
-                <div class="field-group">
-                    <label class="field-label">Status Gangguan</label>
-                    <div class="status-grid">
-                        <div class="status-option selected-down" onclick="selectStatus(this,'selected-down')">
-                            <div class="check">✓</div>
-                            <div class="status-icon icon-down">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="11" fill="#dc2626"/>
-                                    <line x1="12" y1="7" x2="12" y2="13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-                                    <circle cx="12" cy="17" r="1.3" fill="#fff"/>
+                    <!-- Unit / Lokasi Utama (Combobox) -->
+                    <div class="field-group">
+                        <label class="field-label">Unit / Lokasi Utama <span style="color:#dc2626">*</span></label>
+                        <div class="combo-wrap" id="combo">
+                            <div class="input-wrap">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                                 </svg>
+                                <input type="text" id="combo-input" class="input-search"
+                                    placeholder="Ketik nama unit atau IP address..."
+                                    autocomplete="off"
+                                    value="{{ old('unit') }}">
+                                <button type="button" class="combo-clear" id="combo-clear">✕</button>
                             </div>
-                            <div class="status-name down">DOWN</div>
-                            <div class="status-desc">Layanan terputus total (Critical)</div>
+                            <div class="combo-dropdown" id="combo-dropdown"></div>
                         </div>
-                        <div class="status-option" onclick="selectStatus(this,'selected-unusual')">
-                            <div class="check">✓</div>
-                            <div class="status-icon icon-unusual">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 2L2 21h20L12 2z" fill="#b45309"/>
-                                    <line x1="12" y1="10" x2="12" y2="15" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-                                    <circle cx="12" cy="18.5" r="1.2" fill="#fff"/>
-                                </svg>
+                        <input type="hidden" name="unit" id="unit-hidden" value="{{ old('unit') }}">
+                    </div>
+
+                    <!-- Status Gangguan -->
+                    <div class="field-group">
+                        <label class="field-label">Status Gangguan</label>
+                        <div class="status-grid">
+                            <div class="status-option selected-down" onclick="selectStatus(this,'selected-down')">
+                                <div class="check">✓</div>
+                                <div class="status-icon icon-down">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="11" fill="#dc2626"/>
+                                        <line x1="12" y1="7" x2="12" y2="13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+                                        <circle cx="12" cy="17" r="1.3" fill="#fff"/>
+                                    </svg>
+                                </div>
+                                <div class="status-name down">DOWN</div>
+                                <div class="status-desc">Layanan terputus total (Critical)</div>
                             </div>
-                            <div class="status-name unusual">UNUSUAL</div>
-                            <div class="status-desc">Anomali atau performa menurun</div>
-                        </div>
-                        <div class="status-option" onclick="selectStatus(this,'selected-paused')">
-                            <div class="check">✓</div>
-                            <div class="status-icon icon-paused">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="11" fill="#0f766e"/>
-                                    <rect x="7.5" y="7.5" width="3" height="9" rx="1" fill="#fff"/>
-                                    <rect x="13.5" y="7.5" width="3" height="9" rx="1" fill="#fff"/>
-                                </svg>
+                            <div class="status-option" onclick="selectStatus(this,'selected-up')">
+                                <div class="check">✓</div>
+                                <div class="status-icon icon-up">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="11" fill="#16a34a"/>
+                                        <polyline points="7,12 11,16 17,9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="status-name up">UP</div>
+                                <div class="status-desc">Layanan berjalan normal</div>
                             </div>
-                            <div class="status-name paused">PAUSED</div>
-                            <div class="status-desc">Pemeliharaan atau diberhentikan</div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Lokasi Gardu & Alamat IP -->
-                <div class="field-group">
-                    <div class="row-2">
-                        <div>
-                            <label class="field-label">Lokasi Gardu</label>
-                            <input type="text" class="input-field" placeholder="Mandailing Natal">
-                        </div>
-                        <div>
-                            <label class="field-label">Alamat IP</label>
-                            <input type="text" class="input-field" placeholder="10.43.57.XX">
+                    <!-- Lokasi Gardu -->
+                    <div class="field-group">
+                        <label class="field-label">Lokasi Gardu</label>
+                        <input type="text" name="lokasi_gardu" class="input-field"
+                            placeholder="Mandailing Natal"
+                            value="{{ old('lokasi_gardu') }}">
+                    </div>
+
+                    <!-- Penyebab Kendala -->
+                    <div class="field-group">
+                        <label class="field-label">Penyebab Kendala <span style="color:#dc2626">*</span></label>
+                        <div class="select-wrap">
+                            <select name="penyebab" class="select-field">
+                                <option value="Beban Berlebih" {{ old('penyebab') == 'Beban Berlebih' ? 'selected' : '' }}>Beban Berlebih</option>
+                                <option value="Ping Timeout" {{ old('penyebab') == 'Ping Timeout' ? 'selected' : '' }}>Ping Timeout</option>
+                                <option value="Tegangan Drop" {{ old('penyebab') == 'Tegangan Drop' ? 'selected' : '' }}>Tegangan Drop</option>
+                                <option value="Kerusakan Perangkat" {{ old('penyebab') == 'Kerusakan Perangkat' ? 'selected' : '' }}>Kerusakan Perangkat</option>
+                                <option value="Gangguan Jaringan" {{ old('penyebab') == 'Gangguan Jaringan' ? 'selected' : '' }}>Gangguan Jaringan</option>
+                                <option value="Lainnya" {{ old('penyebab') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            </select>
                         </div>
                     </div>
-                </div>
 
-                <!-- Penyebab Kendala -->
-                <div class="field-group">
-                    <label class="field-label">Penyebab Kendala</label>
-                    <div class="select-wrap">
-                        <select class="select-field">
-                            <option value="">Beban Berlebih</option>
-                            <option>Ping Timeout</option>
-                            <option>Tegangan Drop</option>
-                            <option>Beban Berlebih</option>
-                            <option>Kerusakan Perangkat</option>
-                            <option>Gangguan Jaringan</option>
-                            <option>Lainnya</option>
-                        </select>
+                    <!-- Detail Tambahan -->
+                    <div class="field-group">
+                        <label class="field-label">Detail Tambahan</label>
+                        <textarea name="detail" class="textarea-field"
+                            placeholder="Jelaskan secara detail temuan atau masalah di lapangan...">{{ old('detail') }}</textarea>
                     </div>
-                </div>
 
-                <!-- Detail Tambahan -->
-                <div class="field-group">
-                    <label class="field-label">Detail Tambahan</label>
-                    <textarea class="textarea-field" placeholder="Jelaskan secara detail temuan atau masalah di lapangan..."></textarea>
-                </div>
+                    <!-- Footer -->
+                    <div class="form-footer">
+                        <a href="/dashboard"><button type="button" class="btn-batal">Batal</button></a>
+                        <button type="submit" class="btn-kirim">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            Kirim Laporan
+                        </button>
+                    </div>
 
-                <!-- Footer -->
-                <div class="form-footer">
-                    <button class="btn-batal">Batal</button>
-                    <button class="btn-kirim">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                        </svg>
-                        Kirim Laporan
-                    </button>
-                </div>
-
+                </form>
             </div>
 
             <!-- RIGHT SIDEBAR -->
             <div class="side-col">
 
-                <!-- Panduan Input -->
                 <div class="side-card">
                     <div class="side-card-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#173a84" stroke-width="2" width="20" height="20">
@@ -418,7 +450,6 @@
                     </ul>
                 </div>
 
-                <!-- Bantuan Teknis -->
                 <div class="side-card">
                     <div class="side-card-title">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2">
@@ -449,11 +480,74 @@
 </div>
 
 <script>
+const unitData = [
+    {name:"GI Simangkuk",          ip:"10.43.61.81",  gardu:"ULTG TOBA"},
+    {name:"GI Sei Mangke",         ip:"10.43.66.129", gardu:"ULTG KISARAN"},
+    {name:"GI Tanjung Pura",       ip:"10.43.57.33",  gardu:"ULTG/GI"},
+    {name:"GI Martabe",            ip:"10.43.65.97",  gardu:"ULTG PADANG SIDEM"},
+    {name:"GI Pangururan",         ip:"10.43.68.1",   gardu:"ULTG DOLOK SANGGUL"},
+    {name:"Gudang UPT P.Siantar",  ip:"10.43.62.33",  gardu:"UPT SIANTAR"},
+    {name:"GI Porsea",             ip:"10.43.61.241", gardu:"ULTG TOBA"},
+    {name:"GI Asahan 1",           ip:"10.43.66.97",  gardu:"ULTG TOBA"},
+];
+
+const comboInput = document.getElementById('combo-input');
+const unitHidden = document.getElementById('unit-hidden');
+const comboDD    = document.getElementById('combo-dropdown');
+const comboClear = document.getElementById('combo-clear');
+const garduInput = document.querySelector('[name="lokasi_gardu"]');
+
+function renderDropdown(list) {
+    comboDD.innerHTML = list.length
+        ? list.map(u => `<div class="dd-item" onclick="pickUnit(${unitData.indexOf(u)})">
+            <span class="dd-item-name">${u.name}</span>
+            <span class="dd-item-ip">${u.ip}</span>
+          </div>`).join('')
+        : '<div class="dd-empty">Unit tidak ditemukan</div>';
+    comboDD.classList.add('open');
+}
+
+function pickUnit(idx) {
+    const u = unitData[idx];
+    comboInput.value = u.name;
+    unitHidden.value = u.name;
+    garduInput.value = u.gardu;
+    comboDD.classList.remove('open');
+    comboClear.classList.add('visible');
+}
+
+comboInput.addEventListener('input', () => {
+    const q = comboInput.value.toLowerCase();
+    unitHidden.value = comboInput.value;
+    comboClear.classList.toggle('visible', q.length > 0);
+    if (!q) { comboDD.classList.remove('open'); return; }
+    renderDropdown(unitData.filter(u =>
+        u.name.toLowerCase().includes(q) || u.ip.includes(q)
+    ));
+});
+
+comboInput.addEventListener('focus', () => {
+    if (!comboInput.value) renderDropdown(unitData);
+});
+
+comboClear.addEventListener('click', () => {
+    comboInput.value = unitHidden.value = garduInput.value = '';
+    comboClear.classList.remove('visible');
+    comboDD.classList.remove('open');
+    comboInput.focus();
+});
+
+document.addEventListener('click', e => {
+    if (!document.getElementById('combo').contains(e.target))
+        comboDD.classList.remove('open');
+});
+
 function selectStatus(el, cls) {
-    document.querySelectorAll('.status-option').forEach(opt => {
-        opt.classList.remove('selected-down','selected-unusual','selected-paused');
-    });
+    document.querySelectorAll('.status-option').forEach(o =>
+        o.classList.remove('selected-down','selected-up'));
     el.classList.add(cls);
+    document.getElementById('status-input').value =
+        cls === 'selected-down' ? 'DOWN' : 'UP';
 }
 </script>
 

@@ -13,9 +13,10 @@ class Gangguan extends Model
         'waktu_kejadian',
         'status',
         'tahapan',
+        'jenis_gangguan',
         'catatan_perbaikan',
-        'foto_lokasi',    
-        'foto_petugas', 
+        'foto_lokasi',
+        'foto_petugas',
     ];
 
     public function logs()
