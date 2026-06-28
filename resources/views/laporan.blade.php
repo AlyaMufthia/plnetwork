@@ -18,7 +18,7 @@
             height:64px; padding:0 20px; border-bottom:1px solid #e5e7eb;
             display:flex; align-items:center; gap:10px;
         }
-        .sidebar-logo img{ height:45px; }
+        .sidebar-logo img{ height:70px; }
         .sidebar-nav{ padding:16px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
         .nav-item{
             display:flex; align-items:center; gap:12px; padding:10px 14px;
@@ -287,11 +287,11 @@
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
             </div>
-            <div class="icon-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-            </div>
+            <a href="/pengaturan" class="icon-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+</a>
         </div>
     </header>
 

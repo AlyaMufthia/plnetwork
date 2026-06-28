@@ -12,6 +12,7 @@ class Gangguan extends Model
         'gardu_induk',
         'waktu_kejadian',
         'status',
+        'status_jaringan',
         'tahapan',
         'jenis_gangguan',
         'catatan_perbaikan',

@@ -15,15 +15,16 @@ class LaporanController extends Controller
             'penyebab' => 'required|string',
         ]);
 
-        Gangguan::create([
-            'id_laporan'        => 'LAP-' . now()->format('YmdHis'),
-            'gardu_induk'       => $request->unit,
-            'waktu_kejadian'    => now(),
-            'status'            => 'on_progress',
-            'tahapan'           => 1,
-            'jenis_gangguan'    => $request->status,
-            'catatan_perbaikan' => $request->detail,
-        ]);
+        $gangguan = Gangguan::create([
+    'id_laporan'        => 'LAP-' . now()->format('YmdHis'),
+    'gardu_induk'       => $request->unit,
+    'waktu_kejadian'    => now(),
+    'status'            => 'on_progress',
+    'status_jaringan'   => $request->status,   // UP / DOWN
+    'tahapan'           => 1,
+    'jenis_gangguan'    => $request->penyebab,  // Gangguan Jaringan, dll
+    'catatan_perbaikan' => $request->detail,
+]);
 
         return redirect()->route('riwayat.index')->with('success', 'Laporan berhasil dikirim!');
     }

@@ -22,7 +22,7 @@
             display:flex; align-items:center; gap:10px;
         }
 
-        .sidebar-logo img{ height:45px; }
+        .sidebar-logo img{ height:70px; }
 
         .sidebar-nav{ padding:16px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
 
@@ -92,7 +92,6 @@
             gap:20px; margin-bottom:20px; align-items:stretch;
         }
 
-        /* ROW 2: Tabel full width kiri, chart kanan — sejajar */
         .grid-bottom{
             display:grid; grid-template-columns:1fr 1fr;
             gap:20px; margin-bottom:20px; align-items:stretch;
@@ -107,7 +106,6 @@
 
         .card-sub{ font-size:12px; color:#9ca3af; margin-bottom:18px; }
 
-        /* --- ALARM SECTION --- */
         .alarm-inner{ display:flex; align-items:center; gap:28px; }
 
         .donut-wrap{ position:relative; width:190px; height:190px; flex-shrink:0; }
@@ -164,7 +162,6 @@
         .alarm-summary-item .s-num{ font-size:22px; font-weight:700; line-height:1; }
         .alarm-summary-item .s-lbl{ font-size:11px; color:#9ca3af; margin-top:3px; }
 
-        /* --- REKAPAN GANGGUAN UP --- */
         .rekapan-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; }
 
         .rekapan-header{
@@ -195,10 +192,12 @@
         .rekapan-info strong{ font-size:13px; font-weight:600; color:#111827; display:block; margin-bottom:4px; }
         .rekapan-info p{ font-size:12px; color:#6b7280; line-height:1.7; }
 
-        .edit-btn{ background:none; border:none; cursor:pointer; color:#9ca3af; padding:2px; }
+        .edit-btn{
+            background:none; border:none; cursor:pointer; color:#9ca3af; padding:2px;
+            text-decoration:none; display:inline-flex; align-items:center;
+        }
         .edit-btn:hover{ color:#374151; }
 
-        /* --- TABEL REKAPAN PENYEBAB GANGGUAN --- */
         .tabel-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px; display:flex; flex-direction:column; }
 
         .tabel-title{
@@ -243,7 +242,6 @@
         .penyebab-table .penyebab-name{ font-weight:600; color:#111827; }
         .penyebab-table .freq-col{ font-weight:600; color:#374151; }
 
-        /* Status badges tabel — UP & DOWN */
         .status-up{
             background:#dcfce7; color:#15803d; font-size:11px; font-weight:700;
             padding:4px 12px; border-radius:999px; display:inline-block;
@@ -259,8 +257,6 @@
             font-size:12px; color:#9ca3af;
         }
 
-        /* --- CHART 24 JAM --- */
-        /* Chart card fill same height as table card */
         .chart-card{
             background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px;
             display:flex; flex-direction:column;
@@ -271,13 +267,14 @@
             text-align:center; margin-bottom:16px;
         }
 
-        /* Chart canvas fills remaining vertical space */
         .chart-wrap{ flex:1; position:relative; min-height:280px; }
 
         .page-footer{
             text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af;
             border-top:1px solid #e5e7eb; background:#fff; line-height:1.8;
         }
+
+        .empty-state{ text-align:center; padding:30px 0; color:#9ca3af; font-size:13px; }
 
         @media(max-width:1024px){
             .grid-top, .grid-bottom{ grid-template-columns:1fr; }
@@ -325,11 +322,11 @@
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
             </div>
-            <div class="icon-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-            </div>
+            <a href="/pengaturan" class="icon-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            </a>
             <a href="/laporan" class="btn-laporan">+ Laporan Baru</a>
         </div>
     </header>
@@ -343,14 +340,14 @@
             </div>
             <div class="status-badge">
                 <div class="status-dot"></div>
-                SISTEM BEROPERASI &bull; PEMBARUAN TERAKHIR: 12:45 WIB
+                SISTEM BEROPERASI &bull; PEMBARUAN TERAKHIR: {{ now()->format('H:i') }} WIB
             </div>
         </div>
 
         <!-- ROW 1: Alarm + Rekapan Gangguan -->
         <div class="grid-top">
 
-            <!-- ALARM SAAT INI — hanya UP & DOWN -->
+            <!-- ALARM SAAT INI -->
             <div class="card">
                 <div class="card-title">🔔 ALARM SAAT INI</div>
                 <div class="card-sub">Ringkasan status UP dan DOWN perangkat secara real-time.</div>
@@ -358,7 +355,7 @@
                     <div class="donut-wrap">
                         <canvas id="donutChart"></canvas>
                         <div class="donut-center">
-                            <div class="num">16</div>
+                            <div class="num">{{ $total }}</div>
                             <div class="lbl">Total<br>Perangkat</div>
                         </div>
                     </div>
@@ -373,14 +370,14 @@
                                         <span class="badge badge-green"><span class="badge-icon bi-green">▲</span>UP (Normal)</span><br>
                                         <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Perangkat aktif & terhubung</small>
                                     </td>
-                                    <td>11</td>
+                                    <td>{{ $totalUp }}</td>
                                 </tr>
                                 <tr class="alarm-row">
                                     <td>
                                         <span class="badge badge-red"><span class="badge-icon bi-red">▼</span>DOWN (Gangguan)</span><br>
                                         <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Perangkat tidak merespons</small>
                                     </td>
-                                    <td>5</td>
+                                    <td>{{ $totalDown }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -389,56 +386,56 @@
 
                 <div class="alarm-summary">
                     <div class="alarm-summary-item" style="background:#f0fdf4;">
-                        <div class="s-num" style="color:#16a34a;">11</div>
+                        <div class="s-num" style="color:#16a34a;">{{ $totalUp }}</div>
                         <div class="s-lbl">UP</div>
                     </div>
                     <div class="alarm-summary-item" style="background:#fef2f2;">
-                        <div class="s-num" style="color:#dc2626;">5</div>
+                        <div class="s-num" style="color:#dc2626;">{{ $totalDown }}</div>
                         <div class="s-lbl">DOWN</div>
                     </div>
                 </div>
             </div>
 
-            <!-- REKAPAN GANGGUAN -->
+            <!-- REKAPAN GANGGUAN UP — dari database -->
             <div class="rekapan-card">
                 <div class="rekapan-header">
                     <h2>REKAPAN GANGGUAN UP</h2>
-                    <span class="rekapan-count">3 Teratas</span>
+                    <span class="rekapan-count">{{ $rekapanUp->count() }} Teratas</span>
                 </div>
                 <div class="rekapan-body">
+                    @forelse($rekapanUp as $item)
                     <div class="rekapan-item">
                         <div class="rekapan-bar"></div>
                         <div class="rekapan-info">
-                            <strong>Perbaikan ULP Natal New</strong>
-                            <p>Status : UP<br>IP : 10.16.218.1<br>Status : Normal<br>Durasi : 1 jam 22 menit</p>
+                            <strong>{{ $item->gardu_induk }}</strong>
+                            <p>
+                                Status : UP<br>
+                                IP : {{ $item->ip_address ?? '-' }}<br>
+                                Penyebab : {{ $item->jenis_gangguan ?? '-' }}<br>
+                                Waktu : {{ \Carbon\Carbon::parse($item->waktu_kejadian)->diffForHumans() }}
+                            </p>
                         </div>
-                        <button class="edit-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <a href="{{ route('riwayat.show', $item->id) }}" class="edit-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </a>
                     </div>
-                    <div class="rekapan-item">
-                        <div class="rekapan-bar"></div>
-                        <div class="rekapan-info">
-                            <strong>Perbaikan Gudang Logistik ULP Sidempuan</strong>
-                            <p>Status : UP<br>IP : 10.16.219.1<br>Status : Normal<br>Durasi : 3 jam 52 menit</p>
-                        </div>
-                        <button class="edit-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    @empty
+                    <div class="empty-state">
+                        Belum ada laporan dengan status UP.
                     </div>
-                    <div class="rekapan-item">
-                        <div class="rekapan-bar down"></div>
-                        <div class="rekapan-info">
-                            <strong>Perbaikan GI Labuhan Bilik</strong>
-                            <p>Status : Down<br>IP : 10.43.68.193<br>Gangguan : Ping Timeout<br>Durasi : 14 jam 10 menit</p>
-                        </div>
-                        <button class="edit-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
         </div>
 
-        <!-- ROW 2: Tabel + Chart — sejajar & sama tinggi -->
+        <!-- ROW 2: Tabel + Chart -->
         <div class="grid-bottom">
 
-            <!-- TABEL REKAPAN PENYEBAB GANGGUAN -->
+            <!-- TABEL REKAPAN PENYEBAB GANGGUAN — dari database -->
             <div class="tabel-card">
                 <div class="tabel-title">TABEL REKAPAN PENYEBAB GANGGUAN</div>
                 <div class="tabel-filters">
@@ -464,44 +461,34 @@
                         </tr>
                     </thead>
                     <tbody id="tabelBody">
-                        <tr data-penyebab="PING TIMEOUT" data-status="UP">
-                            <td class="no-col">1.</td>
-                            <td class="penyebab-name">PING TIMEOUT</td>
-                            <td class="freq-col">30 KALI</td>
-                            <td><span class="status-up">UP</span></td>
+                        @forelse($penyebabStats as $i => $row)
+                        <tr data-penyebab="{{ strtoupper($row->jenis_gangguan) }}" data-status="{{ $row->status_jaringan }}">
+                            <td class="no-col">{{ $i + 1 }}.</td>
+                            <td class="penyebab-name">{{ strtoupper($row->jenis_gangguan ?? '-') }}</td>
+                            <td class="freq-col">{{ $row->frekuensi }} KALI</td>
+                            <td>
+                                @if($row->status_jaringan === 'UP')
+                                    <span class="status-up">UP</span>
+                                @else
+                                    <span class="status-down">DOWN</span>
+                                @endif
+                            </td>
                         </tr>
-                        <tr data-penyebab="PING TIMEOUT" data-status="DOWN">
-                            <td class="no-col">2.</td>
-                            <td class="penyebab-name">PING TIMEOUT</td>
-                            <td class="freq-col">15 KALI</td>
-                            <td><span class="status-down">DOWN</span></td>
+                        @empty
+                        <tr>
+                            <td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">
+                                Belum ada data penyebab gangguan.
+                            </td>
                         </tr>
-                        <tr data-penyebab="TEGANGAN DROP" data-status="UP">
-                            <td class="no-col">3.</td>
-                            <td class="penyebab-name">TEGANGAN DROP</td>
-                            <td class="freq-col">20 KALI</td>
-                            <td><span class="status-up">UP</span></td>
-                        </tr>
-                        <tr data-penyebab="TEGANGAN DROP" data-status="DOWN">
-                            <td class="no-col">4.</td>
-                            <td class="penyebab-name">TEGANGAN DROP</td>
-                            <td class="freq-col">7 KALI</td>
-                            <td><span class="status-down">DOWN</span></td>
-                        </tr>
-                        <tr data-penyebab="BEBAN BERLEBIH" data-status="UP">
-                            <td class="no-col">5.</td>
-                            <td class="penyebab-name">BEBAN BERLEBIH</td>
-                            <td class="freq-col">12 KALI</td>
-                            <td><span class="status-up">UP</span></td>
-                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
                 <div class="tabel-footer" id="showingInfo">
-                    Showing 1 to 5 of 5 results
+                    Showing 1 to {{ $penyebabStats->count() }} of {{ $penyebabStats->count() }} results
                 </div>
             </div>
 
-            <!-- CHART 24 JAM — hanya data DOWN, sejajar tabel -->
+            <!-- CHART 24 JAM -->
             <div class="chart-card">
                 <div class="chart-card-title">Pemantauan Alarm DOWN 24 Jam</div>
                 <div class="chart-wrap">
@@ -521,13 +508,13 @@
 </div>
 
 <script>
-// ── DONUT CHART — hanya UP & DOWN ──────────────────────────
+// ── DONUT CHART — dari database ──────────────────────────
 const donutCtx = document.getElementById('donutChart').getContext('2d');
 new Chart(donutCtx, {
     type: 'doughnut',
     data: {
         datasets: [{
-            data: [11, 5],
+            data: [{{ $totalUp }}, {{ $totalDown }}],
             backgroundColor: ['#16a34a', '#dc2626'],
             borderWidth: 0,
             hoverOffset: 4
@@ -541,7 +528,7 @@ new Chart(donutCtx, {
     }
 });
 
-// ── LINE CHART — hanya data DOWN ─────────────────────────────
+// ── LINE CHART — data DOWN 24 jam ─────────────────────────────
 const lineCtx = document.getElementById('lineChart').getContext('2d');
 const labels = ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00','24:00'];
 new Chart(lineCtx, {
@@ -551,7 +538,7 @@ new Chart(lineCtx, {
         datasets: [
             {
                 label: 'Jumlah Perangkat DOWN',
-                data: [2, 2, 3, 4, 6, 9, 5, 7, 5, 4, 3, 3, 2],
+                data: {!! json_encode($chartDown) !!},
                 borderColor: '#dc2626',
                 backgroundColor: 'rgba(220,38,38,0.12)',
                 fill: true,
@@ -606,7 +593,8 @@ function filterTabel() {
 
         if (matchKeyword && matchStatus) {
             row.style.display = '';
-            row.querySelector('.no-col').textContent = rowNumber + '.';
+            const noCol = row.querySelector('.no-col');
+            if (noCol) noCol.textContent = rowNumber + '.';
             rowNumber++;
             visibleCount++;
         } else {

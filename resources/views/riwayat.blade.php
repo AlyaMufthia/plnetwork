@@ -21,7 +21,7 @@
             display:flex; align-items:center; gap:10px;
         }
 
-        .sidebar-logo img{ height:75px; }
+        .sidebar-logo img{ height:70px; }
         .sidebar-logo span{ font-size:15px; font-weight:700; color:#173a84; }
 
         .sidebar-nav{ padding:16px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
@@ -201,11 +201,11 @@
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
             </svg>
         </div>
-        <div class="icon-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-            </svg>
-        </div>
+        <a href="/pengaturan" class="icon-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    </svg>
+</a>
     </header>
 
     <div class="content">
@@ -255,16 +255,16 @@
                         </td>
                         <td>
                             @php
-                                $statusClass = match($item->jenis_gangguan) {
-                                    'DOWN' => 'down',
-                                    'UP'   => 'up',
-                                    default => 'down',
-                                };
-                                $statusLabel = match($item->jenis_gangguan) {
-                                    'DOWN' => 'Down',
-                                    'UP'   => 'Up',
-                                    default => 'Down',
-                                };
+                                $statusClass = match($item->status_jaringan) {
+                                'DOWN' => 'down',
+                                'UP'   => 'up',
+                                default => 'down',
+                            };
+                            $statusLabel = match($item->status_jaringan) {
+                                'DOWN' => 'Down',
+                                'UP'   => 'Up',
+                                default => 'Down',
+                            };
                             @endphp
                             <span class="status-badge {{ $statusClass }}">
                                 @if($statusClass === 'down')
