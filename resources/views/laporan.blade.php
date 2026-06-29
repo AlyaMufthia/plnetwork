@@ -75,46 +75,6 @@
             font-size:13px; font-weight:600; color:#374151; margin-bottom:8px; display:block;
         }
 
-        /* Combobox */
-        .combo-wrap{ position:relative; }
-        .input-wrap{ position:relative; }
-        .input-wrap svg{
-            position:absolute; left:13px; top:50%; transform:translateY(-50%);
-            width:16px; height:16px; color:#9ca3af; pointer-events:none;
-        }
-        .input-search{
-            width:100%; padding:11px 40px 11px 42px; border:1.5px solid #e5e7eb;
-            border-radius:10px; font-size:13px; color:#374151; outline:none;
-            background:#fff; transition:border-color 0.2s; font-family:inherit;
-        }
-        .input-search:focus{ border-color:#173a84; }
-        .combo-clear{
-            position:absolute; right:12px; top:50%; transform:translateY(-50%);
-            width:18px; height:18px; border-radius:50%; background:#e5e7eb;
-            border:none; cursor:pointer; display:none; align-items:center;
-            justify-content:center; color:#6b7280; font-size:11px; line-height:1;
-        }
-        .combo-clear.visible{ display:flex; }
-        .combo-dropdown{
-            position:absolute; top:calc(100% + 6px); left:0; right:0;
-            background:#fff; border:1.5px solid #e5e7eb; border-radius:12px;
-            overflow:hidden; z-index:200; box-shadow:0 8px 24px rgba(0,0,0,.1);
-            display:none;
-        }
-        .combo-dropdown.open{ display:block; }
-        .dd-item{
-            padding:11px 16px; font-size:13px; color:#374151; cursor:pointer;
-            display:flex; align-items:center; justify-content:space-between; gap:8px;
-            transition:background 0.15s;
-        }
-        .dd-item:hover{ background:#f3f4f6; }
-        .dd-item-name{ font-weight:600; }
-        .dd-item-ip{
-            font-size:11px; color:#9ca3af; font-family:monospace;
-            background:#f3f4f6; padding:2px 7px; border-radius:5px;
-        }
-        .dd-empty{ padding:14px 16px; font-size:13px; color:#9ca3af; text-align:center; }
-
         .input-field{
             width:100%; padding:11px 14px; border:1.5px solid #e5e7eb;
             border-radius:10px; font-size:13px; color:#374151; outline:none;
@@ -244,6 +204,11 @@
             border-top:1px solid #e5e7eb; background:#fff; line-height:1.8;
         }
 
+        /* Unit list scrollbar */
+        #unit-list::-webkit-scrollbar{ width:6px; }
+        #unit-list::-webkit-scrollbar-track{ background:transparent; }
+        #unit-list::-webkit-scrollbar-thumb{ background:#d1d5db; border-radius:3px; }
+
         @media(max-width:1024px){
             .layout{ grid-template-columns:1fr; }
             .side-col{ flex-direction:row; flex-wrap:wrap; }
@@ -282,16 +247,16 @@
     <header class="topbar">
         <div style="font-size:14px;font-weight:600;color:#6b7280;">Laporan</div>
         <div class="topbar-right">
-        <a href="/riwayat" class="icon-btn" title="Lihat Riwayat Gangguan">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-        </a>
+            <a href="/riwayat" class="icon-btn" title="Lihat Riwayat Gangguan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </a>
             <a href="/pengaturan" class="icon-btn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-    </svg>
-</a>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+            </a>
         </div>
     </header>
 
@@ -300,7 +265,6 @@
         <h1 class="page-title">Buat Laporan Baru</h1>
         <p class="page-sub">Input detail gangguan atau temuan pemeliharaan unit</p>
 
-        {{-- Notif sukses --}}
         @if(session('success'))
         <div class="alert-success">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
@@ -310,7 +274,6 @@
         </div>
         @endif
 
-        {{-- Notif error validasi --}}
         @if($errors->any())
         <div class="alert-error">
             @foreach($errors->all() as $error)
@@ -321,29 +284,46 @@
 
         <div class="layout">
 
-            <!-- FORM -->
             <div class="form-card">
                 <form action="{{ route('laporan.store') }}" method="POST">
                     @csrf
 
-                    <!-- Hidden status input -->
                     <input type="hidden" name="status" id="status-input" value="DOWN">
 
-                    <!-- Unit / Lokasi Utama (Combobox) -->
+                    <!-- Unit / Lokasi Utama -->
                     <div class="field-group">
                         <label class="field-label">Unit / Lokasi Utama <span style="color:#dc2626">*</span></label>
-                        <div class="combo-wrap" id="combo">
-                            <div class="input-wrap">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                                </svg>
-                                <input type="text" id="combo-input" class="input-search"
+                        <div style="border:1.5px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff;">
+
+                            <!-- Search bar -->
+                            <div style="display:flex;align-items:center;border-bottom:1px solid #e5e7eb;">
+                                <span style="padding:0 12px;flex-shrink:0;color:#9ca3af;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                </span>
+                                <input type="text" id="combo-input"
                                     placeholder="Ketik nama unit atau IP address..."
                                     autocomplete="off"
-                                    value="{{ old('unit') }}">
-                                <button type="button" class="combo-clear" id="combo-clear">✕</button>
+                                    style="flex:1;padding:11px 0;border:none;outline:none;font-size:13px;color:#374151;font-family:inherit;background:transparent;">
+                                <div style="width:1px;height:20px;background:#e5e7eb;margin:0 4px;flex-shrink:0;"></div>
+                                <span id="unit-count" style="padding:0 12px;font-size:11px;color:#9ca3af;white-space:nowrap;flex-shrink:0;"></span>
                             </div>
-                            <div class="combo-dropdown" id="combo-dropdown"></div>
+
+                            <!-- Scrollable list -->
+                            <div id="unit-list" style="height:220px;overflow-y:auto;overflow-x:hidden;"></div>
+
+                            <!-- Selected bar -->
+                            <div id="unit-selected-bar" style="display:none;align-items:center;gap:8px;padding:9px 14px;background:#eff6ff;border-top:1px solid #bfdbfe;font-size:12px;color:#1d4ed8;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span id="unit-selected-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                                <button type="button" id="unit-clear-btn"
+                                    style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:18px;line-height:1;padding:0 2px;flex-shrink:0;"
+                                    title="Hapus pilihan">×</button>
+                            </div>
+
                         </div>
                         <input type="hidden" name="unit" id="unit-hidden" value="{{ old('unit') }}">
                     </div>
@@ -381,7 +361,7 @@
                     <!-- Lokasi Gardu -->
                     <div class="field-group">
                         <label class="field-label">Lokasi Gardu</label>
-                        <input type="text" name="lokasi_gardu" class="input-field"
+                        <input type="text" name="lokasi_gardu" id="lokasi-gardu" class="input-field"
                             placeholder="Mandailing Natal"
                             value="{{ old('lokasi_gardu') }}">
                     </div>
@@ -408,7 +388,6 @@
                             placeholder="Jelaskan secara detail temuan atau masalah di lapangan...">{{ old('detail') }}</textarea>
                     </div>
 
-                    <!-- Footer -->
                     <div class="form-footer">
                         <a href="/dashboard"><button type="button" class="btn-batal">Batal</button></a>
                         <button type="submit" class="btn-kirim">
@@ -450,25 +429,24 @@
                     </ul>
                 </div>
 
-            <div class="side-card">
-                <div class="side-card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2">
-                        <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/>
-                    </svg>
-                    <span class="teal">Bantuan Teknis</span>
-                </div>
-                <p class="bantuan-desc">Jika mengalami kesulitan sistem, hubungi dispatcher pusat.</p>
-                <a href="https://wa.me/6281269982628?text=Halo,%20saya%20perlu%20bantuan%20teknis%20terkait%20sistem%20PLNetwork." 
-                target="_blank" 
-                style="text-decoration: none;">
-                    <button class="btn-dispatcher">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                <div class="side-card">
+                    <div class="side-card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2">
+                            <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/>
                         </svg>
-                        Hubungi Dispatcher
-                    </button>
-                </a>
-            </div>
+                        <span class="teal">Bantuan Teknis</span>
+                    </div>
+                    <p class="bantuan-desc">Jika mengalami kesulitan sistem, hubungi dispatcher pusat.</p>
+                    <a href="https://wa.me/6281269982628?text=Halo,%20saya%20perlu%20bantuan%20teknis%20terkait%20sistem%20PLNetwork."
+                        target="_blank" style="text-decoration:none;">
+                        <button class="btn-dispatcher">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            Hubungi Dispatcher
+                        </button>
+                    </a>
+                </div>
 
             </div>
 
@@ -485,73 +463,327 @@
 
 <script>
 const unitData = [
-    {name:"GI Simangkuk",          ip:"10.43.61.81",  gardu:"ULTG TOBA"},
-    {name:"GI Sei Mangke",         ip:"10.43.66.129", gardu:"ULTG KISARAN"},
-    {name:"GI Tanjung Pura",       ip:"10.43.57.33",  gardu:"ULTG/GI"},
-    {name:"GI Martabe",            ip:"10.43.65.97",  gardu:"ULTG PADANG SIDEM"},
-    {name:"GI Pangururan",         ip:"10.43.68.1",   gardu:"ULTG DOLOK SANGGUL"},
-    {name:"Gudang UPT P.Siantar",  ip:"10.43.62.33",  gardu:"UPT SIANTAR"},
-    {name:"GI Porsea",             ip:"10.43.61.241", gardu:"ULTG TOBA"},
-    {name:"GI Asahan 1",           ip:"10.43.66.97",  gardu:"ULTG TOBA"},
+    {name:"10.1.8.20 (DNS)",ip:"10.1.8.20",gardu:"Network Infrastructure"},
+    {name:"DNS GOOGLE",ip:"",gardu:"Network Infrastructure"},
+    {name:"10.43.10.1 (Palo Alto)",ip:"10.43.10.1",gardu:"Network Infrastructure"},
+    {name:"10.43.50.240 (Controller Unifi)",ip:"10.43.50.240",gardu:"SERVER UPT MEDAN"},
+    {name:"10.43.50.17 (VMWare Host 1)",ip:"10.43.50.17",gardu:"SERVER UPT MEDAN"},
+    {name:"10.43.50.109 (VMWare Host 2)",ip:"10.43.50.109",gardu:"SERVER UPT MEDAN"},
+    {name:"AMR",ip:"10.16.1.40",gardu:"SERVER UID SUMUT"},
+    {name:"APEOS",ip:"",gardu:"SERVER UID SUMUT"},
+    {name:"CONTROLER UNIFI",ip:"",gardu:"SERVER UID SUMUT"},
+    {name:"SIODIS",ip:"",gardu:"SERVER UID SUMUT"},
+    {name:"Portal UIDSU",ip:"",gardu:"SERVER UID SUMUT"},
+    {name:"REDEMPTION (RENHAR UP2D)",ip:"",gardu:"SERVER UID SUMUT"},
+    {name:"AV WILSU",ip:"10.16.1.66",gardu:"SERVER ANTI VIRUS UIDSUMUT"},
+    {name:"AV UP3 MEDAN",ip:"10.16.2.66",gardu:"SERVER ANTI VIRUS UIDSUMUT"},
+    {name:"AV UP3 PAKAM",ip:"10.16.83.66",gardu:"SERVER ANTI VIRUS UIDSUMUT"},
+    {name:"AV UP3 BINJAI",ip:"10.16.3.66",gardu:"SERVER ANTI VIRUS UIDSUMUT"},
+    {name:"AV UP3 SIBOLGA",ip:"10.16.5.66",gardu:"SERVER ANTI VIRUS UIDSUMUT"},
+    {name:"AV UP3 SIDEMPUAN",ip:"10.16.6.66",gardu:"SERVER ANTI VIRUS UIDSUMUT"},
+    {name:"10.43.10.240 (VMWare Host-1)",ip:"10.43.10.240",gardu:"SERVER UP2B SBU"},
+    {name:"10.43.10.1 (UP2B SUMBAGUT)",ip:"10.43.10.1",gardu:"UP2B SUMBAGUT"},
+    {name:"10.43.10.10 (UniFi-CloudKey)",ip:"10.43.10.10",gardu:"UP2B SUMBAGUT"},
+    {name:"10.43.50.1 (FORTIGATE UPT MEDAN)",ip:"10.43.50.1",gardu:"ULTG/GI"},
+    {name:"10.43.51.17 (GIS GLUGUR)",ip:"10.43.51.17",gardu:"ULTG/GI"},
+    {name:"10.43.51.81 (ULTG PAYA PASIR)",ip:"10.43.51.81",gardu:"ULTG/GI"},
+    {name:"10.43.53.161 (ULTG SEI ROTAN)",ip:"10.43.53.161",gardu:"ULTG/GI"},
+    {name:"10.43.51.1 (GI BINJAI 150)",ip:"10.43.51.1",gardu:"ULTG/GI"},
+    {name:"10.43.52.1 (GIS LISTRIK)",ip:"10.43.52.1",gardu:"ULTG/GI"},
+    {name:"10.43.55.193 (GI GUNUNG SITOLI)",ip:"10.43.55.193",gardu:"ULTG/GI"},
+    {name:"10.43.55.225 (GI TELUK DALAM)",ip:"10.43.55.225",gardu:"ULTG/GI"},
+    {name:"10.43.55.129 (GI GALANG)",ip:"10.43.55.129",gardu:"ULTG/GI"},
+    {name:"10.43.53.65 (GI TITI KUNING)",ip:"10.43.53.65",gardu:"ULTG/GI"},
+    {name:"10.43.51.65 (GI PAYA GELI)",ip:"10.43.51.65",gardu:"ULTG/GI"},
+    {name:"10.43.51.225 (GI BELAWAN)",ip:"10.43.51.225",gardu:"ULTG/GI"},
+    {name:"10.43.52.17 (GI NAMURAMBE)",ip:"10.43.52.17",gardu:"ULTG/GI"},
+    {name:"10.43.56.1 (GI KUALANAMU)",ip:"10.43.56.1",gardu:"ULTG/GI"},
+    {name:"10.43.51.177 (GI LABUHAN)",ip:"10.43.51.177",gardu:"ULTG/GI"},
+    {name:"10.43.51.97 (GI PANGKALAN BRANDAN)",ip:"10.43.51.97",gardu:"ULTG/GI"},
+    {name:"10.43.56.33 (GI PANGKALAN SUSU)",ip:"10.43.56.33",gardu:"ULTG/GI"},
+    {name:"10.43.56.17 (GI BINJAI 275)",ip:"10.43.56.17",gardu:"ULTG/GI"},
+    {name:"10.43.51.113 (GI TAMORA)",ip:"10.43.51.113",gardu:"ULTG/GI"},
+    {name:"10.43.51.129 (GIS MABAR)",ip:"10.43.51.129",gardu:"ULTG/GI"},
+    {name:"10.43.51.145 (GI KIM)",ip:"10.43.51.145",gardu:"ULTG/GI"},
+    {name:"10.43.51.193 (GI PERBAUNGAN)",ip:"10.43.51.193",gardu:"ULTG/GI"},
+    {name:"10.43.57.1 (GI NEGERI DOLOK)",ip:"10.43.57.1",gardu:"ULTG/GI"},
+    {name:"10.43.57.33 (GI TANJUNG PURA)",ip:"10.43.57.33",gardu:"ULTG/GI"},
+    {name:"10.43.57.65 (GI SELAYANG)",ip:"10.43.57.65",gardu:"ULTG/GI"},
+    {name:"10.43.51.209 (GI DENAI)",ip:"10.43.51.209",gardu:"ULTG/GI"},
+    {name:"GATEWAY ICON NET UID SUMUT",ip:"10.16.19.2",gardu:"UID SUMUT"},
+    {name:"FIREWALL FORTIGATE UIDSUMUT",ip:"10.16.19.2",gardu:"UID SUMUT"},
+    {name:"10.16.19.1 (Mikrotik UID SUMUT)",ip:"10.16.19.1",gardu:"UID SUMUT"},
+    {name:"10.16.116.250 (Mikrotik Ruang M-UP2D SUMUT)",ip:"10.16.116.250",gardu:"UID SUMUT"},
+    {name:"10.16.103.216 (Mikrotik Ruang SRM DISTRIBUSI)",ip:"10.16.103.216",gardu:"UID SUMUT"},
+    {name:"10.16.252.1 (ZoneDirector Ruckus)",ip:"10.16.252.1",gardu:"UID SUMUT"},
+    {name:"10.16.102.240 (Mikrotik Ruang GM UID SUMUT)",ip:"10.16.102.240",gardu:"UID SUMUT"},
+    {name:"10.16.101.1 (SW LT 1 Gd A)",ip:"10.16.101.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.105.1 (SW LT 1 Gd B)",ip:"10.16.105.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.102.1 (SW LT 2 Gd A)",ip:"10.16.102.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.106.1 (SW LT 2 Gd B)",ip:"10.16.106.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.103.1 (SW LT 3 Gd A)",ip:"10.16.103.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.107.1 (SW LT 3 Gd B)",ip:"10.16.107.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.104.1 (SW LT 4 Gd A)",ip:"10.16.104.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.108.1 (SW LT 4 Gd B)",ip:"10.16.108.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.114.1 (SW LT 2 Gd C_FASOP & SVR)",ip:"10.16.114.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.115.1 (SW LT 3 Gd C)",ip:"10.16.115.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.116.1 (SW Gd D UP2D DISPACER)",ip:"10.16.116.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.113.1 (SWITCH YBM, POS, IK PLN)",ip:"10.16.113.1",gardu:"SWITCH UIDSUMUT"},
+    {name:"10.16.10.11 (UPS APC Phase R)",ip:"10.16.10.11",gardu:"UPS UIDSUMUT"},
+    {name:"10.16.10.9 (UPS APC Phase S)",ip:"10.16.10.9",gardu:"UPS UIDSUMUT"},
+    {name:"10.16.10.8 (UPS APC Phase T)",ip:"10.16.10.8",gardu:"UPS UIDSUMUT"},
+    {name:"10.16.2.1 (UP3 MEDAN)",ip:"10.16.2.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.236.1 (ULP DELI TUA)",ip:"10.16.236.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.152.1 (ULP SUNGGAL)",ip:"10.16.152.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.153.1 (ULP MEDAN BARU)",ip:"10.16.153.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.154.1 (ULP MEDAN SELATAN)",ip:"10.16.154.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.157.1 (ULP MEDAN JOHOR)",ip:"10.16.157.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.199.1 (GUDANG LOGISTIK UP3 MEDAN/PAYA PASIR)",ip:"10.16.199.1",gardu:"UP3 MEDAN"},
+    {name:"10.16.17.1 (FORTIGATE UP3 MEDAN UTARA)",ip:"10.16.17.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.150.1 (ULP BELAWAN)",ip:"10.16.150.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.156.1 (ULP LABUHAN)",ip:"10.16.156.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.155.1 (ULP MEDAN TIMUR)",ip:"10.16.155.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.151.1 (ULP HELVETIA)",ip:"10.16.151.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.235.1 (ULP MEDAN DENAI/YANTEK)",ip:"10.16.235.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.173.1 (ULP MEDAN DENAI BARU)",ip:"10.16.173.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.176.1 (ULP GLUGUR)",ip:"10.16.176.1",gardu:"UP3 MEDAN UTARA"},
+    {name:"10.16.3.1 (FORTIGATE UP3 BINJAI)",ip:"10.16.3.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.163.1 (ULP BINJAI KOTA)",ip:"10.16.163.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.164.1 (ULP KUALA)",ip:"10.16.164.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.165.1 (ULP STABAT)",ip:"10.16.165.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.166.1 (ULP TANJUNG PURA)",ip:"10.16.166.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.167.1 (ULP GEBANG)",ip:"10.16.167.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.168.1 (ULP PANGKALAN BRANDAN)",ip:"10.16.168.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.169.1 (ULP PANGKALAN SUSU)",ip:"10.16.169.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.170.1 (ULP BINJAI TIMUR)",ip:"10.16.170.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.171.1 (ULP BINJAI BARAT)",ip:"10.16.171.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.179.1 (GUDANG LOGISTIK UP3 BINJAI)",ip:"10.16.179.1",gardu:"UP3 BINJAI"},
+    {name:"10.16.14.1 (UP3 BUKIT BARISAN)",ip:"10.16.14.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.160.1 (ULP SIDIKALANG)",ip:"10.16.160.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.161.1 (ULP TIGA BINANGA)",ip:"10.16.161.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.162.1 (ULP BERASTAGI)",ip:"10.16.162.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.230.1 (ULP PANCUR BATU)",ip:"10.16.230.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.172.1 (ULP KABANJAHE)",ip:"10.16.172.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.188.1 (ULP PANGURURAN)",ip:"10.16.188.1",gardu:"UP3 BUKIT BARISAN"},
+    {name:"GUDANG UP3 BUKIT BARISAN",ip:"103.253.86.94",gardu:"UP3 BUKIT BARISAN"},
+    {name:"10.16.7.1 (UP3 RANTAU PRAPAT)",ip:"10.16.7.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.225.1 (ULP RANTAU PRAPAT KOTA)",ip:"10.16.225.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.220.1 (ULP KOTA PINANG)",ip:"10.16.220.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.221.1 (ULP TANJUNG BALAI)",ip:"10.16.221.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.222.1 (ULP AEK KANOPAN)",ip:"10.16.222.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.223.1 (ULP LABUHAN BILIK)",ip:"10.16.223.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.224.1 (ULP AEK NABARA)",ip:"10.16.224.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.226.1 (ULP KOTA BATU)",ip:"10.16.226.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.229.1 (GUDANG LOGISTIK UP3 RANTAU PRAPAT)",ip:"10.16.229.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.228.1 (ULP SIMPANG KAWAT BARU)",ip:"10.16.228.1",gardu:"UP3 RANTAU PRAPAT"},
+    {name:"10.16.6.1 (UP3 PADANG SIDEMPUAN)",ip:"10.16.6.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.68.1 (UP3 SIDEMPUAN TEMP. OFFICE)",ip:"10.16.68.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.210.1 (ULP PANYABUNGAN)",ip:"10.16.210.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.211.1 (ULP KOTA NOPAN)",ip:"10.16.211.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.212.1 (ULP SIBUHUAN)",ip:"10.16.212.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.213.1 (ULP SIPIROK)",ip:"10.16.213.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.214.1 (ULP GUNUNG TUA)",ip:"10.16.214.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.216.1 (ULP SIDEMPUAN KOTA)",ip:"10.16.216.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.218.1 (ULP NATAL NEW)",ip:"10.16.218.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.219.1 (GUDANG LOGISTIK UP3 SIDEMPUAN)",ip:"10.16.219.1",gardu:"UP3 PADANG SIDEMPUAN"},
+    {name:"10.16.5.1 (MIKROTIK UP3 SIBOLGA)",ip:"10.16.5.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.5.254 (FORTINET UP3 SIBOLGA)",ip:"10.16.5.254",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.200.1 (ULP PORSEA)",ip:"10.16.200.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.201.1 (ULP BALIGE)",ip:"10.16.201.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.202.1 (ULP SIBORONG-BORONG)",ip:"10.16.202.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.203.1 (ULP DOLOK SANGGUL)",ip:"10.16.203.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.204.1 (ULP TARUTUNG)",ip:"10.16.204.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.205.1 (ULP BARUS)",ip:"10.16.205.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.209.1 (GUDANG LOGISTIK UP3 SIBOLGA)",ip:"10.16.209.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.126.1 (ULP DOLOK SANGGUL TEMP)",ip:"10.16.126.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.238.1 (ULP BARUS - GH BUKIT)",ip:"10.16.238.1",gardu:"UP3 SIBOLGA"},
+    {name:"10.16.206.1 (UP3 NIAS)",ip:"10.16.206.1",gardu:"UP3 NIAS"},
+    {name:"10.16.207.1 (ULP TELUK DALAM)",ip:"10.16.207.1",gardu:"UP3 NIAS"},
+    {name:"10.16.208.1 (ULP NIAS BARAT MODEM VSAT)",ip:"10.16.208.1",gardu:"UP3 NIAS"},
+    {name:"10.16.208.2 (ULP NIAS BARAT MIKROTIK)",ip:"10.16.208.2",gardu:"UP3 NIAS"},
+    {name:"10.16.217.1 (ULP GUNUNG SITOLI)",ip:"10.16.217.1",gardu:"UP3 NIAS"},
+    {name:"10.16.249.1 (GUDANG LOGISTIK UP3 NIAS)",ip:"10.16.249.1",gardu:"UP3 NIAS"},
+    {name:"10.16.206.254 (FORTINET UP3 NIAS)",ip:"10.16.206.254",gardu:"UP3 NIAS"},
+    {name:"202.46.94.26 (ULP NIAS BARAT INTERNET VSAT)",ip:"202.46.94.26",gardu:"UP3 NIAS"},
+    {name:"10.16.8.254 (FORTINET UP3 LUBUK PAKAM)",ip:"10.16.8.254",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.8.1 (MIKROTIK UP3 LUBUK PAKAM)",ip:"10.16.8.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.231.1 (ULP L.PAKAM KOTA)",ip:"10.16.231.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.232.1 (ULP PERBAUNGAN)",ip:"10.16.232.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.233.1 (ULP TANJUNG MORAWA)",ip:"10.16.233.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.234.1 (ULP SEI RAMPAH)",ip:"10.16.234.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.237.1 (ULP GALANG)",ip:"10.16.237.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.239.1 (GUDANG LOGISTIK UP3 PAKAM)",ip:"10.16.239.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.190.1 (ULP DOLOK MASIHUL)",ip:"10.16.190.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.191.1 (GH ULP DOLOK MASIHUL)",ip:"10.16.191.1",gardu:"UP3 LUBUK PAKAM"},
+    {name:"10.16.4.1 (MIKROTIK UP3 PEMATANG SIANTAR)",ip:"10.16.4.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.41.254 (FORTINET UP3 PEMATANGSIANTAR)",ip:"10.16.41.254",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.180.1 (ULP TEBING TINGGI)",ip:"10.16.180.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.181.1 (ULP KISARAN)",ip:"10.16.181.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.182.1 (ULP PERDAGANGAN)",ip:"10.16.182.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.183.1 (ULP PARAPAT)",ip:"10.16.183.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.184.1 (ULP TANJUNG TIRAM)",ip:"10.16.184.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.185.1 (ULP PEMATANG RAYA)",ip:"10.16.185.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.186.1 (ULP INDRAPURA)",ip:"10.16.186.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.187.1 (ULP TANAH JAWA)",ip:"10.16.187.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.189.1 (GUDANG LOGISTIK UP3 SIANTAR)",ip:"10.16.189.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.16.192.1 (ULP LIMA PULUH)",ip:"10.16.192.1",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"202.46.73.210 (INTERNET WISMA RETTA)",ip:"202.46.73.210",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"202.46.73.254 (INTERNET GUDANG UP3 PEMATANG SIANTAR)",ip:"202.46.73.254",gardu:"UP3 PEMATANG SIANTAR"},
+    {name:"10.40.23.1 (FORTIGATE UPMK IV)",ip:"10.40.23.1",gardu:"UIP SBU"},
+    {name:"10.35.2.2 (MIKROTIK UIP SBU CIPTO)",ip:"10.35.2.2",gardu:"UIP SBU"},
+    {name:"10.35.2.4 (FORTIGATE UIP SBU CIPTO)",ip:"10.35.2.4",gardu:"UIP SBU"},
+    {name:"UIP SBU INTERNET ICON+",ip:"",gardu:"UIP SBU"},
+    {name:"10.35.42.1 (MIKROTIK UPP SUMBAGUT 3)",ip:"10.35.42.1",gardu:"UIP SBU"},
+    {name:"10.35.42.254 (FORTIGATE UPP SUMBAGUT 3)",ip:"10.35.42.254",gardu:"UIP SBU"},
+    {name:"10.35.40.1 (UPP SUMBAGUT 4 ASAHAN)",ip:"10.35.40.1",gardu:"UIP SBU"},
+    {name:"103.180.194.62 (UPP SUMBAGUT 4 INTERNET)",ip:"103.180.194.62",gardu:"UIP SBU"},
+    {name:"10.35.10.1 (GUDANG LOGISTIK UIP SUMBAGUT)",ip:"10.35.10.1",gardu:"UIP SBU"},
+    {name:"10.35.7.1 (JARSUM 2 P.SIDEMPUAN)",ip:"10.35.7.1",gardu:"UIP SBU"},
+    {name:"10.58.101.1 (UPP KITSUM 2)",ip:"10.58.101.1",gardu:"UIP SBU"},
+    {name:"10.10.7.7 (MIKROTIK UPDL TUNTUNGAN)",ip:"10.10.7.7",gardu:"UPDL"},
+    {name:"INTERNET ICON+ UPDL TUNTUNGAN",ip:"",gardu:"UPDL"},
+    {name:"10.10.7.1 (FORTIGATE UPDL TUNTUNGAN)",ip:"10.10.7.1",gardu:"UPDL"},
+    {name:"10.43.60.1 (MIKROTIK UPT SIANTAR)",ip:"10.43.60.1",gardu:"UPT SIANTAR"},
+    {name:"10.43.60.254 (FORTINET UPT SIANTAR)",ip:"10.43.60.254",gardu:"UPT SIANTAR"},
+    {name:"10.43.62.33 (Gudang UPT P.Siantar)",ip:"10.43.62.33",gardu:"UPT SIANTAR"},
+    {name:"10.43.61.81 (GI Simangkuk)",ip:"10.43.61.81",gardu:"ULTG TOBA"},
+    {name:"10.43.66.97 (GI Asahan 1)",ip:"10.43.66.97",gardu:"ULTG TOBA"},
+    {name:"10.43.61.241 (GI Porsea)",ip:"10.43.61.241",gardu:"ULTG TOBA"},
+    {name:"10.43.61.177 (GI Pematang Siantar)",ip:"10.43.61.177",gardu:"ULTG TOBA"},
+    {name:"10.43.61.145 (GI Gunung Para)",ip:"10.43.61.145",gardu:"ULTG TOBA"},
+    {name:"10.43.61.65 (GI Tebing Tinggi)",ip:"10.43.61.65",gardu:"ULTG TOBA"},
+    {name:"10.43.69.97 (GI Tanah Jawa)",ip:"10.43.69.97",gardu:"ULTG TOBA"},
+    {name:"10.43.69.129 (GI Asahan 3)",ip:"10.43.69.129",gardu:"ULTG TOBA"},
+    {name:"10.43.66.161 (GI Dolok Sanggul)",ip:"10.43.66.161",gardu:"ULTG DOLOK SANGGUL"},
+    {name:"10.43.61.129 (GI Tarutung)",ip:"10.43.61.129",gardu:"ULTG DOLOK SANGGUL"},
+    {name:"10.43.68.65 (GITET Sarulla)",ip:"10.43.68.65",gardu:"ULTG DOLOK SANGGUL"},
+    {name:"10.43.61.225 (GI Tele)",ip:"10.43.61.225",gardu:"ULTG DOLOK SANGGUL"},
+    {name:"10.43.68.1 (GI Pangururan)",ip:"10.43.68.1",gardu:"ULTG DOLOK SANGGUL"},
+    {name:"10.43.61.33 (GI Sidikalang)",ip:"10.43.61.33",gardu:"ULTG SIDIKALANG"},
+    {name:"10.43.66.225 (GI Siempat Rube)",ip:"10.43.66.225",gardu:"ULTG SIDIKALANG"},
+    {name:"10.43.61.209 (GIS RENUN)",ip:"10.43.61.209",gardu:"ULTG SIDIKALANG"},
+    {name:"10.43.61.113 (GI BRASTAGI)",ip:"10.43.61.113",gardu:"ULTG SIDIKALANG"},
+    {name:"10.43.68.129 (GI KutaCane)",ip:"10.43.68.129",gardu:"ULTG SIDIKALANG"},
+    {name:"10.43.68.161 (GI Subulussalam)",ip:"10.43.68.161",gardu:"ULTG SIDIKALANG"},
+    {name:"10.43.160.1 (MIKROTIK UPT Padangsidempuan)",ip:"10.43.160.1",gardu:"UPT PADANGSIDEMPUAN"},
+    {name:"10.43.160.250 (FORTIGATE UPT PADANG SIDEMPUAN)",ip:"10.43.160.250",gardu:"UPT PADANGSIDEMPUAN"},
+    {name:"10.43.68.33 (GITET NEW P.SIDIMPUAN)",ip:"10.43.68.33",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.61.97 (GI Padang Sidimpuan)",ip:"10.43.61.97",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.62.1 (GI Gunung Tua)",ip:"10.43.62.1",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.68.97 (GI Panyabungan)",ip:"10.43.68.97",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.62.17 (GI Labuhan Angin)",ip:"10.43.62.17",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.61.17 (GI SIBOLGA)",ip:"10.43.61.17",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.65.97 (GI MARTABE)",ip:"10.43.65.97",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.65.65 (GI Sipan 1)",ip:"10.43.65.65",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.65.81 (GI Sipan 2)",ip:"10.43.65.81",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.69.33 (GI SIBUHUAN)",ip:"10.43.69.33",gardu:"ULTG PADANGSIDEMPUAN"},
+    {name:"10.43.61.1 (GI Kisaran)",ip:"10.43.61.1",gardu:"ULTG KISARAN"},
+    {name:"10.43.61.161 (GI Kuala Tanjung)",ip:"10.43.61.161",gardu:"ULTG KISARAN"},
+    {name:"10.43.66.129 (GI Sei Mangke)",ip:"10.43.66.129",gardu:"ULTG KISARAN"},
+    {name:"10.43.61.49 (GI Aek Kanopan)",ip:"10.43.61.49",gardu:"ULTG KISARAN"},
+    {name:"10.43.61.193 (GI Rantau Prapat)",ip:"10.43.61.193",gardu:"ULTG KISARAN"},
+    {name:"10.43.101.65 (GI Kota Pinang)",ip:"10.43.101.65",gardu:"ULTG KISARAN"},
+    {name:"10.43.69.1 (GI Tanjung Balai)",ip:"10.43.69.1",gardu:"ULTG KISARAN"},
+    {name:"10.43.68.193 (GI Labuhan Bilik)",ip:"10.43.68.193",gardu:"ULTG KISARAN"},
+    {name:"GUDANG UP2D SUMUT (103.124.45.246)",ip:"103.124.45.246",gardu:"UP2D SUMUT"},
 ];
 
-const comboInput = document.getElementById('combo-input');
-const unitHidden = document.getElementById('unit-hidden');
-const comboDD    = document.getElementById('combo-dropdown');
-const comboClear = document.getElementById('combo-clear');
-const garduInput = document.querySelector('[name="lokasi_gardu"]');
+// ── DOM refs ──────────────────────────────────────────────
+const comboInput  = document.getElementById('combo-input');
+const unitHidden  = document.getElementById('unit-hidden');
+const unitList    = document.getElementById('unit-list');
+const unitCount   = document.getElementById('unit-count');
+const selBar      = document.getElementById('unit-selected-bar');
+const selText     = document.getElementById('unit-selected-text');
+const clearBtn    = document.getElementById('unit-clear-btn');
+const garduInput  = document.getElementById('lokasi-gardu');
 
-function renderDropdown(list) {
-    comboDD.innerHTML = list.length
-        ? list.map(u => `<div class="dd-item" onclick="pickUnit(${unitData.indexOf(u)})">
-            <span class="dd-item-name">${u.name}</span>
-            <span class="dd-item-ip">${u.ip}</span>
-          </div>`).join('')
-        : '<div class="dd-empty">Unit tidak ditemukan</div>';
-    comboDD.classList.add('open');
+// ── State ─────────────────────────────────────────────────
+let selected = null;
+let filtered = [...unitData];
+
+// ── Render list ───────────────────────────────────────────
+function renderList(arr) {
+    if (!arr.length) {
+        unitList.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:#9ca3af;">Unit tidak ditemukan</div>';
+        unitCount.textContent = '0 unit';
+        return;
+    }
+    unitCount.textContent = arr.length + ' unit';
+    unitList.innerHTML = arr.map(u => {
+        const idx   = unitData.indexOf(u);
+        const isAct = selected && selected.name === u.name;
+        const bg    = isAct ? '#eff6ff' : '#fff';
+        const bgHov = isAct ? '#dbeafe' : '#f9fafb';
+        return `<div onclick="pickUnit(${idx})"
+            onmouseover="this.style.background='${bgHov}'"
+            onmouseout="this.style.background='${bg}'"
+            style="display:flex;align-items:center;padding:9px 14px;cursor:pointer;
+                   border-bottom:0.5px solid #f3f4f6;font-size:13px;background:${bg};">
+            <span style="font-weight:500;color:#374151;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.name}</span>
+            ${u.ip
+                ? `<span style="width:1px;height:16px;background:#e5e7eb;margin:0 10px;flex-shrink:0;"></span>
+                   <span style="font-size:11px;color:#9ca3af;font-family:monospace;background:#f3f4f6;padding:2px 6px;border-radius:4px;flex-shrink:0;white-space:nowrap;">${u.ip}</span>`
+                : ''}
+            <span style="width:1px;height:16px;background:#e5e7eb;margin:0 10px;flex-shrink:0;"></span>
+            <span style="font-size:11px;color:#6b7280;flex-shrink:0;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;">${u.gardu}</span>
+        </div>`;
+    }).join('');
 }
 
+// ── Pick unit ─────────────────────────────────────────────
 function pickUnit(idx) {
-    const u = unitData[idx];
-    comboInput.value = u.name;
-    unitHidden.value = u.name;
-    garduInput.value = u.gardu;
-    comboDD.classList.remove('open');
-    comboClear.classList.add('visible');
+    selected         = unitData[idx];
+    unitHidden.value = selected.name;
+    garduInput.value = selected.gardu;
+    selText.textContent  = selected.name + (selected.ip ? ' | ' + selected.ip : '') + ' | ' + selected.gardu;
+    selBar.style.display = 'flex';
+    comboInput.value     = '';
+    filtered             = [...unitData];
+    renderList(filtered);
 }
 
-comboInput.addEventListener('input', () => {
-    const q = comboInput.value.toLowerCase();
-    unitHidden.value = comboInput.value;
-    comboClear.classList.toggle('visible', q.length > 0);
-    if (!q) { comboDD.classList.remove('open'); return; }
-    renderDropdown(unitData.filter(u =>
-        u.name.toLowerCase().includes(q) || u.ip.includes(q)
-    ));
-});
-
-comboInput.addEventListener('focus', () => {
-    if (!comboInput.value) renderDropdown(unitData);
-});
-
-comboClear.addEventListener('click', () => {
-    comboInput.value = unitHidden.value = garduInput.value = '';
-    comboClear.classList.remove('visible');
-    comboDD.classList.remove('open');
+// ── Clear ─────────────────────────────────────────────────
+clearBtn.addEventListener('click', () => {
+    selected = null;
+    unitHidden.value = garduInput.value = '';
+    selBar.style.display = 'none';
+    comboInput.value = '';
+    filtered = [...unitData];
+    renderList(filtered);
     comboInput.focus();
 });
 
-document.addEventListener('click', e => {
-    if (!document.getElementById('combo').contains(e.target))
-        comboDD.classList.remove('open');
+// ── Search ────────────────────────────────────────────────
+comboInput.addEventListener('input', () => {
+    const q = comboInput.value.toLowerCase();
+    filtered = q
+        ? unitData.filter(u =>
+            u.name.toLowerCase().includes(q) ||
+            u.ip.includes(q) ||
+            u.gardu.toLowerCase().includes(q))
+        : [...unitData];
+    renderList(filtered);
 });
 
+// ── Restore old value (setelah validation error) ──────────
+(function init() {
+    const old = unitHidden.value;
+    if (old) {
+        const u = unitData.find(x => x.name === old);
+        if (u) pickUnit(unitData.indexOf(u));
+        else renderList(unitData);
+    } else {
+        renderList(unitData);
+    }
+})();
+
+// ── Status selector ───────────────────────────────────────
 function selectStatus(el, cls) {
     document.querySelectorAll('.status-option').forEach(o =>
-        o.classList.remove('selected-down','selected-up'));
+        o.classList.remove('selected-down', 'selected-up'));
     el.classList.add(cls);
-    document.getElementById('status-input').value =
-        cls === 'selected-down' ? 'DOWN' : 'UP';
+    document.getElementById('status-input').value = cls === 'selected-down' ? 'DOWN' : 'UP';
 }
 </script>
 
