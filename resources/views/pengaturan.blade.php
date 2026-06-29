@@ -196,11 +196,27 @@
 
 <div class="main">
 
-    <header class="topbar">
-        <h1>Pengaturan</h1>
-        <div class="icon-btn"><i class="ti ti-bell"></i></div>
-        <div class="icon-btn"><i class="ti ti-user"></i></div>
-    </header>
+        <style>
+            /* Layout Topbar */
+            .topbar { height: 64px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; padding: 0 28px; }
+            .topbar h1 { font-size: 20px; font-weight: 700; color: #111827; flex: 1; }
+            
+            /* Container Kanan */
+            .topbar-right { display: flex; gap: 12px; align-items: center; }
+            
+            /* Tombol Ikon */
+            .icon-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid #e5e7eb; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6b7280; text-decoration: none; transition: all 0.2s; }
+            .icon-btn:hover { background: #f3f4f6; color: #374151; }
+            .icon-btn svg { width: 18px; height: 18px; }
+        </style>
+
+        <header class="topbar">
+            <h1>Pengaturan</h1>
+            <div class="topbar-right">
+                <a href="/riwayat" class="icon-btn" title="Riwayat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
+                <a href="/pengaturan" class="icon-btn" title="Profil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
+            </div>
+        </header>
 
     <div class="content">
 
