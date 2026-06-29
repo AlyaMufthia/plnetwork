@@ -48,7 +48,10 @@
         .icon-btn i { font-size: 18px; color: #6b7280; }
 
         /* ── Content ── */
-        .content { padding: 32px 28px; flex: 1; }
+        .content { 
+            padding: 32px 28px; /* Jika ingin benar-benar rapat tanpa jarak ke tepi layar, ubah menjadi: padding: 32px 0; */
+            flex: 1; 
+        }
 
         /* ── Alert ── */
         .alert-success {
@@ -65,8 +68,11 @@
 
         /* ── Action bar ── */
         .action-bar {
-            display: flex; justify-content: flex-end; gap: 10px;
-            margin-bottom: 20px; max-width: 860px;
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 10px;
+            margin-bottom: 20px; 
+            max-width: 100%; /* Diubah dari 860px ke 100% agar memenuhi layar */
         }
         .btn-batal {
             padding: 9px 20px; border: 1.5px solid #e5e7eb; border-radius: 10px;
@@ -82,8 +88,11 @@
 
         /* ── Card ── */
         .card {
-            background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
-            overflow: hidden; max-width: 860px;
+            background: #fff; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 16px;
+            overflow: hidden; 
+            max-width: 100%;
         }
         .card-section { padding: 24px 28px; }
         .card-section + .card-section { border-top: 1px solid #f3f4f6; }
