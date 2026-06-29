@@ -11,6 +11,7 @@
         body { background: #f0f2f7; display: flex; min-height: 100vh; }
 
         /* ── Sidebar ── */
+        /* ── Sidebar Style ── */
         .sidebar {
             width: 230px; min-height: 100vh; background: #fff;
             border-right: 1px solid #e5e7eb; display: flex;
@@ -18,9 +19,10 @@
         }
         .sidebar-logo {
             height: 64px; padding: 0 20px; border-bottom: 1px solid #e5e7eb;
-            display: flex; align-items: center;
+            display: flex; align-items: center; gap: 10px;
         }
         .sidebar-logo img { height: 70px; }
+        .sidebar-logo span { font-size: 15px; font-weight: 700; color: #173a84; }
         .sidebar-nav { padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
         .nav-item {
             display: flex; align-items: center; gap: 12px; padding: 10px 14px;
@@ -29,7 +31,7 @@
         }
         .nav-item:hover { background: #f3f4f6; color: #374151; }
         .nav-item.active { background: #173a84; color: #fff; }
-        .nav-item i { font-size: 18px; flex-shrink: 0; }
+        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
 
         /* ── Main ── */
         .main { margin-left: 230px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
@@ -188,17 +190,21 @@
         <img src="{{ asset('images/logo-plnetwork.png') }}" alt="PLNetwork">
     </div>
     <nav class="sidebar-nav">
-        <a href="/dashboard" class="nav-item">
-            <i class="ti ti-layout-dashboard"></i> Beranda
+        <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            Beranda
         </a>
-        <a href="/riwayat" class="nav-item">
-            <i class="ti ti-clock"></i> Riwayat
+        <a href="{{ route('riwayat.index') }}" class="nav-item {{ request()->routeIs('riwayat.*') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Riwayat
         </a>
-        <a href="/laporan" class="nav-item">
-            <i class="ti ti-file-text"></i> Laporan
+        <a href="{{ route('laporan.index') }}" class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Laporan
         </a>
-        <a href="/pengaturan" class="nav-item active">
-            <i class="ti ti-settings"></i> Pengaturan
+        <a href="{{ route('pengaturan.index') }}" class="nav-item {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Pengaturan
         </a>
     </nav>
 </aside>
