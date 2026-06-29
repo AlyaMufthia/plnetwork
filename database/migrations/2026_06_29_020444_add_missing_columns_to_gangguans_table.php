@@ -10,17 +10,25 @@ return new class extends Migration
     {
         Schema::table('gangguans', function (Blueprint $table) {
 
-            if (!Schema::hasColumn('gangguans', 'ip_address')) {
-                $table->string('ip_address')->nullable();
+            if (!Schema::hasColumn('gangguans', 'waktu_kejadian')) {
+                $table->dateTime('waktu_kejadian')->nullable();
             }
 
-            if (!Schema::hasColumn('gangguans', 'jenis_gangguan')) {
-                $table->string('jenis_gangguan')->nullable();
+            if (!Schema::hasColumn('gangguans', 'tahapan')) {
+                $table->string('tahapan')->nullable();
+            }
+
+            if (!Schema::hasColumn('gangguans', 'ip_address')) {
+                $table->string('ip_address')->nullable();
             }
 
             if (!Schema::hasColumn('gangguans', 'status_jaringan')) {
                 $table->enum('status_jaringan', ['UP', 'DOWN'])
                     ->default('DOWN');
+            }
+
+            if (!Schema::hasColumn('gangguans', 'jenis_gangguan')) {
+                $table->string('jenis_gangguan')->nullable();
             }
 
         });
@@ -30,9 +38,11 @@ return new class extends Migration
     {
         Schema::table('gangguans', function (Blueprint $table) {
             $table->dropColumn([
+                'waktu_kejadian',
+                'tahapan',
                 'ip_address',
-                'jenis_gangguan',
-                'status_jaringan'
+                'status_jaringan',
+                'jenis_gangguan'
             ]);
         });
     }

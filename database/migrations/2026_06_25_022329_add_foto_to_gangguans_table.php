@@ -9,13 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
-{
-    Schema::table('gangguans', function (Blueprint $table) {
-        $table->string('foto_lokasi')->nullable()->after('tahapan');
-        $table->string('foto_petugas')->nullable()->after('foto_lokasi');
-    });
-}
+    public function up(): void
+    {
+        Schema::table('gangguans', function (Blueprint $table) {
+            $table->string('foto_lokasi')->nullable();
+            $table->string('foto_petugas')->nullable();
+        });
+    }
 
     /**
      * Reverse the migrations.
@@ -23,7 +23,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('gangguans', function (Blueprint $table) {
-        $table->dropColumn(['foto_lokasi', 'foto_petugas']);
+            $table->dropColumn([
+                'foto_lokasi',
+                'foto_petugas'
+            ]);
         });
     }
 };
