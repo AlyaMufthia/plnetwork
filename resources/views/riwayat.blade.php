@@ -79,14 +79,6 @@
             background-repeat:no-repeat; background-position:right 12px center;
         }
 
-        .btn-filter{
-            display:flex; align-items:center; gap:8px; padding:9px 18px;
-            border:1px solid #e5e7eb; border-radius:10px; background:#fff;
-            font-size:13px; font-weight:500; color:#374151; cursor:pointer;
-        }
-
-        .btn-filter svg{ width:16px; height:16px; }
-
         .btn-ekspor{
             display:flex; align-items:center; gap:8px; padding:9px 18px;
             background:#173a84; border:none; border-radius:10px;
@@ -101,8 +93,20 @@
             overflow:hidden; flex:1; display:flex; flex-direction:column;
         }
 
-        table{ width:100%; border-collapse:collapse; }
+        /* Wrapper supaya body tabel bisa di-scroll, header tetap & halaman tidak makin panjang */
+        .table-scroll{
+            max-height:560px;
+            overflow-y:auto;
+        }
 
+        table{ border-collapse:collapse; width:100%; table-layout:fixed; }
+        thead th, tbody td{ padding:18px 16px; }
+        thead th:nth-child(1), tbody td:nth-child(1){ width:300px; }
+        thead th:nth-child(2), tbody td:nth-child(2){ width:140px; white-space:nowrap; }
+        thead th:nth-child(3), tbody td:nth-child(3){ width:280px; white-space:normal; }
+        thead th:nth-child(4), tbody td:nth-child(4){ width:auto; }
+
+        thead{ position:sticky; top:0; z-index:5; background:#fff; }
         thead tr{ border-bottom:1px solid #e5e7eb; }
 
         thead th{
@@ -142,7 +146,12 @@
         .status-badge.down{ background:#fef2f2; color:#dc2626; }
         .status-badge.up{ background:#f0fdf4; color:#15803d; }
 
-        .catatan{ color:#374151; font-size:13px; }
+        .catatan{ color:#374151; font-size:13px; word-break:break-word; }
+        .no-tiket{
+            color:#6b7280; font-size:11px; font-weight:600;
+            background:#f3f4f6; padding:3px 10px; border-radius:999px;
+            white-space:nowrap;
+        }
 
         .chevron-btn{
             background:none; border:none; cursor:pointer; color:#9ca3af; padding:4px;
@@ -210,91 +219,97 @@
 
     <div class="content">
 
-        <div class="toolbar">
+        <form method="GET" action="{{ route('riwayat.index') }}" class="toolbar">
             <div class="search-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" placeholder="Cari sesuai Unit atau Gardu Induk...">
+                <input type="text" name="cari" value="{{ request('cari') }}" placeholder="Cari sesuai Unit atau Gardu Induk...">
             </div>
-            <select class="select-status">
-                <option>Status</option>
-                <option>Down</option>
-                <option>Up</option>
+            <select class="select-status" name="status" onchange="this.form.submit()">
+                <option value="" {{ request('status') == '' ? 'selected' : '' }}>Status</option>
+                <option value="DOWN" {{ request('status') == 'DOWN' ? 'selected' : '' }}>Down</option>
+                <option value="UP" {{ request('status') == 'UP' ? 'selected' : '' }}>Up</option>
             </select>
-            <button class="btn-filter">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-                Filter
-            </button>
-            <a href="/riwayat/ekspor-pdf" class="btn-ekspor">
+            <a href="/riwayat/ekspor-pdf?{{ http_build_query(request()->query()) }}" class="btn-ekspor">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Ekspor PDF
             </a>
-        </div>
+        </form>
 
         <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Unit</th>
-                        <th>Status</th>
-                        <th>Catatan Perbaikan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($gangguans as $item)
-                    <tr onclick="window.location='{{ route('riwayat.show', $item->id) }}'">
-                        <td>
-                            <div class="left-bar">
-                                <div class="bar-line"></div>
-                                <div>
-                                    <div class="td-unit">{{ $item->gardu_induk }}</div>
-                                    <div class="td-date">{{ \Carbon\Carbon::parse($item->waktu_kejadian)->translatedFormat('d F Y') }}</div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Unit</th>
+                            <th>Status</th>
+                            <th>Catatan Perbaikan</th>
+                            <th>No. Tiket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($gangguans as $item)
+                        <tr onclick="window.location='{{ route('riwayat.show', $item->id) }}'">
+                            <td>
+                                <div class="left-bar">
+                                    <div class="bar-line"></div>
+                                    <div>
+                                        <div class="td-unit">{{ $item->gardu_induk }}</div>
+                                        <div class="td-date">{{ \Carbon\Carbon::parse($item->waktu_kejadian)->translatedFormat('d F Y') }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            @php
-                                $statusClass = match($item->status_jaringan) {
-                                'DOWN' => 'down',
-                                'UP'   => 'up',
-                                default => 'down',
-                            };
-                            $statusLabel = match($item->status_jaringan) {
-                                'DOWN' => 'Down',
-                                'UP'   => 'Up',
-                                default => 'Down',
-                            };
-                            @endphp
-                            <span class="status-badge {{ $statusClass }}">
-                                @if($statusClass === 'down')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                @else
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
-                                @endif
-                                {{ $statusLabel }}
-                            </span>
-                        </td>
-                        <td>
-                            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                            </td>
+                            <td>
+                                @php
+                                    $statusClass = match($item->status_jaringan) {
+                                    'DOWN' => 'down',
+                                    'UP'   => 'up',
+                                    default => 'down',
+                                };
+                                $statusLabel = match($item->status_jaringan) {
+                                    'DOWN' => 'Down',
+                                    'UP'   => 'Up',
+                                    default => 'Down',
+                                };
+                                @endphp
+                                <span class="status-badge {{ $statusClass }}">
+                                    @if($statusClass === 'down')
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    @else
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+                                    @endif
+                                    {{ $statusLabel }}
+                                </span>
+                            </td>
+                            <td>
                                 <span class="catatan">{{ $item->catatan_perbaikan ?? '-' }}</span>
-                                <a href="{{ route('riwayat.show', $item->id) }}"
-                                   class="chevron-btn"
-                                   onclick="event.stopPropagation()">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="3" style="text-align:center;padding:40px;color:#9ca3af;">
-                            Tidak ada data gangguan.
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </td>
+                            <td>
+                                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                                    @if(!empty($item->no_tiket))
+                                        <span class="no-tiket">{{ $item->no_tiket }}</span>
+                                    @else
+                                        <span class="catatan">-</span>
+                                    @endif
+                                    <a href="{{ route('riwayat.show', $item->id) }}"
+                                       class="chevron-btn"
+                                       onclick="event.stopPropagation()">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" style="text-align:center;padding:40px;color:#9ca3af;">
+                                Tidak ada data gangguan.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
             <div class="table-footer">
                 <span class="showing">

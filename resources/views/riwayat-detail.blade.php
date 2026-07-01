@@ -129,7 +129,7 @@
 
         <!-- HEADER INFO -->
         <div class="detail-header-card">
-            <div class="detail-id">ID LAPORAN: #{{ $gangguan->id_laporan ?? '-' }}</div>
+            <div class="detail-id">NO. TIKET: {{ $gangguan->no_tiket ?? '-' }}</div>
             <div class="detail-title-row">
                 <div class="detail-title">Gangguan {{ $gangguan->gardu_induk ?? '-' }}</div>
                 @php

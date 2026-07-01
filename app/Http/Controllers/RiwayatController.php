@@ -9,9 +9,24 @@ use Illuminate\Support\Facades\Storage;
 
 class RiwayatController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $gangguans = Gangguan::latest()->paginate(20);
+        $query = Gangguan::query();
+
+        if ($request->filled('status')) {
+            $query->where('status_jaringan', $request->status);
+        }
+
+        if ($request->filled('cari')) {
+            $cari = $request->cari;
+            $query->where(function ($q) use ($cari) {
+                $q->where('gardu_induk', 'like', "%{$cari}%")
+                  ->orWhere('id_laporan', 'like', "%{$cari}%");
+            });
+        }
+
+        $gangguans = $query->latest()->paginate(20)->appends($request->query());
+
         return view('riwayat', compact('gangguans'));
     }
 

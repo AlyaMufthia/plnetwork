@@ -624,14 +624,14 @@
                             Ringkasan Insiden
                         </div>
 
-                        {{-- ✅ ID Laporan — sekarang bisa diedit --}}
+                        {{-- ✅ No Tiket — bisa diedit, konsisten dengan kolom no_tiket di halaman Riwayat --}}
                         <div class="info-field">
-                            <div class="info-field-label">ID Laporan</div>
-                            <input class="info-field-input" type="text"
-                                   name="id_laporan"
-                                   value="{{ $gangguan->id_laporan ?? '' }}"
-                                   placeholder="Contoh: FLT-20260614-001">
-                        </div>
+                        <div class="info-field-label">No Tiket</div>
+                        <input class="info-field-input" type="text"
+                            name="no_tiket"
+                            value="{{ $gangguan->no_tiket ?? '' }}"
+                            placeholder="Contoh: FLT-20260614-001">
+                    </div>
 
                         {{-- ✅ Lokasi — bisa diedit --}}
                         <div class="info-field">
