@@ -20,15 +20,23 @@ class LaporanController extends Controller
 
         $gangguan = DB::transaction(function () use ($request, $waktuKejadian) {
 
-            // ✅ Hitung urutan tiket hari ini (lock supaya tidak bentrok kalau ada input bersamaan)
-            $tanggalKode = $waktuKejadian->format('dmY'); // contoh: 30062026
+            // ✅ Ambil & lock baris counter global (bukan per tanggal lagi)
+            $counter = DB::table('tiket_counters')->lockForUpdate()->first();
 
-            $urutan = Gangguan::where('no_tiket', 'like', $tanggalKode . '-%')
-                ->lockForUpdate()
-                ->count() + 1;
+            if (!$counter) {
+                DB::table('tiket_counters')->insert(['last_number' => 0]);
+                $counter = DB::table('tiket_counters')->lockForUpdate()->first();
+            }
 
-            // Format nomor tiket: DDMMYYYY-XXXX -> 30062026-0001
-            $noTiket = $tanggalKode . '-' . str_pad($urutan, 4, '0', STR_PAD_LEFT);
+            $urutan = $counter->last_number + 1;
+
+            DB::table('tiket_counters')
+                ->where('id', $counter->id)
+                ->update(['last_number' => $urutan]);
+
+            // Format nomor tiket: GGN-DDMMYYYY-XXXXX -> GGN-30062026-00001
+            $tanggalKode = $waktuKejadian->format('dmY');
+            $noTiket = 'GGN-' . $tanggalKode . '-' . str_pad($urutan, 5, '0', STR_PAD_LEFT);
 
             return Gangguan::create([
                 'id_laporan'        => 'LAP-' . $waktuKejadian->format('YmdHis'),
@@ -36,10 +44,10 @@ class LaporanController extends Controller
                 'gardu_induk'       => $request->unit,
                 'waktu_kejadian'    => $waktuKejadian,
                 'status'            => 'on_progress',
-                'status_jaringan'   => $request->status,   // UP / DOWN
+                'status_jaringan'   => $request->status,
                 'tahapan'           => 1,
-                'jenis_gangguan'    => $request->penyebab,  // Gangguan Jaringan, dll
-                'catatan_perbaikan' => $request->detail,
+                'jenis_gangguan'    => $request->penyebab,
+                'catatan_perbaikan' => $request->penyebab, // ✅ diisi dari penyebab kendala
             ]);
         });
 

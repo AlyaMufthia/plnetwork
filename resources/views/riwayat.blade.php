@@ -43,7 +43,7 @@
             display:flex; align-items:center; padding:0 28px; gap:16px;
         }
 
-        .topbar h1{ font-size:22px; font-weight:700; color:#111827; flex:1; }
+        .topbar h1{ font-size:21px; font-weight:700; color:#111827; flex:1; }
 
         .icon-btn{
             width:38px; height:38px; border-radius:50%; border:1px solid #e5e7eb;
@@ -79,6 +79,8 @@
             background-repeat:no-repeat; background-position:right 12px center;
         }
 
+        .export-wrap{ position:relative; }
+
         .btn-ekspor{
             display:flex; align-items:center; gap:8px; padding:9px 18px;
             background:#173a84; border:none; border-radius:10px;
@@ -87,6 +89,22 @@
         }
 
         .btn-ekspor svg{ width:16px; height:16px; }
+
+        .export-menu{
+            display:none; position:absolute; right:0; top:calc(100% + 6px);
+            background:#fff; border:1px solid #e5e7eb; border-radius:10px;
+            box-shadow:0 8px 20px rgba(0,0,0,0.08); min-width:170px;
+            overflow:hidden; z-index:20;
+        }
+
+        .export-menu a{
+            display:flex; align-items:center; gap:10px; padding:11px 14px;
+            font-size:13px; color:#374151; text-decoration:none;
+        }
+
+        .export-menu a:hover{ background:#f9fafb; }
+        .export-menu a + a{ border-top:1px solid #f3f4f6; }
+        .export-menu svg{ flex-shrink:0; }
 
         .table-card{
             background:#fff; border:1px solid #e5e7eb; border-radius:14px;
@@ -105,6 +123,7 @@
         thead th:nth-child(2), tbody td:nth-child(2){ width:140px; white-space:nowrap; }
         thead th:nth-child(3), tbody td:nth-child(3){ width:280px; white-space:normal; }
         thead th:nth-child(4), tbody td:nth-child(4){ width:auto; }
+        thead th:nth-child(5), tbody td:nth-child(5){ width:auto; }
 
         thead{ position:sticky; top:0; z-index:5; background:#fff; }
         thead tr{ border-bottom:1px solid #e5e7eb; }
@@ -147,7 +166,7 @@
         .status-badge.up{ background:#f0fdf4; color:#15803d; }
 
         .catatan{ color:#374151; font-size:13px; word-break:break-word; }
-        .no-tiket{
+        .id-laporan{
             color:#6b7280; font-size:11px; font-weight:600;
             background:#f3f4f6; padding:3px 10px; border-radius:999px;
             white-space:nowrap;
@@ -183,7 +202,12 @@
     </div>
     <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="8" height="10" rx="1.5"/>
+                <rect x="13" y="3" width="8" height="6" rx="1.5"/>
+                <rect x="13" y="11" width="8" height="10" rx="1.5"/>
+                <rect x="3" y="15" width="8" height="6" rx="1.5"/>
+            </svg>
             Beranda
         </a>
         <a href="{{ route('riwayat.index') }}" class="nav-item {{ request()->routeIs('riwayat.*') ? 'active' : '' }}">
@@ -231,10 +255,39 @@
                 <option value="DOWN" {{ request('status') == 'DOWN' ? 'selected' : '' }}>Down</option>
                 <option value="UP" {{ request('status') == 'UP' ? 'selected' : '' }}>Up</option>
             </select>
-            <a href="/riwayat/ekspor-pdf?{{ http_build_query(request()->query()) }}" class="btn-ekspor">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Ekspor PDF
-            </a>
+
+            <div class="export-wrap" id="exportWrap">
+                <button type="button" class="btn-ekspor" onclick="toggleExportMenu()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Ekspor
+                </button>
+                <div class="export-menu" id="exportMenu">
+                    <a href="{{ route('riwayat.eksporPdf') }}?{{ http_build_query(request()->query()) }}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+                            <path d="M15 2v5h5" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+                            <text x="12" y="17" text-anchor="middle" font-size="6.5" font-weight="700" fill="#dc2626">PDF</text>
+                        </svg>
+                        Ekspor PDF
+                    </a>
+                    <a href="{{ route('riwayat.eksporCsv') }}?{{ http_build_query(request()->query()) }}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+                            <path d="M15 2v5h5" fill="none" stroke="#16a34a" stroke-width="1.5"/>
+                            <text x="12" y="17" text-anchor="middle" font-size="6.5" font-weight="700" fill="#16a34a">CSV</text>
+                        </svg>
+                        Ekspor CSV
+                    </a>
+                    <a href="{{ route('riwayat.eksporExcel') }}?{{ http_build_query(request()->query()) }}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+                            <path d="M15 2v5h5" fill="none" stroke="#15803d" stroke-width="1.5"/>
+                            <text x="12" y="17" text-anchor="middle" font-size="6" font-weight="700" fill="#15803d">XLS</text>
+                        </svg>
+                        Ekspor Excel
+                    </a>
+                </div>
+            </div>
         </form>
 
         <div class="table-card">
@@ -244,7 +297,8 @@
                         <tr>
                             <th>Unit</th>
                             <th>Status</th>
-                            <th>Catatan Perbaikan</th>
+                            <th>Kategori</th>
+                            <th>Penyebab Kendala</th>
                             <th>No. Tiket</th>
                         </tr>
                     </thead>
@@ -274,21 +328,31 @@
                                 };
                                 @endphp
                                 <span class="status-badge {{ $statusClass }}">
-                                    @if($statusClass === 'down')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                    @else
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
-                                    @endif
-                                    {{ $statusLabel }}
-                                </span>
+                                @if($statusClass === 'down')
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="11" fill="#dc2626"/>
+                                        <line x1="12" y1="7" x2="12" y2="13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+                                        <circle cx="12" cy="17" r="1.3" fill="#fff"/>
+                                    </svg>
+                                @else
+                                    <svg viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="11" fill="#16a34a"/>
+                                        <polyline points="7,12 11,16 17,9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                @endif
+                                {{ $statusLabel }}
+                            </span>
                             </td>
-                            <td>
-                                <span class="catatan">{{ $item->catatan_perbaikan ?? '-' }}</span>
-                            </td>
+                           <td>
+                         <span class="catatan">{{ $item->jenis_gangguan ?? '-' }}</span>
+                        </td>
+                        <td>
+                        <span class="catatan">{{ $item->catatan_perbaikan ?? '-' }}</span>
+                        </td>
                             <td>
                                 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
                                     @if(!empty($item->no_tiket))
-                                        <span class="no-tiket">{{ $item->no_tiket }}</span>
+                                        <span class="id-laporan">{{ $item->no_tiket }}</span>
                                     @else
                                         <span class="catatan">-</span>
                                     @endif
@@ -301,12 +365,12 @@
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="4" style="text-align:center;padding:40px;color:#9ca3af;">
-                                Tidak ada data gangguan.
-                            </td>
-                        </tr>
-                        @endforelse
+<tr>
+    <td colspan="5" style="text-align:center;padding:40px;color:#9ca3af;">
+        Tidak ada data gangguan.
+    </td>
+</tr>
+@endforelse
                     </tbody>
                 </table>
             </div>
@@ -327,6 +391,19 @@
     </footer>
 
 </div>
+
+<script>
+function toggleExportMenu() {
+    const menu = document.getElementById('exportMenu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+document.addEventListener('click', function (e) {
+    const wrap = document.getElementById('exportWrap');
+    if (!wrap.contains(e.target)) {
+        document.getElementById('exportMenu').style.display = 'none';
+    }
+});
+</script>
 
 </body>
 </html>

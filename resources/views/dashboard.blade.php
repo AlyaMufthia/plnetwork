@@ -44,18 +44,6 @@
             position:sticky; top:0; z-index:50;
         }
 
-        .search-box{ flex:1; max-width:420px; position:relative; }
-
-        .search-box input{
-            width:100%; padding:9px 16px 9px 40px; border:1px solid #e5e7eb;
-            border-radius:999px; background:#f9fafb; font-size:13px; outline:none; color:#374151;
-        }
-
-        .search-box svg{
-            position:absolute; left:13px; top:50%; transform:translateY(-50%);
-            width:16px; height:16px; color:#9ca3af;
-        }
-
         .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
 
         .icon-btn{
@@ -226,6 +214,14 @@
             appearance:none; cursor:pointer; min-width:140px;
         }
 
+        .penyebab-table-wrap{
+            max-height:360px;
+            overflow-y:auto;
+        }
+        .penyebab-table thead th{
+            position:sticky; top:0; background:#fff; z-index:2;
+        }
+
         .penyebab-table{ width:100%; border-collapse:collapse; }
 
         .penyebab-table th{
@@ -264,7 +260,25 @@
 
         .chart-card-title{
             font-size:13px; font-weight:700; color:#111827;
-            text-align:center; margin-bottom:16px;
+        }
+
+        .chart-header{
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:16px;
+        }
+
+        .segmented-control{
+            display:inline-flex; background:#f3f4f6; border-radius:10px; padding:3px; gap:2px;
+        }
+
+        .chart-filter-btn{
+            border:none; background:transparent; color:#6b7280;
+            font-size:12px; font-weight:600; padding:7px 16px; border-radius:8px;
+            cursor:pointer; transition:all 0.15s;
+        }
+        .chart-filter-btn:hover{ color:#374151; }
+        .chart-filter-btn.active{
+            background:#fff; color:#173a84; box-shadow:0 1px 2px rgba(0,0,0,0.08);
         }
 
         .chart-wrap{ flex:1; position:relative; min-height:280px; }
@@ -288,34 +302,33 @@
         <img src="{{ asset('images/logo-plnetwork.png') }}" alt="PLNetwork">
     </div>
     <nav class="sidebar-nav">
-        <a href="/dashboard" class="nav-item active">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-            Beranda
-        </a>
-        <a href="/riwayat" class="nav-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Riwayat
-        </a>
-        <a href="/laporan" class="nav-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Laporan
-        </a>
-        <a href="/pengaturan" class="nav-item">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Pengaturan
-        </a>
-    </nav>
+    <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="8" height="10" rx="1.5"/>
+            <rect x="13" y="3" width="8" height="6" rx="1.5"/>
+            <rect x="13" y="11" width="8" height="10" rx="1.5"/>
+            <rect x="3" y="15" width="8" height="6" rx="1.5"/>
+        </svg>
+        Beranda
+    </a>
+    <a href="{{ route('riwayat.index') }}" class="nav-item {{ request()->routeIs('riwayat.*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Riwayat
+    </a>
+    <a href="{{ route('laporan.index') }}" class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Laporan
+    </a>
+    <a href="{{ route('pengaturan.index') }}" class="nav-item {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Pengaturan
+    </a>
+</nav>
 </aside>
 
 <div class="main">
 
     <header class="topbar">
-        <div class="search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            <input type="text" placeholder="Cari alamat IP atau lokasi...">
-        </div>
         <div class="topbar-right">
             <a href="/riwayat" class="icon-btn" title="Lihat Riwayat Gangguan">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -340,7 +353,7 @@
             </div>
             <div class="status-badge">
                 <div class="status-dot"></div>
-                SISTEM BEROPERASI &bull; PEMBARUAN TERAKHIR: {{ now()->format('H:i') }} WIB
+                SISTEM BEROPERASI &bull; PEMBARUAN TERAKHIR: <span id="waktuUpdate">{{ now()->format('H:i') }}</span> WIB
             </div>
         </div>
 
@@ -355,7 +368,7 @@
                     <div class="donut-wrap">
                         <canvas id="donutChart"></canvas>
                         <div class="donut-center">
-                            <div class="num">{{ $total }}</div>
+                            <div class="num" id="totalPerangkat">{{ $total }}</div>
                             <div class="lbl">Total<br>Perangkat</div>
                         </div>
                     </div>
@@ -370,14 +383,14 @@
                                         <span class="badge badge-green"><span class="badge-icon bi-green">▲</span>UP (Normal)</span><br>
                                         <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Perangkat aktif & terhubung</small>
                                     </td>
-                                    <td>{{ $totalUp }}</td>
+                                    <td id="jumlahUp">{{ $totalUp }}</td>
                                 </tr>
                                 <tr class="alarm-row">
                                     <td>
                                         <span class="badge badge-red"><span class="badge-icon bi-red">▼</span>DOWN (Gangguan)</span><br>
                                         <small style="color:#9ca3af;font-weight:400;font-size:10px;padding-left:4px;">Perangkat tidak merespons</small>
                                     </td>
-                                    <td>{{ $totalDown }}</td>
+                                    <td id="jumlahDown">{{ $totalDown }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -386,11 +399,11 @@
 
                 <div class="alarm-summary">
                     <div class="alarm-summary-item" style="background:#f0fdf4;">
-                        <div class="s-num" style="color:#16a34a;">{{ $totalUp }}</div>
+                        <div class="s-num" id="summaryUp" style="color:#16a34a;">{{ $totalUp }}</div>
                         <div class="s-lbl">UP</div>
                     </div>
                     <div class="alarm-summary-item" style="background:#fef2f2;">
-                        <div class="s-num" style="color:#dc2626;">{{ $totalDown }}</div>
+                        <div class="s-num" id="summaryDown" style="color:#dc2626;">{{ $totalDown }}</div>
                         <div class="s-lbl">DOWN</div>
                     </div>
                 </div>
@@ -400,9 +413,9 @@
             <div class="rekapan-card">
                 <div class="rekapan-header">
                     <h2>REKAPAN GANGGUAN UP</h2>
-                    <span class="rekapan-count">{{ $rekapanUp->count() }} Teratas</span>
+                    <span class="rekapan-count" id="rekapanCount">{{ $rekapanUp->count() }} Teratas</span>
                 </div>
-                <div class="rekapan-body">
+                <div class="rekapan-body" id="rekapanBody">
                     @forelse($rekapanUp as $item)
                     <div class="rekapan-item">
                         <div class="rekapan-bar"></div>
@@ -451,46 +464,57 @@
                         <option value="DOWN">DOWN</option>
                     </select>
                 </div>
-                <table class="penyebab-table">
-                    <thead>
-                        <tr>
-                            <th class="no-col">NO</th>
-                            <th>PENYEBAB GANGGUAN</th>
-                            <th>FREKUENSI</th>
-                            <th>STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelBody">
-                        @forelse($penyebabStats as $i => $row)
-                        <tr data-penyebab="{{ strtoupper($row->jenis_gangguan) }}" data-status="{{ $row->status_jaringan }}">
-                            <td class="no-col">{{ $i + 1 }}.</td>
-                            <td class="penyebab-name">{{ strtoupper($row->jenis_gangguan ?? '-') }}</td>
-                            <td class="freq-col">{{ $row->frekuensi }} KALI</td>
-                            <td>
-                                @if($row->status_jaringan === 'UP')
-                                    <span class="status-up">UP</span>
-                                @else
-                                    <span class="status-down">DOWN</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">
-                                Belum ada data penyebab gangguan.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+
+                <div class="penyebab-table-wrap">
+                    <table class="penyebab-table">
+                        <thead>
+                            <tr>
+                                <th class="no-col">NO</th>
+                                <th>PENYEBAB GANGGUAN</th>
+                                <th>FREKUENSI</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelBody">
+                            @forelse($penyebabStats as $i => $row)
+                            <tr data-penyebab="{{ strtoupper($row->jenis_gangguan) }}" data-status="{{ $row->status_jaringan }}">
+                                <td class="no-col">{{ $i + 1 }}.</td>
+                                <td class="penyebab-name">{{ strtoupper($row->jenis_gangguan ?? '-') }}</td>
+                                <td class="freq-col">{{ $row->frekuensi }} KALI</td>
+                                <td>
+                                    @if($row->status_jaringan === 'UP')
+                                        <span class="status-up">UP</span>
+                                    @else
+                                        <span class="status-down">DOWN</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">
+                                    Belum ada data penyebab gangguan.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="tabel-footer" id="showingInfo">
                     Showing 1 to {{ $penyebabStats->count() }} of {{ $penyebabStats->count() }} results
                 </div>
             </div>
 
-            <!-- CHART 24 JAM -->
+            <!-- CHART DOWN — bisa difilter -->
             <div class="chart-card">
-                <div class="chart-card-title">Pemantauan Alarm DOWN 24 Jam</div>
+                <div class="chart-header">
+                    <div class="chart-card-title" id="chartTitle">Pemantauan Alarm DOWN 24 Jam</div>
+                    <div class="segmented-control">
+                        <button type="button" class="chart-filter-btn active" data-period="harian" onclick="gantiPeriode('harian')">Harian</button>
+                        <button type="button" class="chart-filter-btn" data-period="bulanan" onclick="gantiPeriode('bulanan')">Bulanan</button>
+                        <button type="button" class="chart-filter-btn" data-period="tahunan" onclick="gantiPeriode('tahunan')">Tahunan</button>
+                    </div>
+                </div>
                 <div class="chart-wrap">
                     <canvas id="lineChart"></canvas>
                 </div>
@@ -510,7 +534,7 @@
 <script>
 // ── DONUT CHART — dari database ──────────────────────────
 const donutCtx = document.getElementById('donutChart').getContext('2d');
-new Chart(donutCtx, {
+const donutChart = new Chart(donutCtx, {
     type: 'doughnut',
     data: {
         datasets: [{
@@ -528,17 +552,17 @@ new Chart(donutCtx, {
     }
 });
 
-// ── LINE CHART — data DOWN 24 jam ─────────────────────────────
+// ── LINE CHART — data DOWN, bisa ganti periode ────────────────
 const lineCtx = document.getElementById('lineChart').getContext('2d');
-const labels = ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00','24:00'];
-new Chart(lineCtx, {
+
+const lineChart = new Chart(lineCtx, {
     type: 'line',
     data: {
-        labels,
+        labels: {!! json_encode($chartData['labels']) !!},
         datasets: [
             {
                 label: 'Jumlah Perangkat DOWN',
-                data: {!! json_encode($chartDown) !!},
+                data: {!! json_encode($chartData['data']) !!},
                 borderColor: '#dc2626',
                 backgroundColor: 'rgba(220,38,38,0.12)',
                 fill: true,
@@ -575,6 +599,30 @@ new Chart(lineCtx, {
     }
 });
 
+// ── GANTI PERIODE FILTER (AJAX, tanpa reload halaman) ─────────
+const judulPeriode = {
+    harian: 'Pemantauan Alarm DOWN 24 Jam',
+    bulanan: 'Pemantauan Alarm DOWN Bulan Ini',
+    tahunan: 'Pemantauan Alarm DOWN Tahun Ini'
+};
+
+function gantiPeriode(period) {
+    document.querySelectorAll('.chart-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.period === period);
+    });
+
+    document.getElementById('chartTitle').textContent = judulPeriode[period];
+
+    fetch(`{{ route('dashboard.chart-data') }}?period=${period}`)
+        .then(res => res.json())
+        .then(json => {
+            lineChart.data.labels = json.labels;
+            lineChart.data.datasets[0].data = json.data;
+            lineChart.update();
+        })
+        .catch(err => console.error('Gagal ambil data chart:', err));
+}
+
 // ── FILTER TABEL ─────────────────────────────────────────────
 function filterTabel() {
     const keyword = document.getElementById('searchInput').value.toUpperCase().trim();
@@ -610,6 +658,86 @@ function filterTabel() {
         info.textContent = `Showing 1 to ${visibleCount} of ${total} results`;
     }
 }
+
+// ── POLLING DATA DASHBOARD (refresh otomatis tanpa reload) ────
+function formatRekapanUp(item) {
+    return `
+    <div class="rekapan-item">
+        <div class="rekapan-bar"></div>
+        <div class="rekapan-info">
+            <strong>${item.gardu}</strong>
+            <p>
+                Status : UP<br>
+                IP : ${item.ip}<br>
+                Penyebab : ${item.penyebab}<br>
+                Waktu : ${item.waktu}
+            </p>
+        </div>
+        <a href="${item.url}" class="edit-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+        </a>
+    </div>`;
+}
+
+function formatPenyebabRow(row, i) {
+    const nama = (row.jenis_gangguan || '-').toUpperCase();
+    const statusBadge = row.status_jaringan === 'UP'
+        ? '<span class="status-up">UP</span>'
+        : '<span class="status-down">DOWN</span>';
+    return `
+    <tr data-penyebab="${nama}" data-status="${row.status_jaringan}">
+        <td class="no-col">${i + 1}.</td>
+        <td class="penyebab-name">${nama}</td>
+        <td class="freq-col">${row.frekuensi} KALI</td>
+        <td>${statusBadge}</td>
+    </tr>`;
+}
+
+function refreshDashboard() {
+    fetch(`{{ route('dashboard.status-data') }}`)
+        .then(res => res.json())
+        .then(json => {
+            // Jam pembaruan terakhir
+            const jamEl = document.getElementById('waktuUpdate');
+            if (jamEl) jamEl.textContent = json.last_updated;
+
+            // Angka-angka
+            document.getElementById('totalPerangkat').textContent = json.total;
+            document.getElementById('jumlahUp').textContent = json.totalUp;
+            document.getElementById('jumlahDown').textContent = json.totalDown;
+            document.getElementById('summaryUp').textContent = json.totalUp;
+            document.getElementById('summaryDown').textContent = json.totalDown;
+
+            // Donut chart
+            donutChart.data.datasets[0].data = [json.totalUp, json.totalDown];
+            donutChart.update();
+
+            // Rekapan UP
+            document.getElementById('rekapanCount').textContent = `${json.rekapanUp.length} Teratas`;
+            const rekapanBody = document.getElementById('rekapanBody');
+            rekapanBody.innerHTML = json.rekapanUp.length
+                ? json.rekapanUp.map(formatRekapanUp).join('')
+                : '<div class="empty-state">Belum ada laporan dengan status UP.</div>';
+
+            // Tabel penyebab
+            const tabelBody = document.getElementById('tabelBody');
+            tabelBody.innerHTML = json.penyebabStats.length
+                ? json.penyebabStats.map(formatPenyebabRow).join('')
+                : '<tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;font-size:13px;">Belum ada data penyebab gangguan.</td></tr>';
+
+            document.getElementById('showingInfo').textContent =
+                `Showing 1 to ${json.penyebabStats.length} of ${json.penyebabStats.length} results`;
+
+            // Terapkan ulang filter tabel kalau user sedang mencari/filter aktif
+            filterTabel();
+        })
+        .catch(err => console.error('Gagal refresh dashboard:', err));
+}
+
+setInterval(refreshDashboard, 30000); // refresh data tiap 30 detik
 </script>
 
 </body>

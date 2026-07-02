@@ -6,10 +6,17 @@ use App\Models\Gangguan;
 use App\Models\GangguanLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\RiwayatExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RiwayatController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Query dasar yang dipakai bareng oleh index, eksporPdf, dan eksporCsv
+     * supaya filter status & pencarian selalu konsisten di ketiganya.
+     */
+    protected function filteredQuery(Request $request)
     {
         $query = Gangguan::query();
 
@@ -25,7 +32,12 @@ class RiwayatController extends Controller
             });
         }
 
-        $gangguans = $query->latest()->paginate(20)->appends($request->query());
+        return $query->latest();
+    }
+
+    public function index(Request $request)
+    {
+        $gangguans = $this->filteredQuery($request)->paginate(20)->appends($request->query());
 
         return view('riwayat', compact('gangguans'));
     }
@@ -51,7 +63,7 @@ class RiwayatController extends Controller
             'logs.*.tanggal'      => 'required|date',
             'logs.*.tahapan'      => 'required|integer|between:1,4',
             'logs.*.deskripsi'    => 'required|min:10',
-            'catatan_perbaikan'   => 'nullable|string|max:1000', // ✅ Baru
+            'catatan_perbaikan'   => 'nullable|string|max:1000', 
             'foto_lokasi'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'foto_petugas'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
@@ -111,5 +123,68 @@ class RiwayatController extends Controller
         return redirect()
             ->route('riwayat.show', $gangguan->id)
             ->with('success', 'Perubahan berhasil disimpan!');
+    }
+
+    /**
+     * Ekspor PDF — route: /riwayat/ekspor-pdf
+     */
+    public function eksporPdf(Request $request)
+    {
+        $data = $this->filteredQuery($request)->get();
+
+        $pdf = Pdf::loadView('exports.riwayat-pdf', ['data' => $data]);
+
+        return $pdf->download('riwayat-gangguan-' . now()->format('Ymd-His') . '.pdf');
+    }
+
+    /**
+     * Ekspor CSV — route: /riwayat/ekspor-csv
+     */
+    public function eksporCsv(Request $request)
+    {
+        $data = $this->filteredQuery($request)->get();
+
+        $filename = 'riwayat-gangguan-' . now()->format('Ymd-His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($data) {
+            $file = fopen('php://output', 'w');
+
+            // BOM supaya karakter dibaca benar saat dibuka di Excel
+            fwrite($file, "\xEF\xBB\xBF");
+
+            fputcsv($file, ['No. Tiket', 'Unit', 'Status', 'Kategori', 'Penyebab Kendala', 'Tanggal']);
+
+            foreach ($data as $row) {
+            fputcsv($file, [
+            $row->no_tiket ?? '-',
+            $row->gardu_induk,
+            $row->status_jaringan,
+            $row->jenis_gangguan ?? '-',
+            $row->catatan_perbaikan ?? '-',
+            \Carbon\Carbon::parse($row->waktu_kejadian)->format('d-m-Y'),
+            ]);
+        }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Ekspor Excel — route: /riwayat/ekspor-excel
+     */
+    public function eksporExcel(Request $request)
+    {
+        $data = $this->filteredQuery($request)->get();
+
+        $filename = 'riwayat-gangguan-' . now()->format('Ymd-His') . '.xlsx';
+
+        return Excel::download(new RiwayatExport($data), $filename);
     }
 }
