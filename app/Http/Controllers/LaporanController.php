@@ -13,6 +13,7 @@ class LaporanController extends Controller
         $request->validate([
             'unit'     => 'required|string',
             'status'   => 'required|in:DOWN,UP',
+            'kategori' => 'required|string',
             'penyebab' => 'required|string',
         ]);
 
@@ -20,7 +21,6 @@ class LaporanController extends Controller
 
         $gangguan = DB::transaction(function () use ($request, $waktuKejadian) {
 
-            // ✅ Ambil & lock baris counter global (bukan per tanggal lagi)
             $counter = DB::table('tiket_counters')->lockForUpdate()->first();
 
             if (!$counter) {
@@ -34,7 +34,6 @@ class LaporanController extends Controller
                 ->where('id', $counter->id)
                 ->update(['last_number' => $urutan]);
 
-            // Format nomor tiket: GGN-DDMMYYYY-XXXXX -> GGN-30062026-00001
             $tanggalKode = $waktuKejadian->format('dmY');
             $noTiket = 'GGN-' . $tanggalKode . '-' . str_pad($urutan, 5, '0', STR_PAD_LEFT);
 
@@ -46,8 +45,8 @@ class LaporanController extends Controller
                 'status'            => 'on_progress',
                 'status_jaringan'   => $request->status,
                 'tahapan'           => 1,
-                'jenis_gangguan'    => $request->penyebab,
-                'catatan_perbaikan' => $request->penyebab, // ✅ diisi dari penyebab kendala
+                'jenis_gangguan'    => $request->kategori,   // ✅ sekarang diisi KATEGORI (KABEL, POWER, dll)
+                'catatan_perbaikan' => $request->penyebab,   // ✅ diisi deskripsi/penyebab kendala
             ]);
         });
 
