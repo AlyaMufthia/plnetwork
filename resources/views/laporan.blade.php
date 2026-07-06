@@ -43,8 +43,12 @@
         }
         .icon-btn svg{ width:18px; height:18px; color:#6b7280; }
 
+        .topbar-title{
+            font-size:21px; font-weight:700; color:#111827; font-family:'Poppins',sans-serif; line-height:1;
+        }
+
         .content{ padding:32px 28px; flex:1; }
-        .page-title{ font-size:26px; font-weight:700; color:#111827; }
+        .page-title{ font-size:20px; font-weight:700; color:#111827; }
         .page-sub{ font-size:13px; color:#6b7280; margin-top:6px; margin-bottom:28px; }
 
         .alert-success{
@@ -223,19 +227,24 @@
         <img src="{{ asset('images/logo-plnetwork.png') }}" alt="PLNetwork">
     </div>
     <nav class="sidebar-nav">
-        <a href="/dashboard" class="nav-item">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="8" height="10" rx="1.5"/>
+                <rect x="13" y="3" width="8" height="6" rx="1.5"/>
+                <rect x="13" y="11" width="8" height="10" rx="1.5"/>
+                <rect x="3" y="15" width="8" height="6" rx="1.5"/>
+            </svg>
             Beranda
         </a>
-        <a href="/riwayat" class="nav-item">
+        <a href="{{ route('riwayat.index') }}" class="nav-item {{ request()->routeIs('riwayat.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Riwayat
         </a>
-        <a href="/laporan" class="nav-item active">
+        <a href="{{ route('laporan.index') }}" class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             Laporan
         </a>
-        <a href="/pengaturan" class="nav-item">
+        <a href="{{ route('pengaturan.index') }}" class="nav-item {{ request()->routeIs('pengaturan.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Pengaturan
         </a>
@@ -245,7 +254,7 @@
 <div class="main">
 
     <header class="topbar">
-        <div style="font-size:14px;font-weight:600;color:#6b7280;">Laporan</div>
+        <div class="topbar-title">Laporan</div>
         <div class="topbar-right">
             <a href="/riwayat" class="icon-btn" title="Lihat Riwayat Gangguan">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -312,7 +321,7 @@
                             </div>
 
                             <!-- Scrollable list -->
-                            <div id="unit-list" style="height:220px;overflow-y:auto;overflow-x:hidden;"></div>
+                            <div id="unit-list" style="height:0;overflow-y:auto;overflow-x:hidden;transition:height 0.2s;"></div>
 
                             <!-- Selected bar -->
                             <div id="unit-selected-bar" style="display:none;align-items:center;gap:8px;padding:9px 14px;background:#eff6ff;border-top:1px solid #bfdbfe;font-size:12px;color:#1d4ed8;">
@@ -367,27 +376,32 @@
                             value="{{ old('lokasi_gardu') }}">
                     </div>
 
-                    <!-- Penyebab Kendala -->
+                    <!-- Kategori -->
                     <div class="field-group">
-                        <label class="field-label">Penyebab Kendala <span style="color:#dc2626">*</span></label>
+                        <label class="field-label">Kategori <span style="color:#dc2626">*</span></label>
                         <div class="select-wrap">
-                            <select name="penyebab" class="select-field">
-                                <option value="Beban Berlebih" {{ old('penyebab') == 'Beban Berlebih' ? 'selected' : '' }}>Beban Berlebih</option>
-                                <option value="Ping Timeout" {{ old('penyebab') == 'Ping Timeout' ? 'selected' : '' }}>Ping Timeout</option>
-                                <option value="Tegangan Drop" {{ old('penyebab') == 'Tegangan Drop' ? 'selected' : '' }}>Tegangan Drop</option>
-                                <option value="Kerusakan Perangkat" {{ old('penyebab') == 'Kerusakan Perangkat' ? 'selected' : '' }}>Kerusakan Perangkat</option>
-                                <option value="Gangguan Jaringan" {{ old('penyebab') == 'Gangguan Jaringan' ? 'selected' : '' }}>Gangguan Jaringan</option>
-                                <option value="Lainnya" {{ old('penyebab') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            <select name="kategori" class="select-field">
+                                <option value="" {{ old('kategori') ? '' : 'selected' }} disabled>Pilih Kategori</option>
+                                <option value="ANOMALY" {{ old('kategori') == 'ANOMALY' ? 'selected' : '' }}>ANOMALY</option>
+                                <option value="BACKBONE" {{ old('kategori') == 'BACKBONE' ? 'selected' : '' }}>BACKBONE</option>
+                                <option value="CRACKCORE" {{ old('kategori') == 'CRACKCORE' ? 'selected' : '' }}>CRACKCORE</option>
+                                <option value="KABEL" {{ old('kategori') == 'KABEL' ? 'selected' : '' }}>KABEL</option>
+                                <option value="PERANGKAT" {{ old('kategori') == 'PERANGKAT' ? 'selected' : '' }}>PERANGKAT</option>
+                                <option value="POWER" {{ old('kategori') == 'POWER' ? 'selected' : '' }}>POWER</option>
+                                <option value="SOFTWARE" {{ old('kategori') == 'SOFTWARE' ? 'selected' : '' }}>SOFTWARE</option>
+                                <option value="WIRING" {{ old('kategori') == 'WIRING' ? 'selected' : '' }}>WIRING</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Detail Tambahan -->
+                    <!-- Penyebab Kendala (merangkap sebagai catatan perbaikan) -->
                     <div class="field-group">
-                        <label class="field-label">Detail Tambahan</label>
-                        <textarea name="detail" class="textarea-field"
-                            placeholder="Jelaskan secara detail temuan atau masalah di lapangan...">{{ old('detail') }}</textarea>
+                        <label class="field-label">Penyebab Kendala <span style="color:#dc2626">*</span></label>
+                        <textarea name="penyebab" id="penyebab-kendala" class="textarea-field" required
+                            placeholder="Jelaskan secara detail penyebab kendala, temuan, atau masalah di lapangan...">{{ old('penyebab') }}</textarea>
                     </div>
+                    <!-- Dikirim otomatis biar tetap kompatibel kalau backend masih memvalidasi field 'detail' -->
+                    <input type="hidden" name="detail" id="detail-hidden" value="{{ old('penyebab') }}">
 
                     <div class="form-footer">
                         <a href="/dashboard"><button type="button" class="btn-batal">Batal</button></a>
@@ -706,10 +720,12 @@ let filtered = [...unitData];
 // ── Render list ───────────────────────────────────────────
 function renderList(arr) {
     if (!arr.length) {
+        unitList.style.height = '80px';
         unitList.innerHTML = '<div style="padding:24px;text-align:center;font-size:13px;color:#9ca3af;">Unit tidak ditemukan</div>';
         unitCount.textContent = '0 unit';
         return;
     }
+    unitList.style.height = '220px';
     unitCount.textContent = arr.length + ' unit';
     unitList.innerHTML = arr.map(u => {
         const idx   = unitData.indexOf(u);
@@ -758,12 +774,16 @@ clearBtn.addEventListener('click', () => {
 // ── Search ────────────────────────────────────────────────
 comboInput.addEventListener('input', () => {
     const q = comboInput.value.toLowerCase();
-    filtered = q
-        ? unitData.filter(u =>
-            u.name.toLowerCase().includes(q) ||
-            u.ip.includes(q) ||
-            u.gardu.toLowerCase().includes(q))
-        : [...unitData];
+    if (!q) {
+        unitList.style.height = '0';
+        unitList.innerHTML = '';
+        unitCount.textContent = '';
+        return;
+    }
+    filtered = unitData.filter(u =>
+        u.name.toLowerCase().includes(q) ||
+        u.ip.includes(q) ||
+        u.gardu.toLowerCase().includes(q));
     renderList(filtered);
 });
 
@@ -773,10 +793,8 @@ comboInput.addEventListener('input', () => {
     if (old) {
         const u = unitData.find(x => x.name === old);
         if (u) pickUnit(unitData.indexOf(u));
-        else renderList(unitData);
-    } else {
-        renderList(unitData);
     }
+    // Tidak render apa-apa saat awal load — list baru muncul saat mulai ketik
 })();
 
 // ── Status selector ───────────────────────────────────────
@@ -786,6 +804,13 @@ function selectStatus(el, cls) {
     el.classList.add(cls);
     document.getElementById('status-input').value = cls === 'selected-down' ? 'DOWN' : 'UP';
 }
+
+// ── Sinkronkan Penyebab Kendala -> hidden field 'detail' ─
+const penyebabKendala = document.getElementById('penyebab-kendala');
+const detailHidden     = document.getElementById('detail-hidden');
+function syncDetail() { detailHidden.value = penyebabKendala.value; }
+penyebabKendala.addEventListener('input', syncDetail);
+syncDetail();
 </script>
 
 </body>

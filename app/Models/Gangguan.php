@@ -8,6 +8,7 @@ class Gangguan extends Model
 {
     protected $fillable = [
         'id_laporan',
+        'no_tiket',
         'ip_address',
         'gardu_induk',
         'waktu_kejadian',

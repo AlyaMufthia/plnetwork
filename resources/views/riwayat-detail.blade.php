@@ -35,7 +35,7 @@
         .badge-ditangani{ display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; white-space:nowrap; border:1px solid; }
         .badge-ditangani svg{ width:14px; height:14px; }
 
-        /* ✅ meta-col: catatan di atas, waktu di bawah */
+        /* meta-col: catatan di atas, waktu di bawah */
         .meta-col{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
         .detail-meta{ display:inline-flex; align-items:center; gap:10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:10px 16px; width:fit-content; max-width:100%; }
         .detail-meta svg{ width:16px; height:16px; color:#173a84; flex-shrink:0; }
@@ -129,7 +129,7 @@
 
         <!-- HEADER INFO -->
         <div class="detail-header-card">
-            <div class="detail-id">ID LAPORAN: #{{ $gangguan->id_laporan ?? '-' }}</div>
+            <div class="detail-id">NO. TIKET: {{ $gangguan->no_tiket ?? '-' }}</div>
             <div class="detail-title-row">
                 <div class="detail-title">Gangguan {{ $gangguan->gardu_induk ?? '-' }}</div>
                 @php
@@ -139,12 +139,21 @@
                     $statusBd    = ['on_progress' => '#fecaca', 'paused' => '#fde68a', 'resolved' => '#bbf7d0'][$gangguan->status ?? 'on_progress'] ?? '#fecaca';
                 @endphp
                 <span class="badge-ditangani" style="background:{{ $statusBg }};color:{{ $statusColor }};border-color:{{ $statusBd }};">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    @if(($gangguan->status ?? 'on_progress') === 'resolved')
+                        {{-- Ikon centang untuk status SELESAI --}}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    @elseif(($gangguan->status ?? 'on_progress') === 'paused')
+                        {{-- Ikon jeda untuk status DITUNDA --}}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                    @else
+                        {{-- Ikon segitiga peringatan untuk status DITANGANI --}}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    @endif
                     {{ $statusLabel }}
                 </span>
             </div>
 
-            {{-- ✅ Catatan Perbaikan di atas, Waktu Kejadian di bawah --}}
+            {{-- Catatan Perbaikan di atas, Waktu Kejadian di bawah --}}
             <div class="meta-col">
 
                 @if($gangguan->catatan_perbaikan)

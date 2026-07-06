@@ -61,26 +61,35 @@
         .content{ padding:28px; flex:1; }
 
         /* ── GRID LAYOUT ── */
+        /* ✅ content-grid tidak lagi pakai display:grid karena right-col sudah
+           dikeluarkan dari alur dokumen (position:fixed). Cukup block biasa. */
         .content-grid{
-            display:grid;
-            grid-template-columns:1fr 300px;
-            gap:20px;
-            align-items:start;
+            display:block;
         }
 
-        .left-col{ display:flex; flex-direction:column; gap:20px; }
+        /* ✅ left-col diberi margin-right supaya tidak tertutup panel kanan
+           yang fixed (lebar panel 300px + gap 20px = 320px) */
+        .left-col{
+            display:flex;
+            flex-direction:column;
+            gap:20px;
+            margin-right:320px;
+        }
 
+        /* ✅ right-col: position:fixed membuat panel LANGSUNG diam di posisi
+           ini sejak halaman dimuat, tidak ikut scroll sedikit pun —
+           berbeda dari position:sticky yang masih ikut alur normal dulu
+           sebelum "menempel". */
         .right-col{
-            position:sticky;
+            position:fixed;
             top:84px;
+            right:28px;
+            width:300px;
             display:flex;
             flex-direction:column;
             gap:16px;
-            align-self:start;
+            z-index:40;
         }
-
-        /* info-card tinggi natural sesuai konten, tidak stretch */
-        .info-card{ align-self:start; }
 
         /* ── CARD ── */
         .card{
@@ -614,8 +623,11 @@
 
                 <!-- ── KOLOM KANAN ── -->
                 {{--
-                    ✅ right-col sticky di top:84px, align-self:start agar tidak memanjang ke bawah.
-                    Info-card hanya berisi 3 field: ID Laporan (editable), Lokasi, Waktu Kejadian.
+                    ✅ right-col position:fixed di top:84px right:28px, sehingga
+                    panel LANGSUNG diam sejak halaman dimuat, tidak ikut scroll
+                    sedikit pun (berbeda dari position:sticky sebelumnya).
+                    Info-card berisi 4 field: No Tiket, Lokasi, Waktu Kejadian,
+                    Catatan Perbaikan — semua bisa diedit.
                 --}}
                 <div class="right-col">
                     <div class="info-card">
@@ -624,14 +636,14 @@
                             Ringkasan Insiden
                         </div>
 
-                        {{-- ✅ ID Laporan — sekarang bisa diedit --}}
+                        {{-- ✅ No Tiket — bisa diedit, konsisten dengan kolom no_tiket di halaman Riwayat --}}
                         <div class="info-field">
-                            <div class="info-field-label">ID Laporan</div>
-                            <input class="info-field-input" type="text"
-                                   name="id_laporan"
-                                   value="{{ $gangguan->id_laporan ?? '' }}"
-                                   placeholder="Contoh: FLT-20260614-001">
-                        </div>
+                        <div class="info-field-label">No Tiket</div>
+                        <input class="info-field-input" type="text"
+                            name="no_tiket"
+                            value="{{ $gangguan->no_tiket ?? '' }}"
+                            placeholder="Contoh: FLT-20260614-001">
+                    </div>
 
                         {{-- ✅ Lokasi — bisa diedit --}}
                         <div class="info-field">
