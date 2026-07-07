@@ -423,9 +423,8 @@
                             <strong>{{ $item->gardu_induk }}</strong>
                             <p>
                                 Status : UP<br>
-                                IP : {{ $item->ip_address ?? '-' }}<br>
-                                Penyebab : {{ $item->jenis_gangguan ?? '-' }}<br>
-                                Waktu : {{ \Carbon\Carbon::parse($item->waktu_kejadian)->diffForHumans() }}
+                                Kategori : {{ $item->jenis_gangguan ?? '-' }}<br>
+                                Waktu : {{ \Carbon\Carbon::parse($item->waktu_kejadian)->locale('id')->diffForHumans() }}
                             </p>
                         </div>
                         <a href="{{ route('riwayat.show', $item->id) }}" class="edit-btn">
@@ -456,7 +455,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                         </svg>
-                        <input type="text" id="searchInput" placeholder="Cari Penyebab Gangguan" oninput="filterTabel()">
+                        <input type="text" id="searchInput" placeholder="Cari Kategori Gangguan" oninput="filterTabel()">
                     </div>
                     <select class="filter-select" id="filterStatus" onchange="filterTabel()">
                         <option value="">Semua Status</option>
@@ -470,7 +469,7 @@
                         <thead>
                             <tr>
                                 <th class="no-col">NO</th>
-                                <th>PENYEBAB GANGGUAN</th>
+                                <th>KATEGORI GANGGUAN</th>
                                 <th>FREKUENSI</th>
                                 <th>STATUS</th>
                             </tr>
@@ -668,8 +667,7 @@ function formatRekapanUp(item) {
             <strong>${item.gardu}</strong>
             <p>
                 Status : UP<br>
-                IP : ${item.ip}<br>
-                Penyebab : ${item.penyebab}<br>
+                Kategori : ${item.penyebab}<br>
                 Waktu : ${item.waktu}
             </p>
         </div>
