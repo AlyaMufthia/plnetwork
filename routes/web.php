@@ -21,3 +21,4 @@ Route::get('/riwayat/ekspor-excel', [RiwayatController::class, 'eksporExcel'])->
 Route::get('/riwayat/{id}',        [RiwayatController::class, 'show'])->name('riwayat.show');
 Route::get('/riwayat/{id}/update', [RiwayatController::class, 'edit'])->name('riwayat.edit');
 Route::put('/riwayat/{id}',        [RiwayatController::class, 'update'])->name('riwayat.update');
+Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');

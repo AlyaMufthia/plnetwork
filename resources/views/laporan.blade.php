@@ -36,7 +36,7 @@
             display:flex; align-items:center; padding:0 28px; gap:16px;
             position:sticky; top:0; z-index:50;
         }
-        .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+        .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:8px; }
         .icon-btn{
             width:38px; height:38px; border-radius:50%; border:1px solid #e5e7eb;
             background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
@@ -46,6 +46,34 @@
         .topbar-title{
             font-size:21px; font-weight:700; color:#111827; font-family:'Poppins',sans-serif; line-height:1;
         }
+
+        /* ── PROFILE DROPDOWN ───────────────────────────── */
+        .profile-wrap{ position:relative; }
+
+        .profile-btn{ padding:0; overflow:hidden; }
+
+        .profile-img{
+            width:100%; height:100%; object-fit:cover; border-radius:50%;
+        }
+
+        .profile-dropdown{
+            display:none;
+            position:absolute; top:calc(100% + 10px); right:0;
+            background:#fff; border:1px solid #e5e7eb; border-radius:12px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.14);
+            min-width:160px; padding:6px; z-index:200;
+        }
+
+        .profile-dropdown.show{ display:block; }
+
+        .dropdown-item{
+            display:flex; align-items:center; gap:9px;
+            width:100%; padding:10px 12px; border:none; background:none;
+            border-radius:8px; font-size:13px; font-weight:500; color:#dc2626;
+            cursor:pointer; text-align:left; transition:background 0.15s;
+        }
+
+        .dropdown-item:hover{ background:#fef2f2; }
 
         .content{ padding:32px 28px; flex:1; }
         .page-title{ font-size:20px; font-weight:700; color:#111827; }
@@ -257,11 +285,33 @@
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
             </a>
-            <a href="/pengaturan" class="icon-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-            </a>
+
+            <!-- ── PROFILE + LOGOUT DROPDOWN ── -->
+            <div class="profile-wrap" id="profileWrap">
+                <button type="button" class="icon-btn profile-btn" id="profileBtn" title="Akun Saya">
+                    @if(Auth::check() && Auth::user()->foto)
+                        <img src="{{ asset('storage/'.Auth::user()->foto) }}" alt="Profile" class="profile-img">
+                    @else
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    @endif
+                </button>
+
+                <div class="profile-dropdown" id="profileDropdown">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                <polyline points="16 17 21 12 16 7"/>
+                                <line x1="21" y1="12" x2="9" y2="12"/>
+                            </svg>
+                            Log out
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </header>
     
@@ -807,6 +857,28 @@ const detailHidden     = document.getElementById('detail-hidden');
 function syncDetail() { detailHidden.value = penyebabKendala.value; }
 penyebabKendala.addEventListener('input', syncDetail);
 syncDetail();
+
+// ── PROFILE DROPDOWN (buka/tutup + auto-close di luar area) ────
+const profileBtn = document.getElementById('profileBtn');
+const profileDropdown = document.getElementById('profileDropdown');
+const profileWrap = document.getElementById('profileWrap');
+
+profileBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    profileDropdown.classList.toggle('show');
+});
+
+document.addEventListener('click', function (e) {
+    if (!profileWrap.contains(e.target)) {
+        profileDropdown.classList.remove('show');
+    }
+});
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        profileDropdown.classList.remove('show');
+    }
+});
 </script>
 
 </body>
