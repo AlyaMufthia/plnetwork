@@ -40,14 +40,26 @@
 
         .topbar{
             height:64px; background:#fff; border-bottom:1px solid #e5e7eb;
-            display:flex; align-items:center; padding:0 28px; gap:8px;
+            display:flex; align-items:center; padding:0 28px; gap:12px;
         }
 
         .topbar h1{ font-size:21px; font-weight:700; color:#111827; flex:1; }
 
+        /* ── TOMBOL + INPUT GANGGUAN BARU ───────────────────────────── */
+        .btn-tambah{
+            display:flex; align-items:center; gap:8px; padding:9px 18px;
+            background:#173a84; border:none; border-radius:10px;
+            font-size:13px; font-weight:600; color:#fff; cursor:pointer;
+            text-decoration:none; white-space:nowrap; transition:background 0.15s;
+        }
+
+        .btn-tambah:hover{ background:#122d68; }
+        .btn-tambah svg{ width:16px; height:16px; }
+
         .icon-btn{
             width:38px; height:38px; border-radius:50%; border:1px solid #e5e7eb;
             background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
+            flex-shrink:0;
         }
 
         .icon-btn svg{ width:18px; height:18px; color:#6b7280; }
@@ -246,7 +258,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             Input Gangguan
         </a>
-                <a href="{{ route('laporan.index') }}" class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+        <a href="{{ route('laporan.index') }}" class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8.3 14 13l-3-3-4.7 4.7"/></svg>
             Laporan
         </a>
@@ -258,10 +270,9 @@
     <header class="topbar">
         <h1>Riwayat Gangguan</h1>
 
-        <a href="/riwayat" class="icon-btn" title="Lihat Riwayat Gangguan">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
+        <a href="{{ route('inputgangguan.index') }}" class="btn-tambah">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Input Gangguan Baru
         </a>
 
         <!-- ── PROFILE + LOGOUT DROPDOWN ── -->
