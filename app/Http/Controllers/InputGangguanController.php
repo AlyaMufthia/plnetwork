@@ -2,54 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Gangguan;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
-class LaporanController extends Controller
+class InputGangguanController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
-            'unit'     => 'required|string',
-            'status'   => 'required|in:DOWN,UP',
-            'kategori' => 'required|string',
-            'penyebab' => 'required|string',
+        $validated = $request->validate([
+            'unit'         => 'required|string|max:255',
+            'status'       => 'required|in:DOWN,UP',
+            'lokasi_gardu' => 'nullable|string|max:255',
+            'kategori'     => 'required|string|max:50',
+            'penyebab'     => 'required|string',
+        ], [
+            'unit.required'     => 'Unit / Lokasi Utama wajib dipilih.',
+            'kategori.required' => 'Kategori wajib dipilih.',
+            'penyebab.required' => 'Penyebab kendala wajib diisi.',
         ]);
 
-        $waktuKejadian = now();
+        // Coba ambil IP address dari string unit, misal "10.43.51.1 (GI BINJAI 150)"
+        preg_match('/\b\d{1,3}(?:\.\d{1,3}){3}\b/', $validated['unit'], $matches);
+        $ipAddress = $matches[0] ?? null;
 
-        $gangguan = DB::transaction(function () use ($request, $waktuKejadian) {
+        Gangguan::create([
+            'id_laporan'        => 'LAP-' . now()->format('Ymdhis') . '-' . str_pad(rand(0, 999), 3, '0', STR_PAD_LEFT),
+            'no_tiket'          => null,
+            'ip_address'        => $ipAddress,
+            'gardu_induk'       => $validated['unit'],
+            'waktu_kejadian'    => now(),
+            'status'            => 'on_progress',
+            'tahapan'           => 1,
+            'jenis_gangguan'    => $validated['kategori'],
+            'status_jaringan'   => $validated['status'],
+            'foto_lokasi'       => null,
+            'foto_petugas'      => null,
+            'catatan_perbaikan' => $validated['penyebab'],
+        ]);
 
-            $counter = DB::table('tiket_counters')->lockForUpdate()->first();
-
-            if (!$counter) {
-                DB::table('tiket_counters')->insert(['last_number' => 0]);
-                $counter = DB::table('tiket_counters')->lockForUpdate()->first();
-            }
-
-            $urutan = $counter->last_number + 1;
-
-            DB::table('tiket_counters')
-                ->where('id', $counter->id)
-                ->update(['last_number' => $urutan]);
-
-            $tanggalKode = $waktuKejadian->format('dmY');
-            $noTiket = 'GGN-' . $tanggalKode . '-' . str_pad($urutan, 5, '0', STR_PAD_LEFT);
-
-            return Gangguan::create([
-                'id_laporan'        => 'LAP-' . $waktuKejadian->format('YmdHis'),
-                'no_tiket'          => $noTiket,
-                'gardu_induk'       => $request->unit,
-                'waktu_kejadian'    => $waktuKejadian,
-                'status'            => 'on_progress',
-                'status_jaringan'   => $request->status,
-                'tahapan'           => 1,
-                'jenis_gangguan'    => $request->kategori,   // ✅ sekarang diisi KATEGORI (KABEL, POWER, dll)
-                'catatan_perbaikan' => $request->penyebab,   // ✅ diisi deskripsi/penyebab kendala
-            ]);
-        });
-
-        return redirect()->route('riwayat.index')->with('success', 'Laporan berhasil dikirim! No. Tiket: ' . $gangguan->no_tiket);
+        return redirect()
+            ->route('inputgangguan.index')
+            ->with('success', 'Data gangguan berhasil dikirim.');
     }
 }
