@@ -162,13 +162,17 @@ class LaporanController extends Controller
         }
 
         Gangguan::create([
+            'id_laporan'        => $this->generateIdLaporan(),
             'no_tiket'          => $this->generateNoTiket(),
             'ip_address'        => null, // form belum mengirim IP unit secara terpisah
             'gardu_induk'       => $validated['unit'],
             'waktu_kejadian'    => now(),
-            'status'            => $validated['status'],       // status umum tiket
+            // 'status' TIDAK diisi di sini — biarkan default DB ('on_progress'),
+            // karena kolom ini adalah status PENANGANAN tiket (on_progress/paused/resolved),
+            // bukan status jaringan (UP/DOWN).
             'status_jaringan'   => $validated['status'],       // UP / DOWN
-            'tahapan'           => 'Baru',                      // tahap awal penanganan
+            // 'tahapan' TIDAK diisi — biarkan default DB (1), karena kolom ini
+            // bertipe tinyint (angka tahap), bukan teks.
             'jenis_gangguan'    => $validated['kategori'],
             'catatan_perbaikan' => $catatan,
         ]);
@@ -186,5 +190,16 @@ class LaporanController extends Controller
         } while (Gangguan::where('no_tiket', $noTiket)->exists());
 
         return $noTiket;
+    }
+
+    // Generate id_laporan unik (kolom ini varchar UNIQUE, bukan foreign key),
+    // contoh: LAP-20260707-4821
+    private function generateIdLaporan(): string
+    {
+        do {
+            $idLaporan = 'LAP-' . now()->format('Ymd') . '-' . random_int(1000, 9999);
+        } while (Gangguan::where('id_laporan', $idLaporan)->exists());
+
+        return $idLaporan;
     }
 }
