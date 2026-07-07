@@ -268,9 +268,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Riwayat
         </a>
-        <a href="{{ route('laporan.index') }}" class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+        <a href="{{ route('inputgangguan.index') }}" class="nav-item {{ request()->routeIs('inputgangguan.*') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Laporan
+            Input Gangguan
         </a>
     </nav>
 </aside>
@@ -278,7 +278,7 @@
 <div class="main">
 
     <header class="topbar">
-        <div class="topbar-title">Laporan</div>
+        <div class="topbar-title">Input Gangguan</div>
         <div class="topbar-right">
             <a href="/riwayat" class="icon-btn" title="Lihat Riwayat Gangguan">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -318,7 +318,7 @@
 
     <div class="content">
 
-        <h1 class="page-title">Buat Laporan Baru</h1>
+        <h1 class="page-title">Input Data Gangguan Baru</h1>
         <p class="page-sub">Input detail gangguan atau temuan pemeliharaan unit</p>
 
         @if(session('success'))
@@ -341,7 +341,7 @@
         <div class="layout">
 
             <div class="form-card">
-                <form action="{{ route('laporan.store') }}" method="POST">
+                <form action="{{ route('inputgangguan.store') }}" method="POST">
                     @csrf
 
                     <input type="hidden" name="status" id="status-input" value="DOWN">
@@ -455,7 +455,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
                             </svg>
-                            Kirim Laporan
+                            Kirim Input Gangguan
                         </button>
                     </div>
 
