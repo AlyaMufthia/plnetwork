@@ -19,21 +19,24 @@ class DashboardController extends Controller
                         ->take(3)
                         ->get();
 
+        // Semua unit yang pernah DOWN, diurut dari paling sering (bisa discroll di view)
+        $rekapanDown = $this->getRekapanDown();
+
         // Rekapan penyebab gangguan dari DB
         $penyebabStats = Gangguan::selectRaw('jenis_gangguan, status_jaringan, COUNT(*) as frekuensi')
                         ->groupBy('jenis_gangguan', 'status_jaringan')
                         ->orderByDesc('frekuensi')
                         ->get();
 
-        // Chart default (harian) untuk load pertama kali
+        // Chart default (harian) untuk load pertama kali — sekarang dipakai di halaman Laporan
         $chartData = $this->getChartData('harian');
 
         return view('dashboard', compact(
-            'totalUp', 'totalDown', 'total', 'rekapanUp', 'penyebabStats', 'chartData'
+            'totalUp', 'totalDown', 'total', 'rekapanUp', 'rekapanDown', 'penyebabStats', 'chartData'
         ));
     }
 
-    // ✅ Endpoint AJAX — dipanggil saat filter periode diganti (Harian/Bulanan/Tahunan)
+    // ✅ Endpoint AJAX — dipanggil saat filter periode diganti (Harian/Bulanan/Tahunan) di halaman Laporan
     public function chartData(Request $request)
     {
         $period = $request->get('period', 'harian');
@@ -62,6 +65,21 @@ class DashboardController extends Controller
                             ];
                         });
 
+        // ✅ Rekapan gangguan DOWN — SEMUA unit, diurut paling sering DOWN (scrollable di view)
+        $rekapanDown = $this->getRekapanDown()
+                        ->map(function ($item) {
+                            return [
+                                'id'        => $item->id,
+                                'gardu'     => $item->gardu_induk,
+                                'penyebab'  => $item->jenis_gangguan ?? '-',
+                                'frekuensi' => $item->frekuensi,
+                                'waktu'     => $item->waktu_kejadian
+                                                ? \Carbon\Carbon::parse($item->waktu_kejadian)->diffForHumans()
+                                                : '-',
+                                'url'       => $item->id ? route('riwayat.show', $item->id) : '#',
+                            ];
+                        });
+
         $penyebabStats = Gangguan::selectRaw('jenis_gangguan, status_jaringan, COUNT(*) as frekuensi')
                         ->groupBy('jenis_gangguan', 'status_jaringan')
                         ->orderByDesc('frekuensi')
@@ -72,12 +90,43 @@ class DashboardController extends Controller
             'totalDown'     => $totalDown,
             'total'         => $total,
             'rekapanUp'     => $rekapanUp,
+            'rekapanDown'   => $rekapanDown,
             'penyebabStats' => $penyebabStats,
             'last_updated'  => now()->format('H:i'),
         ]);
     }
 
+    // ✅ SEMUA unit (gardu) yang pernah mengalami DOWN, diurut dari paling sering,
+    //    lengkap dengan kategori & waktu kejadian TERAKHIR untuk masing-masing unit.
+    //    Tidak lagi dibatasi top 3 — ditampilkan semua dan bisa discroll di view.
+    private function getRekapanDown()
+    {
+        // 1) Hitung frekuensi DOWN per unit, urut dari yang paling sering
+        $topUnit = Gangguan::where('status_jaringan', 'DOWN')
+                    ->selectRaw('gardu_induk, COUNT(*) as frekuensi')
+                    ->groupBy('gardu_induk')
+                    ->orderByDesc('frekuensi')
+                    ->get();
+
+        // 2) Untuk tiap unit, ambil kejadian DOWN yang paling baru (kategori & waktu)
+        return $topUnit->map(function ($unit) {
+            $latest = Gangguan::where('status_jaringan', 'DOWN')
+                        ->where('gardu_induk', $unit->gardu_induk)
+                        ->latest('waktu_kejadian')
+                        ->first();
+
+            return (object) [
+                'id'             => $latest->id ?? null,
+                'gardu_induk'    => $unit->gardu_induk,
+                'frekuensi'      => $unit->frekuensi,
+                'jenis_gangguan' => $latest->jenis_gangguan ?? null,
+                'waktu_kejadian' => $latest->waktu_kejadian ?? null,
+            ];
+        });
+    }
+
     // ✅ Logic query per periode, terpusat di satu fungsi (hanya 1 query per periode)
+    // Dipakai oleh halaman Laporan untuk grafik "Pemantauan Alarm DOWN"
     private function getChartData(string $period): array
     {
         if ($period === 'bulanan') {

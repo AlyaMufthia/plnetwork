@@ -136,4 +136,55 @@ class LaporanController extends Controller
             'dataTahunan'
         ));
     }
+
+    // ✅ Menyimpan laporan gangguan baru dari form "Input Gangguan"
+    //    lalu redirect ke halaman Riwayat.
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'unit'         => ['required', 'string', 'max:255'],
+            'status'       => ['required', 'in:UP,DOWN'],
+            'lokasi_gardu' => ['nullable', 'string', 'max:255'],
+            'kategori'     => ['required', 'string', 'max:100'],
+            'penyebab'     => ['required', 'string'],
+        ], [
+            'unit.required'     => 'Unit / Lokasi Utama wajib dipilih.',
+            'status.required'   => 'Status Gangguan wajib dipilih.',
+            'kategori.required' => 'Kategori wajib dipilih.',
+            'penyebab.required' => 'Penyebab Kendala wajib diisi.',
+        ]);
+
+        // Gabungkan "Lokasi Gardu" ke catatan perbaikan karena belum ada
+        // kolom khusus untuk itu di tabel gangguan.
+        $catatan = $validated['penyebab'];
+        if (!empty($validated['lokasi_gardu'])) {
+            $catatan = "Lokasi Gardu: {$validated['lokasi_gardu']}\n\n{$catatan}";
+        }
+
+        Gangguan::create([
+            'no_tiket'          => $this->generateNoTiket(),
+            'ip_address'        => null, // form belum mengirim IP unit secara terpisah
+            'gardu_induk'       => $validated['unit'],
+            'waktu_kejadian'    => now(),
+            'status'            => $validated['status'],       // status umum tiket
+            'status_jaringan'   => $validated['status'],       // UP / DOWN
+            'tahapan'           => 'Baru',                      // tahap awal penanganan
+            'jenis_gangguan'    => $validated['kategori'],
+            'catatan_perbaikan' => $catatan,
+        ]);
+
+        return redirect()
+            ->route('riwayat.index')
+            ->with('success', 'Laporan gangguan berhasil dikirim.');
+    }
+
+    // Generate nomor tiket unik, contoh: TRB-20260707-4821
+    private function generateNoTiket(): string
+    {
+        do {
+            $noTiket = 'TRB-' . now()->format('Ymd') . '-' . random_int(1000, 9999);
+        } while (Gangguan::where('no_tiket', $noTiket)->exists());
+
+        return $noTiket;
+    }
 }
