@@ -179,12 +179,14 @@
         .alarm-summary-item .s-num{ font-size:22px; font-weight:700; line-height:1; }
         .alarm-summary-item .s-lbl{ font-size:11px; color:#9ca3af; margin-top:3px; }
 
-        .rekapan-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; }
+        .rekapan-card{ background:#fff; border:1px solid #e5e7eb; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
 
         .rekapan-header{
             background:#173a84; padding:14px 20px;
             display:flex; align-items:center; justify-content:space-between;
         }
+
+        .rekapan-header.down{ background:#b91c1c; }
 
         .rekapan-header h2{ font-size:13px; font-weight:700; color:#fff; letter-spacing:0.3px; }
 
@@ -194,6 +196,18 @@
         }
 
         .rekapan-body{ padding:16px; }
+
+        /* ✅ Panel rekapan DOWN dibuat bisa discroll agar semua unit tampil,
+              tanpa membuat halaman jadi terlalu panjang */
+        .rekapan-body-scroll{
+            max-height:460px;
+            overflow-y:auto;
+        }
+
+        .rekapan-body-scroll::-webkit-scrollbar{ width:6px; }
+        .rekapan-body-scroll::-webkit-scrollbar-track{ background:transparent; }
+        .rekapan-body-scroll::-webkit-scrollbar-thumb{ background:#e5e7eb; border-radius:999px; }
+        .rekapan-body-scroll::-webkit-scrollbar-thumb:hover{ background:#d1d5db; }
 
         .rekapan-item{
             border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px;
@@ -281,36 +295,6 @@
             margin-top:14px; padding-top:12px; border-top:1px solid #f3f4f6;
             font-size:12px; color:#9ca3af;
         }
-
-        .chart-card{
-            background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:22px;
-            display:flex; flex-direction:column;
-        }
-
-        .chart-card-title{
-            font-size:13px; font-weight:700; color:#111827;
-        }
-
-        .chart-header{
-            display:flex; align-items:center; justify-content:space-between;
-            margin-bottom:16px;
-        }
-
-        .segmented-control{
-            display:inline-flex; background:#f3f4f6; border-radius:10px; padding:3px; gap:2px;
-        }
-
-        .chart-filter-btn{
-            border:none; background:transparent; color:#6b7280;
-            font-size:12px; font-weight:600; padding:7px 16px; border-radius:8px;
-            cursor:pointer; transition:all 0.15s;
-        }
-        .chart-filter-btn:hover{ color:#374151; }
-        .chart-filter-btn.active{
-            background:#fff; color:#173a84; box-shadow:0 1px 2px rgba(0,0,0,0.08);
-        }
-
-        .chart-wrap{ flex:1; position:relative; min-height:280px; }
 
         .page-footer{
             text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af;
@@ -490,7 +474,7 @@
 
         </div>
 
-        <!-- ROW 2: Tabel + Chart -->
+        <!-- ROW 2: Tabel Penyebab + Tabel Rekapan Gangguan DOWN -->
         <div class="grid-bottom">
 
             <!-- TABEL REKAPAN PENYEBAB GANGGUAN — dari database -->
@@ -550,18 +534,36 @@
                 </div>
             </div>
 
-            <!-- CHART DOWN — bisa difilter -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-card-title" id="chartTitle">Pemantauan Alarm DOWN 24 Jam</div>
-                    <div class="segmented-control">
-                        <button type="button" class="chart-filter-btn active" data-period="harian" onclick="gantiPeriode('harian')">Harian</button>
-                        <button type="button" class="chart-filter-btn" data-period="bulanan" onclick="gantiPeriode('bulanan')">Bulanan</button>
-                        <button type="button" class="chart-filter-btn" data-period="tahunan" onclick="gantiPeriode('tahunan')">Tahunan</button>
-                    </div>
+            <!-- REKAPAN GANGGUAN DOWN — semua unit yang pernah DOWN, bisa discroll -->
+            <div class="rekapan-card">
+                <div class="rekapan-header down">
+                    <h2>REKAPAN GANGGUAN DOWN</h2>
+                    <span class="rekapan-count" id="rekapanDownCount">{{ $rekapanDown->count() }} Unit</span>
                 </div>
-                <div class="chart-wrap">
-                    <canvas id="lineChart"></canvas>
+                <div class="rekapan-body rekapan-body-scroll" id="rekapanDownBody">
+                    @forelse($rekapanDown as $item)
+                    <div class="rekapan-item">
+                        <div class="rekapan-bar down"></div>
+                        <div class="rekapan-info">
+                            <strong>{{ $item->gardu_induk }}</strong>
+                            <p>
+                                Frekuensi : {{ $item->frekuensi }} Kali DOWN<br>
+                                Kategori : {{ $item->jenis_gangguan ?? '-' }}<br>
+                                Waktu Terakhir : {{ $item->waktu_kejadian ? \Carbon\Carbon::parse($item->waktu_kejadian)->locale('id')->diffForHumans() : '-' }}
+                            </p>
+                        </div>
+                        <a href="{{ $item->id ? route('riwayat.show', $item->id) : '#' }}" class="edit-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    @empty
+                    <div class="empty-state">
+                        Belum ada laporan dengan status DOWN.
+                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -597,78 +599,7 @@ const donutChart = new Chart(donutCtx, {
     }
 });
 
-// ── LINE CHART — data DOWN, bisa ganti periode ────────────────
-const lineCtx = document.getElementById('lineChart').getContext('2d');
-
-const lineChart = new Chart(lineCtx, {
-    type: 'line',
-    data: {
-        labels: {!! json_encode($chartData['labels']) !!},
-        datasets: [
-            {
-                label: 'Jumlah Perangkat DOWN',
-                data: {!! json_encode($chartData['data']) !!},
-                borderColor: '#dc2626',
-                backgroundColor: 'rgba(220,38,38,0.12)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 2.5,
-                pointRadius: 3,
-                pointBackgroundColor: '#dc2626'
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: { font: { size: 11 }, boxWidth: 14, padding: 10 }
-            },
-            tooltip: {
-                callbacks: {
-                    label: ctx => ` ${ctx.parsed.y} perangkat DOWN`
-                }
-            }
-        },
-        scales: {
-            x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-            y: {
-                grid: { color: '#f3f4f6' },
-                ticks: { font: { size: 10 }, stepSize: 1 },
-                min: 0,
-                title: { display: true, text: 'Jumlah DOWN', font: { size: 10 }, color: '#9ca3af' }
-            }
-        }
-    }
-});
-
-// ── GANTI PERIODE FILTER (AJAX, tanpa reload halaman) ─────────
-const judulPeriode = {
-    harian: 'Pemantauan Alarm DOWN 24 Jam',
-    bulanan: 'Pemantauan Alarm DOWN Bulan Ini',
-    tahunan: 'Pemantauan Alarm DOWN Tahun Ini'
-};
-
-function gantiPeriode(period) {
-    document.querySelectorAll('.chart-filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.period === period);
-    });
-
-    document.getElementById('chartTitle').textContent = judulPeriode[period];
-
-    fetch(`{{ route('dashboard.chart-data') }}?period=${period}`)
-        .then(res => res.json())
-        .then(json => {
-            lineChart.data.labels = json.labels;
-            lineChart.data.datasets[0].data = json.data;
-            lineChart.update();
-        })
-        .catch(err => console.error('Gagal ambil data chart:', err));
-}
-
-// ── FILTER TABEL ─────────────────────────────────────────────
+// ── FILTER TABEL PENYEBAB ─────────────────────────────────────
 function filterTabel() {
     const keyword = document.getElementById('searchInput').value.toUpperCase().trim();
     const statusFilter = document.getElementById('filterStatus').value.toUpperCase();
@@ -748,6 +679,27 @@ function formatRekapanUp(item) {
     </div>`;
 }
 
+function formatRekapanDown(item) {
+    return `
+    <div class="rekapan-item">
+        <div class="rekapan-bar down"></div>
+        <div class="rekapan-info">
+            <strong>${item.gardu}</strong>
+            <p>
+                Frekuensi : ${item.frekuensi} Kali DOWN<br>
+                Kategori : ${item.penyebab}<br>
+                Waktu Terakhir : ${item.waktu}
+            </p>
+        </div>
+        <a href="${item.url}" class="edit-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+        </a>
+    </div>`;
+}
+
 function formatPenyebabRow(row, i) {
     const nama = (row.jenis_gangguan || '-').toUpperCase();
     const statusBadge = row.status_jaringan === 'UP'
@@ -787,6 +739,13 @@ function refreshDashboard() {
             rekapanBody.innerHTML = json.rekapanUp.length
                 ? json.rekapanUp.map(formatRekapanUp).join('')
                 : '<div class="empty-state">Belum ada laporan dengan status UP.</div>';
+
+            // Rekapan DOWN (semua unit — scrollable)
+            document.getElementById('rekapanDownCount').textContent = `${json.rekapanDown.length} Unit`;
+            const rekapanDownBody = document.getElementById('rekapanDownBody');
+            rekapanDownBody.innerHTML = json.rekapanDown.length
+                ? json.rekapanDown.map(formatRekapanDown).join('')
+                : '<div class="empty-state">Belum ada laporan dengan status DOWN.</div>';
 
             // Tabel penyebab
             const tabelBody = document.getElementById('tabelBody');
