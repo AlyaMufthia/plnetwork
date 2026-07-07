@@ -8,8 +8,8 @@ use App\Http\Controllers\DashboardController;
 Route::get('/register',   fn() => view('register'))->name('register');
 Route::get('/login',      fn() => view('login'))->name('login');
 Route::get('/dashboard',  [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/laporan',    fn() => view('laporan'))->name('laporan.index');
-Route::post('/laporan',   [LaporanController::class, 'store'])->name('laporan.store');
+Route::get('/inputgangguan',    fn() => view('inputgangguan'))->name('inputgangguan.index');
+Route::post('/inputgangguan',   [LaporanController::class, 'store'])->name('inputgangguan.store');
 Route::get('/dashboard/chart-data',  [DashboardController::class, 'chartData'])->name('dashboard.chart-data');
 Route::get('/dashboard/status-data', [DashboardController::class, 'statusData'])->name('dashboard.status-data');
 
@@ -22,3 +22,4 @@ Route::get('/riwayat/{id}',        [RiwayatController::class, 'show'])->name('ri
 Route::get('/riwayat/{id}/update', [RiwayatController::class, 'edit'])->name('riwayat.edit');
 Route::put('/riwayat/{id}',        [RiwayatController::class, 'update'])->name('riwayat.update');
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
