@@ -139,41 +139,6 @@
         .textarea-field:focus{ border-color:#173a84; }
         .textarea-field::placeholder{ color:#b0b7c3; }
 
-        .status-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-
-        .status-option{
-            border:2px solid #e5e7eb; border-radius:12px; padding:14px;
-            cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
-        }
-        .status-option:hover{ border-color:#d1d5db; background:#fafafa; }
-        .status-option.selected-down{ border-color:#dc2626; background:#fff8f8; }
-        .status-option.selected-up{ border-color:#16a34a; background:#f0fdf9; }
-
-        .status-icon{
-            width:36px; height:36px; border-radius:8px;
-            display:flex; align-items:center; justify-content:center;
-            font-size:18px; margin-bottom:10px;
-        }
-        .icon-down{ background:#fef2f2; }
-        .icon-up{ background:#f0fdf4; }
-
-        .status-name{
-            font-size:13px; font-weight:700; letter-spacing:0.3px; margin-bottom:4px;
-        }
-        .status-name.down{ color:#dc2626; }
-        .status-name.up{ color:#16a34a; }
-
-        .status-desc{ font-size:11px; color:#9ca3af; line-height:1.5; }
-
-        .status-option .check{
-            position:absolute; top:10px; right:10px;
-            width:18px; height:18px; border-radius:50%;
-            display:flex; align-items:center; justify-content:center;
-            font-size:10px; color:#fff; opacity:0; transition:opacity 0.2s;
-        }
-        .status-option.selected-down .check{ background:#dc2626; opacity:1; }
-        .status-option.selected-up .check{ background:#16a34a; opacity:1; }
-
         .form-footer{
             display:flex; justify-content:flex-end; gap:10px;
             margin-top:24px; padding-top:20px; border-top:1px solid #f3f4f6;
@@ -348,8 +313,6 @@
                 <form action="{{ route('inputgangguan.store') }}" method="POST">
                     @csrf
 
-                    <input type="hidden" name="status" id="status-input" value="DOWN">
-
                     <!-- Unit / Lokasi Utama -->
                     <div class="field-group">
                         <label class="field-label">Unit / Lokasi Utama <span style="color:#dc2626">*</span></label>
@@ -386,36 +349,6 @@
 
                         </div>
                         <input type="hidden" name="unit" id="unit-hidden" value="{{ old('unit') }}">
-                    </div>
-
-                    <!-- Status Gangguan -->
-                    <div class="field-group">
-                        <label class="field-label">Status Gangguan</label>
-                        <div class="status-grid">
-                            <div class="status-option selected-down" onclick="selectStatus(this,'selected-down')">
-                                <div class="check">✓</div>
-                                <div class="status-icon icon-down">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="12" r="11" fill="#dc2626"/>
-                                        <line x1="12" y1="7" x2="12" y2="13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-                                        <circle cx="12" cy="17" r="1.3" fill="#fff"/>
-                                    </svg>
-                                </div>
-                                <div class="status-name down">DOWN</div>
-                                <div class="status-desc">Layanan terputus total (Critical)</div>
-                            </div>
-                            <div class="status-option" onclick="selectStatus(this,'selected-up')">
-                                <div class="check">✓</div>
-                                <div class="status-icon icon-up">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="12" r="11" fill="#16a34a"/>
-                                        <polyline points="7,12 11,16 17,9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                                <div class="status-name up">UP</div>
-                                <div class="status-desc">Layanan berjalan normal</div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Lokasi Gardu -->
@@ -485,10 +418,6 @@
                         </li>
                         <li>
                             <span class="panduan-num">2</span>
-                            <span>Status <b>DOWN</b> hanya digunakan jika terjadi gangguan pasokan jaringan total.</span>
-                        </li>
-                        <li>
-                            <span class="panduan-num">3</span>
                             <span>Pastikan bahwa data laporan yang dimasukkan merupakan fakta dan benar terjadi.</span>
                         </li>
                     </ul>
@@ -846,14 +775,6 @@ comboInput.addEventListener('input', () => {
     }
     // Tidak render apa-apa saat awal load — list baru muncul saat mulai ketik
 })();
-
-// ── Status selector ───────────────────────────────────────
-function selectStatus(el, cls) {
-    document.querySelectorAll('.status-option').forEach(o =>
-        o.classList.remove('selected-down', 'selected-up'));
-    el.classList.add(cls);
-    document.getElementById('status-input').value = cls === 'selected-down' ? 'DOWN' : 'UP';
-}
 
 // ── Sinkronkan Penyebab Kendala -> hidden field 'detail' ─
 const penyebabKendala = document.getElementById('penyebab-kendala');

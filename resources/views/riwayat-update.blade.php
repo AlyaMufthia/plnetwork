@@ -61,14 +61,10 @@
         .content{ padding:28px; flex:1; }
 
         /* ── GRID LAYOUT ── */
-        /* ✅ content-grid tidak lagi pakai display:grid karena right-col sudah
-           dikeluarkan dari alur dokumen (position:fixed). Cukup block biasa. */
         .content-grid{
             display:block;
         }
 
-        /* ✅ left-col diberi margin-right supaya tidak tertutup panel kanan
-           yang fixed (lebar panel 300px + gap 20px = 320px) */
         .left-col{
             display:flex;
             flex-direction:column;
@@ -76,10 +72,6 @@
             margin-right:320px;
         }
 
-        /* ✅ right-col: position:fixed membuat panel LANGSUNG diam di posisi
-           ini sejak halaman dimuat, tidak ikut scroll sedikit pun —
-           berbeda dari position:sticky yang masih ikut alur normal dulu
-           sebelum "menempel". */
         .right-col{
             position:fixed;
             top:84px;
@@ -105,13 +97,13 @@
 
         /* ── STATUS SELECTOR ── */
         .status-grid{
-            display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+            display:grid; grid-template-columns:repeat(2,1fr); gap:16px;
             margin-bottom:24px;
         }
         .status-card{
-            border:2px solid #e5e7eb; border-radius:12px;
-            padding:16px 12px;
-            display:flex; flex-direction:column; align-items:center; gap:8px;
+            border:2px solid #e5e7eb; border-radius:14px;
+            padding:22px 16px;
+            display:flex; flex-direction:column; align-items:center; gap:10px;
             cursor:pointer; transition:all 0.2s;
             background:#fff; position:relative;
             user-select:none;
@@ -119,24 +111,54 @@
         .status-card:hover{ border-color:#173a84; background:#f0f4ff; }
         .status-card.selected{ border-color:#173a84; background:#eef2ff; }
         .status-card.selected .sc-icon-wrap{ background:#173a84; }
-        .status-card.selected .sc-icon-wrap svg{ stroke:#fff; }
         .status-card.selected .sc-name{ color:#173a84; font-weight:700; }
         .sc-icon-wrap{
-            width:46px; height:46px; border-radius:12px;
+            width:56px; height:56px; border-radius:50%;
             background:#f3f4f6;
             display:flex; align-items:center; justify-content:center;
             transition:background 0.2s;
         }
-        .sc-icon-wrap svg{ width:22px; height:22px; stroke:#9ca3af; fill:none; stroke-width:1.8; transition:stroke 0.2s; }
-        .sc-name{ font-size:13px; font-weight:600; color:#9ca3af; transition:color 0.2s; }
+        /* ✅ tambahkan `color` di samping `stroke` supaya fill="currentColor"
+           (titik pada icon seru) ikut berubah warna, tidak cuma garisnya */
+        .sc-icon-wrap svg{ width:26px; height:26px; stroke:#9ca3af; color:#9ca3af; fill:none; stroke-width:1.8; transition:stroke 0.2s, color 0.2s; }
+        .sc-name{ font-size:15px; font-weight:700; color:#374151; transition:color 0.2s; }
+        .sc-desc{ font-size:11.5px; color:#9ca3af; text-align:center; line-height:1.4; }
         .sc-check{
-            position:absolute; top:8px; right:8px;
-            width:20px; height:20px; border-radius:50%;
-            background:#173a84;
+            position:absolute; top:-9px; right:-9px;
+            width:22px; height:22px; border-radius:50%;
+            background:#173a84; border:2px solid #fff;
+            box-shadow:0 1px 3px rgba(0,0,0,.15);
             display:none; align-items:center; justify-content:center;
         }
         .sc-check svg{ width:11px; height:11px; stroke:#fff; fill:none; stroke-width:3; }
         .status-card.selected .sc-check{ display:flex; }
+
+        /* ✅ FIX BUG: sebelumnya aturan warna per-status (di bawah) menang atas
+           aturan .selected di atas karena spesifisitasnya sama tapi ditulis
+           belakangan → icon jadi ketutup warna aslinya saat kartu dipilih.
+           Solusinya: tulis aturan .selected DIGABUNG dengan [data-status="..."]
+           supaya spesifisitasnya lebih tinggi dan pasti menang jadi putih. */
+
+        /* Warna per-status, persis gaya kartu Status Gangguan (DOWN=merah, UP=hijau) */
+        .status-card[data-status="down"]:hover{ border-color:#dc2626; background:#fef2f2; }
+        .status-card[data-status="down"].selected{ border-color:#dc2626; background:#fef2f2; }
+        .status-card[data-status="down"].selected .sc-icon-wrap{ background:#dc2626; }
+        .status-card[data-status="down"].selected .sc-name{ color:#dc2626; }
+        .status-card[data-status="down"].selected .sc-check{ background:#dc2626; }
+        .status-card[data-status="down"] .sc-icon-wrap{ background:#fee2e2; }
+        .status-card[data-status="down"] .sc-icon-wrap svg{ stroke:#dc2626; color:#dc2626; }
+        /* ✅ ini yang bikin icon putih terlihat saat DOWN dipilih (menang atas baris di atas) */
+        .status-card[data-status="down"].selected .sc-icon-wrap svg{ stroke:#fff; color:#fff; }
+
+        .status-card[data-status="up"]:hover{ border-color:#10b981; background:#ecfdf5; }
+        .status-card[data-status="up"].selected{ border-color:#10b981; background:#ecfdf5; }
+        .status-card[data-status="up"].selected .sc-icon-wrap{ background:#10b981; }
+        .status-card[data-status="up"].selected .sc-name{ color:#10b981; }
+        .status-card[data-status="up"].selected .sc-check{ background:#10b981; }
+        .status-card[data-status="up"] .sc-icon-wrap{ background:#f3f4f6; }
+        .status-card[data-status="up"] .sc-icon-wrap svg{ stroke:#10b981; color:#10b981; }
+        /* ✅ ini yang bikin icon putih terlihat saat UP dipilih (menang atas baris di atas) */
+        .status-card[data-status="up"].selected .sc-icon-wrap svg{ stroke:#fff; color:#fff; }
 
         /* ── STEP TRACKER ── */
         .step-section-label{
@@ -228,7 +250,6 @@
             font-size:10px; opacity:.6; margin-bottom:5px;
             font-weight:600; letter-spacing:.06em; text-transform:uppercase;
         }
-        /* ✅ Editable input di ringkasan insiden */
         .info-field-input{
             width:100%; background:rgba(255,255,255,.12);
             border:1px solid rgba(255,255,255,.2); border-radius:8px;
@@ -364,7 +385,6 @@
     <div class="content">
         <div class="content-grid">
 
-            <!-- ✅ Form pakai enctype multipart untuk upload foto -->
             <form id="updateForm"
                   action="{{ route('riwayat.update', $gangguan->id) }}"
                   method="POST"
@@ -373,7 +393,7 @@
                 @csrf
                 @method('PUT')
 
-                <input type="hidden" name="status"  id="inputStatus"  value="{{ $gangguan->status ?? 'on_progress' }}">
+                <input type="hidden" name="status"  id="inputStatus"  value="{{ $gangguan->status ?? 'down' }}">
                 <input type="hidden" name="tahapan" id="inputTahapan" value="{{ $gangguan->tahapan ?? 2 }}">
 
                 <!-- ── KOLOM KIRI ── -->
@@ -389,29 +409,29 @@
 
                             <div class="field-label" style="margin-bottom:12px;">Status Saat Ini</div>
                             <div class="status-grid">
-                                <div class="status-card {{ ($gangguan->status ?? 'on_progress') === 'on_progress' ? 'selected' : '' }}"
-                                     onclick="pickStatus(this,'on_progress')">
+                                <div class="status-card {{ ($gangguan->status ?? 'down') === 'down' ? 'selected' : '' }}"
+                                     data-status="down"
+                                     onclick="pickStatus(this,'down')">
                                     <div class="sc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
                                     <div class="sc-icon-wrap">
-                                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        <!-- ✅ icon diganti: tanda seru bulat simpel, sama seperti gambar 2 -->
+                                        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                            <line x1="12" y1="7" x2="12" y2="13"/>
+                                            <circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/>
+                                        </svg>
                                     </div>
-                                    <div class="sc-name">On Progress</div>
+                                    <div class="sc-name">DOWN</div>
+                                    <div class="sc-desc">Layanan terputus total (Critical)</div>
                                 </div>
-                                <div class="status-card {{ ($gangguan->status ?? '') === 'paused' ? 'selected' : '' }}"
-                                     onclick="pickStatus(this,'paused')">
+                                <div class="status-card {{ ($gangguan->status ?? '') === 'up' ? 'selected' : '' }}"
+                                     data-status="up"
+                                     onclick="pickStatus(this,'up')">
                                     <div class="sc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
                                     <div class="sc-icon-wrap">
-                                        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                                     </div>
-                                    <div class="sc-name">Paused</div>
-                                </div>
-                                <div class="status-card {{ ($gangguan->status ?? '') === 'resolved' ? 'selected' : '' }}"
-                                     onclick="pickStatus(this,'resolved')">
-                                    <div class="sc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-                                    <div class="sc-icon-wrap">
-                                        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                                    </div>
-                                    <div class="sc-name">Resolved</div>
+                                    <div class="sc-name">UP</div>
+                                    <div class="sc-desc">Layanan berjalan normal</div>
                                 </div>
                             </div>
 
@@ -429,7 +449,7 @@
                                     <div class="step-dot">{{ ($gangguan->tahapan ?? 2) > 2 ? '✓' : '2' }}</div>
                                     <div class="step-label">Mobilisasi</div>
                                 </div>
-                                <div class="step-connector"><div class="step-line {{ ($gangguan->tahapan ?? 2) > 2 ? 'done' : '' }}" id="sl2"></div></div>
+                                <div class="step-connector"><div class="step-line {{ ($gangguan->tahapan ?? 2) > 3 ? 'done' : '' }}" id="sl2"></div></div>
 
                                 <div class="step-item {{ ($gangguan->tahapan ?? 2) > 3 ? 'done' : (($gangguan->tahapan ?? 2) == 3 ? 'active' : '') }}"
                                      onclick="pickStep(3)">
@@ -448,7 +468,7 @@
                         </div>
                     </div>
 
-                    <!-- ✅ FOTO DOKUMENTASI UPLOAD -->
+                    <!-- FOTO DOKUMENTASI UPLOAD -->
                     <div class="card">
                         <div class="card-header">
                             <div class="card-bar"></div>
@@ -618,13 +638,6 @@
                 {{-- /left-col --}}
 
                 <!-- ── KOLOM KANAN ── -->
-                {{--
-                    ✅ right-col position:fixed di top:84px right:28px, sehingga
-                    panel LANGSUNG diam sejak halaman dimuat, tidak ikut scroll
-                    sedikit pun (berbeda dari position:sticky sebelumnya).
-                    Info-card berisi 4 field: No Tiket, Lokasi, Waktu Kejadian,
-                    Catatan Perbaikan — semua bisa diedit.
-                --}}
                 <div class="right-col">
                     <div class="info-card">
                         <div class="info-card-title">
@@ -632,16 +645,14 @@
                             Ringkasan Insiden
                         </div>
 
-                        {{-- ✅ No Tiket — bisa diedit, konsisten dengan kolom no_tiket di halaman Riwayat --}}
                         <div class="info-field">
-                        <div class="info-field-label">No Tiket</div>
-                        <input class="info-field-input" type="text"
-                            name="no_tiket"
-                            value="{{ $gangguan->no_tiket ?? '' }}"
-                            placeholder="Contoh: FLT-20260614-001">
-                    </div>
+                            <div class="info-field-label">No Tiket</div>
+                            <input class="info-field-input" type="text"
+                                name="no_tiket"
+                                value="{{ $gangguan->no_tiket ?? '' }}"
+                                placeholder="Contoh: FLT-20260614-001">
+                        </div>
 
-                        {{-- ✅ Lokasi — bisa diedit --}}
                         <div class="info-field">
                             <div class="info-field-label">Lokasi / Gardu Induk</div>
                             <input class="info-field-input" type="text"
@@ -650,7 +661,6 @@
                                    placeholder="Contoh: UP3 MEDAN UTARA">
                         </div>
 
-                        {{-- ✅ Waktu Kejadian — bisa diedit --}}
                         <div class="info-field">
                             <div class="info-field-label">Waktu Mulai Kejadian</div>
                             <input class="info-field-input" type="datetime-local"
@@ -658,33 +668,32 @@
                                    value="{{ $gangguan->waktu_kejadian ? \Carbon\Carbon::parse($gangguan->waktu_kejadian)->format('Y-m-d\TH:i') : '' }}">
                         </div>
 
-                        {{-- ✅ Catatan Perbaikan — bisa diedit --}}
-<div class="info-field">
-    <div class="info-field-label">Catatan Perbaikan</div>
-    <textarea
-        name="catatan_perbaikan"
-        rows="3"
-        placeholder="Masukkan catatan perbaikan..."
-        style="
-            width:100%;
-            background:rgba(255,255,255,.12);
-            border:1px solid rgba(255,255,255,.2);
-            border-radius:8px;
-            padding:8px 12px;
-            font-family:'Poppins',sans-serif;
-            font-size:13px;
-            font-weight:500;
-            color:#fff;
-            outline:none;
-            resize:vertical;
-            min-height:80px;
-            line-height:1.6;
-            transition:background 0.2s;
-        "
-        onfocus="this.style.background='rgba(255,255,255,.25)';this.style.borderColor='rgba(255,255,255,.5)'"
-        onblur="this.style.background='rgba(255,255,255,.12)';this.style.borderColor='rgba(255,255,255,.2)'"
-    >{{ old('catatan_perbaikan', $gangguan->catatan_perbaikan) }}</textarea>
-</div>
+                        <div class="info-field">
+                            <div class="info-field-label">Catatan Perbaikan</div>
+                            <textarea
+                                name="catatan_perbaikan"
+                                rows="3"
+                                placeholder="Masukkan catatan perbaikan..."
+                                style="
+                                    width:100%;
+                                    background:rgba(255,255,255,.12);
+                                    border:1px solid rgba(255,255,255,.2);
+                                    border-radius:8px;
+                                    padding:8px 12px;
+                                    font-family:'Poppins',sans-serif;
+                                    font-size:13px;
+                                    font-weight:500;
+                                    color:#fff;
+                                    outline:none;
+                                    resize:vertical;
+                                    min-height:80px;
+                                    line-height:1.6;
+                                    transition:background 0.2s;
+                                "
+                                onfocus="this.style.background='rgba(255,255,255,.25)';this.style.borderColor='rgba(255,255,255,.5)'"
+                                onblur="this.style.background='rgba(255,255,255,.12)';this.style.borderColor='rgba(255,255,255,.2)'"
+                            >{{ old('catatan_perbaikan', $gangguan->catatan_perbaikan) }}</textarea>
+                        </div>
                     </div>
                 </div>
                 {{-- /right-col --}}
@@ -711,23 +720,19 @@
 <script>
     let entryCount = {{ $gangguan->logs->count() ?: 1 }};
 
-    /* ✅ Preview foto sebelum upload */
     function previewFoto(input, dropzoneId) {
         const dz = document.getElementById(dropzoneId);
         if (!input.files || !input.files[0]) return;
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            // Bersihkan konten lama
             dz.querySelectorAll('svg, span, .foto-existing, .foto-badge-upload').forEach(el => el.remove());
 
-            // Tambahkan preview
             const img = document.createElement('img');
             img.src = e.target.result;
             img.className = 'foto-preview';
             dz.insertBefore(img, dz.querySelector('input'));
 
-            // Overlay hover
             let overlay = dz.querySelector('.foto-preview-overlay');
             if (!overlay) {
                 overlay = document.createElement('div');
