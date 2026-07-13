@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('gangguan_logs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('gangguan_id');
+            $table->date('tanggal');
+            $table->tinyInteger('tahapan')->unsigned()->default(1);
+            $table->text('deskripsi');
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
     }

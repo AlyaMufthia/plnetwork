@@ -13,7 +13,18 @@ return new class extends Migration
     {
         \Schema::create('gangguans', function (Blueprint $table) {
             $table->id();
-            $table->string('status_jaringan');
+            $table->dateTime('waktu_kejadian')->nullable();
+            $table->string('id_laporan');
+            $table->string('no_tiket');
+            $table->string('ip_address');
+            $table->string('gardu_induk');
+            $table->enum('status', ['on_progress', 'paused', 'resolved'])->default('on_progress');
+            $table->tinyInteger('tahapan')->unsigned()->default(1);
+            $table->string('jenis_gangguan')->nullable();
+            $table->enum('status_jaringan', ['UP', 'DOWN'])->default('DOWN');
+            $table->string('foto_lokasi')->nullable();
+            $table->string('foto_petugas')->nullable();
+            $table->text('catatan_perbaikan')->nullable();
             $table->timestamps();
         });
     }

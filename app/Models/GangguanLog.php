@@ -8,12 +8,7 @@ class GangguanLog extends Model
 {
     protected $table = 'gangguan_logs';
 
-    protected $fillable = [
-        'gangguan_id',
-        'tanggal',
-        'tahapan',
-        'deskripsi',
-    ];
+    protected $guarded = ['id'];
 
     public function gangguan()
     {
