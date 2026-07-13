@@ -56,27 +56,45 @@ class RiwayatController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Catatan: validasi ini disesuaikan persis dengan field yang benar-benar
+        // dikirim oleh form di riwayat-update.blade.php.
+        //  - 'status_jaringan' (bukan 'status') menampung nilai DOWN/UP dari kartu status.
+        //  - 'tahapan' sekarang 1-6 (Down, Persiapan, Mobilisasi, Eksekusi, Finalisasi, Up).
+        //    Field ini adalah tahapan TERKINI tiket (dipakai buat stepper & status kerja).
+        //  - 'logs.*.tahapan' BARU: tiap catatan log sekarang bawa tahapan-nya sendiri
+        //    (dikirim dari hidden input logs[i][tahapan] di form), diisi otomatis oleh JS
+        //    saat user klik salah satu bulatan tahapan di stepper. Kalau kosong (mis. entri
+        //    lama sebelum fitur ini ada), fallback ke tahapan tiket saat ini.
+        //  - 'logs.*.foto' baru: foto opsional per catatan log.
         $request->validate([
-            'status'              => 'required|in:on_progress,paused,resolved',
-            'tahapan'             => 'required|integer|between:1,4',
+            'status_jaringan'     => 'required|in:DOWN,UP',
+            'tahapan'             => 'required|integer|between:1,6',
             'logs'                => 'required|array|min:1',
             'logs.*.tanggal'      => 'required|date',
-            'logs.*.tahapan'      => 'required|integer|between:1,4',
             'logs.*.deskripsi'    => 'required|min:10',
-            'catatan_perbaikan'   => 'nullable|string|max:1000', 
+            'logs.*.tahapan'      => 'nullable|integer|between:1,6',
+            'logs.*.foto'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'no_tiket'            => 'nullable|string|max:100',
+            'gardu_induk'         => 'nullable|string|max:255',
+            'waktu_kejadian'      => 'nullable|date',
+            'catatan_perbaikan'   => 'nullable|string|max:1000',
             'foto_lokasi'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'foto_petugas'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $gangguan = Gangguan::findOrFail($id);
 
-        // ✅ Update status & tahapan
-        $gangguan->status  = $request->status;
-        $gangguan->tahapan = $request->tahapan;
+        // ✅ Update status jaringan (DOWN/UP) & tahapan pengerjaan tiket
+        $gangguan->status_jaringan = $request->status_jaringan;
+        $gangguan->tahapan         = $request->tahapan;
 
-        // ✅ Update ringkasan insiden (id_laporan, gardu_induk, waktu_kejadian)
-        if ($request->filled('id_laporan')) {
-            $gangguan->id_laporan = $request->id_laporan;
+        // ✅ Status kerja tiket mengikuti tahapan secara otomatis:
+        //    kalau sudah sampai tahap terakhir ("Up" = 6), tiket dianggap selesai.
+        $gangguan->status = $request->tahapan >= 6 ? 'resolved' : 'on_progress';
+
+        // ✅ Update ringkasan insiden (no_tiket, gardu_induk, waktu_kejadian)
+        if ($request->filled('no_tiket')) {
+            $gangguan->no_tiket = $request->no_tiket;
         }
         if ($request->filled('gardu_induk')) {
             $gangguan->gardu_induk = $request->gardu_induk;
@@ -108,20 +126,45 @@ class RiwayatController extends Controller
 
         $gangguan->save();
 
-        // ✅ Hapus semua log lama, replace dengan yang baru
+        // ✅ Simpan ulang semua log — foto lama dipertahankan lewat 'existing_foto'
+        //    kecuali ada upload foto baru untuk baris tersebut.
         $gangguan->logs()->delete();
 
-        foreach ($request->logs as $log) {
+        foreach ($request->logs as $i => $log) {
+            $fotoPath = $log['existing_foto'] ?? null;
+
+            if ($request->hasFile("logs.$i.foto")) {
+                if ($fotoPath && Storage::disk('public')->exists($fotoPath)) {
+                    Storage::disk('public')->delete($fotoPath);
+                }
+                $fotoPath = $request->file("logs.$i.foto")->store('foto_log', 'public');
+            }
+
+            // 🔍 DEBUG SEMENTARA — nilai persis sebelum disimpan ke DB.
+            // HAPUS baris ini setelah masalah ketemu.
+            \Log::info('DEBUG SIMPAN LOG', [
+                'index'      => $i,
+                'hasFile'    => $request->hasFile("logs.$i.foto"),
+                'fotoPath'   => $fotoPath,
+                'existing'   => $log['existing_foto'] ?? null,
+            ]);
+
             GangguanLog::create([
                 'gangguan_id' => $gangguan->id,
                 'tanggal'     => $log['tanggal'],
-                'tahapan'     => $log['tahapan'],
+                // ✅ FIX: setiap catatan sekarang bawa tahapan-nya sendiri
+                //    (dari hidden input logs[i][tahapan] yang diisi JS saat klik stepper),
+                //    bukan ditimpa tahapan tiket yang sedang aktif. Ini yang bikin
+                //    catatan "Persiapan" lama tidak lagi ikut berubah jadi "Mobilisasi"
+                //    saat tiket diupdate ke tahap berikutnya.
+                'tahapan'     => $log['tahapan'] ?? $gangguan->tahapan,
                 'deskripsi'   => $log['deskripsi'],
+                'foto'        => $fotoPath,
             ]);
         }
 
         return redirect()
-            ->route('riwayat.show', $gangguan->id)
+            ->route('riwayat.index')
             ->with('success', 'Perubahan berhasil disimpan!');
     }
 

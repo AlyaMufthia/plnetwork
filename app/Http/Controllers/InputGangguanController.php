@@ -13,7 +13,6 @@ class InputGangguanController extends Controller
     {
         $validated = $request->validate([
             'unit'         => 'required|string|max:255',
-            'status'       => 'required|in:DOWN,UP',
             'lokasi_gardu' => 'nullable|string|max:255',
             'kategori'     => 'required|string|max:50',
             'penyebab'     => 'required|string',
@@ -63,7 +62,9 @@ class InputGangguanController extends Controller
             'status'            => 'on_progress',
             'tahapan'           => 1,
             'jenis_gangguan'    => $validated['kategori'],
-            'status_jaringan'   => $validated['status'],
+            // status_jaringan (DOWN/UP) sudah tidak diisi dari form Input Gangguan ini —
+            // sekarang diatur belakangan lewat fitur Update Riwayat.
+            'status_jaringan'   => null,
             'foto_lokasi'       => null,
             'foto_petugas'      => null,
             'catatan_perbaikan' => $validated['penyebab'],

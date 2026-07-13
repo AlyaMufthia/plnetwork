@@ -8,16 +8,11 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * Menambahkan kolom 'foto' ke tabel gangguan_logs.
-     * Kolom ini dipakai untuk foto opsional per-catatan di Log Aktivitas
-     * (lihat GangguanLog::$fillable, RiwayatController::update(), dan
-     * input logs[i][foto] di riwayat-update.blade.php).
      */
     public function up(): void
     {
         Schema::table('gangguan_logs', function (Blueprint $table) {
-            $table->string('foto')->nullable()->after('deskripsi');
+             $table->string('foto')->nullable()->after('deskripsi');
         });
     }
 
@@ -27,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('gangguan_logs', function (Blueprint $table) {
-            $table->dropColumn('foto');
+             $table->dropColumn('foto');
         });
     }
 };
+

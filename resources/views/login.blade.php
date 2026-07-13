@@ -16,17 +16,51 @@
         }
 
         body{
-            background:#ffffff;
             min-height:100vh;
             overflow-y:auto;
+            position:relative;
+            background:linear-gradient(160deg, #e3ecfb 0%, #b9d0f5 55%, #85aeea 100%);
+        }
+
+        body::before{
+            content:'';
+            position:fixed;
+            top:-40px;
+            left:10%;
+            width:340px;
+            height:340px;
+            background:#ffffff;
+            border-radius:50%;
+            filter:blur(90px);
+            opacity:0.5;
+            z-index:0;
+            pointer-events:none;
+        }
+
+        body::after{
+            content:'';
+            position:fixed;
+            bottom:-80px;
+            right:-40px;
+            width:300px;
+            height:300px;
+            background:#5c8ce8;
+            border-radius:50%;
+            filter:blur(90px);
+            opacity:0.25;
+            z-index:0;
+            pointer-events:none;
         }
 
         .header{
             height:95px;
-            background:#f4f3f9;
+            background:rgba(255,255,255,0.55);
+            backdrop-filter:blur(6px);
             display:flex;
             align-items:center;
             padding:0 50px;
+            position:relative;
+            z-index:1;
         }
 
         .logo{
@@ -47,6 +81,8 @@
             justify-content:center;
             align-items:center;
             padding:20px;
+            position:relative;
+            z-index:1;
         }
 
         .card{
@@ -56,7 +92,7 @@
             border:1px solid #cfcfcf;
             border-radius:28px;
             padding:40px;
-            box-shadow:0 5px 20px rgba(0,0,0,0.05);
+            box-shadow:0 10px 34px rgba(23,58,132,0.16);
         }
 
         .profile{
@@ -216,7 +252,7 @@
                     <label>Email Pengguna</label>
                     <div class="input-wrapper">
                         <img src="{{ asset('images/email.svg') }}" class="input-icon">
-                        <input type="email" placeholder="123@gmail.com">
+                        <input type="email" placeholder="123@gmail.com" autocomplete="off">
                     </div>
                 </div>
 
@@ -224,7 +260,7 @@
                     <label>Kata Sandi</label>
                     <div class="password-wrapper">
                         <img src="{{ asset('images/password.svg') }}" class="input-icon">
-                        <input type="password" id="password" placeholder="**********">
+                        <input type="password" id="password" placeholder="**********" autocomplete="new-password">
                         <span class="eye-icon" id="togglePassword">
                             <svg id="eyeIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22.4133 11.6867C20.1667 7.53334 16.2267 5.02 11.8667 5.02C7.50667 5.02 3.56 7.53334 1.33333 11.6867L1.14667 12L1.32 12.32C3.56667 16.4733 7.50667 18.9867 11.8667 18.9867C16.2267 18.9867 20.1733 16.5067 22.4133 12.32L22.5867 12L22.4133 11.6867Z" fill="#7E7E7E"/>

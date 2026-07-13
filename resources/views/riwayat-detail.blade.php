@@ -10,7 +10,7 @@
         body{ background:#f0f2f7; display:flex; min-height:100vh; }
         .sidebar{ width:230px; min-height:100vh; background:#fff; border-right:1px solid #e5e7eb; display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:100; }
         .sidebar-logo{ height:64px; padding:0 20px; border-bottom:1px solid #e5e7eb; display:flex; align-items:center; gap:10px; }
-        .sidebar-logo img{ height:75px; }
+        .sidebar-logo img{ height:70px; }
         .sidebar-nav{ padding:16px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
         .nav-item{ display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; font-size:14px; font-weight:500; color:#6b7280; cursor:pointer; text-decoration:none; transition:all 0.2s; }
         .nav-item:hover{ background:#f3f4f6; color:#374151; }
@@ -56,9 +56,32 @@
         .timeline-dot{ position:absolute; left:-27px; top:2px; width:20px; height:20px; border-radius:50%; background:#173a84; border:3px solid #fff; box-shadow:0 0 0 2px #173a84; display:flex; align-items:center; justify-content:center; }
         .timeline-dot.active{ background:#2563eb; box-shadow:0 0 0 2px #2563eb; }
         .timeline-dot svg{ width:10px; height:10px; color:#fff; }
-        .timeline-title{ font-size:14px; font-weight:600; color:#111827; margin-bottom:8px; }
+        .timeline-title-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+        .timeline-title{ font-size:14px; font-weight:600; color:#111827; }
         .timeline-title.active{ color:#2563eb; }
         .timeline-desc{ background:#f9fafb; border:1px solid #f3f4f6; border-radius:10px; padding:12px 16px; font-size:12px; color:#6b7280; line-height:1.7; }
+
+        /* ── Icon foto kecil di sebelah judul tahap ── */
+        .timeline-photo-btn{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:24px; height:24px; border-radius:7px;
+            border:1px solid #e5e7eb; background:#f9fafb; color:#173a84;
+            cursor:pointer; flex-shrink:0; transition:all 0.2s; padding:0;
+        }
+        .timeline-photo-btn:hover{ background:#eef2ff; border-color:#173a84; }
+        .timeline-photo-btn.open{ background:#173a84; border-color:#173a84; color:#fff; }
+        .timeline-photo-btn svg{ width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; display:block; }
+
+        /* ── Foto tersembunyi, muncul saat diklik ── */
+        .timeline-photo-preview{
+            display:none; margin-top:10px; overflow:hidden;
+        }
+        .timeline-photo-preview.show{ display:block; }
+        .timeline-photo-preview img{
+            max-width:240px; width:100%; border-radius:10px;
+            border:1px solid #e5e7eb; cursor:zoom-in; display:block;
+        }
+
         .log-footer{ padding:16px 24px; border-top:1px solid #f3f4f6; display:flex; justify-content:flex-end; }
         .btn-update{ display:inline-flex; align-items:center; gap:8px; background:#173a84; color:#fff; border:none; border-radius:10px; padding:10px 22px; font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; transition:background 0.2s; }
         .btn-update:hover{ background:#122d6e; }
@@ -73,6 +96,25 @@
         .foto-badge{ position:absolute; top:10px; left:10px; background:rgba(23,58,132,0.85); color:#fff; font-size:10px; font-weight:600; padding:3px 8px; border-radius:6px; display:flex; align-items:center; gap:4px; }
         .foto-empty{ text-align:center; padding:32px 24px; background:#fff; border:1px solid #e5e7eb; border-radius:16px; color:#9ca3af; font-size:13px; }
         .page-footer{ text-align:center; padding:16px 28px; font-size:12px; color:#9ca3af; border-top:1px solid #e5e7eb; background:#fff; line-height:1.8; }
+
+        /* ── MODAL ZOOM FOTO LOG ── */
+        .foto-modal-overlay{
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,.75);
+            align-items:center; justify-content:center; z-index:300; padding:40px;
+        }
+        .foto-modal-overlay.show{ display:flex; }
+        .foto-modal-overlay img{
+            max-width:90vw; max-height:88vh; border-radius:12px;
+            box-shadow:0 20px 60px rgba(0,0,0,.5);
+        }
+        .foto-modal-close{
+            position:absolute; top:24px; right:32px;
+            width:40px; height:40px; border-radius:50%;
+            background:rgba(255,255,255,.15); border:none; color:#fff;
+            font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition:background 0.2s;
+        }
+        .foto-modal-close:hover{ background:rgba(255,255,255,.3); }
     </style>
 </head>
 <body>
@@ -133,26 +175,24 @@
     <div class="content">
 
         <!-- HEADER INFO -->
-        <div class="detail-header-card">
+        @php
+        $statusValue = strtolower($gangguan->status_jaringan ?? 'down'); // ✅ pakai status_jaringan
+        $statusLabel = $statusValue === 'up' ? 'UP' : 'DOWN';
+        $statusColor = $statusValue === 'up' ? '#16a34a' : '#dc2626';
+        $statusBg    = $statusValue === 'up' ? '#f0fdf4' : '#fef2f2';
+        $statusBd    = $statusValue === 'up' ? '#bbf7d0' : '#fecaca';
+        @endphp
+        <div class="detail-header-card" style="border-left-color:{{ $statusColor }};">
             <div class="detail-id">NO. TIKET: {{ $gangguan->no_tiket ?? '-' }}</div>
             <div class="detail-title-row">
                 <div class="detail-title">Gangguan {{ $gangguan->gardu_induk ?? '-' }}</div>
-                @php
-                    $statusLabel = ['on_progress' => 'DITANGANI', 'paused' => 'DITUNDA', 'resolved' => 'SELESAI'][$gangguan->status ?? 'on_progress'] ?? 'DITANGANI';
-                    $statusColor = ['on_progress' => '#dc2626', 'paused' => '#d97706', 'resolved' => '#16a34a'][$gangguan->status ?? 'on_progress'] ?? '#dc2626';
-                    $statusBg    = ['on_progress' => '#fef2f2', 'paused' => '#fffbeb', 'resolved' => '#f0fdf4'][$gangguan->status ?? 'on_progress'] ?? '#fef2f2';
-                    $statusBd    = ['on_progress' => '#fecaca', 'paused' => '#fde68a', 'resolved' => '#bbf7d0'][$gangguan->status ?? 'on_progress'] ?? '#fecaca';
-                @endphp
                 <span class="badge-ditangani" style="background:{{ $statusBg }};color:{{ $statusColor }};border-color:{{ $statusBd }};">
-                    @if(($gangguan->status ?? 'on_progress') === 'resolved')
-                        {{-- Ikon centang untuk status SELESAI --}}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    @elseif(($gangguan->status ?? 'on_progress') === 'paused')
-                        {{-- Ikon jeda untuk status DITUNDA --}}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                    @if($statusValue === 'up')
+                        {{-- Ikon centang untuk status UP --}}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     @else
-                        {{-- Ikon segitiga peringatan untuk status DITANGANI --}}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        {{-- Ikon seru untuk status DOWN --}}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg>
                     @endif
                     {{ $statusLabel }}
                 </span>
@@ -214,12 +254,34 @@
                                     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>
                                 @endif
                             </div>
-                            <div class="timeline-title {{ $loop->last ? 'active' : '' }}">
-                                {{ \Carbon\Carbon::parse($log->tanggal)->translatedFormat('d F Y') }}
-                                &mdash;
-                                {{ ['1' => 'Persiapan', '2' => 'Mobilisasi', '3' => 'Eksekusi', '4' => 'Finalisasi'][$log->tahapan] ?? 'Tahapan ' . $log->tahapan }}
+
+                            <div class="timeline-title-row">
+                                <div class="timeline-title {{ $loop->last ? 'active' : '' }}">
+                                    {{ \Carbon\Carbon::parse($log->tanggal)->translatedFormat('d F Y') }}
+                                    &mdash;
+                                    {{ [1=>'Down', 2=>'Persiapan', 3=>'Mobilisasi', 4=>'Eksekusi', 5=>'Finalisasi', 6=>'Up'][(int)$log->tahapan] ?? 'Tahapan ' . $log->tahapan }}
+                                </div>
+
+                                {{-- ✅ Icon foto: cuma muncul kalau catatan ini punya foto --}}
+                                @if($log->foto)
+                                <button type="button" class="timeline-photo-btn"
+                                        aria-label="Lihat foto kegiatan"
+                                        onclick="toggleTimelinePhoto(this)">
+                                    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                </button>
+                                @endif
                             </div>
+
                             <div class="timeline-desc">{{ $log->deskripsi }}</div>
+
+                            {{-- ✅ Foto tersembunyi, cuma tampil saat icon di atas diklik --}}
+                            @if($log->foto)
+                            <div class="timeline-photo-preview">
+                                <img src="{{ asset('storage/' . $log->foto) }}"
+                                     alt="Foto kegiatan tahap {{ [1=>'Down', 2=>'Persiapan', 3=>'Mobilisasi', 4=>'Eksekusi', 5=>'Finalisasi', 6=>'Up'][(int)$log->tahapan] ?? '' }}"
+                                     onclick="openFotoModal(this.src)">
+                            </div>
+                            @endif
                         </div>
                     @empty
                         <div style="text-align:center; padding:32px 24px; color:#9ca3af; font-size:13px;">
@@ -300,6 +362,12 @@
     </div>
 </div>
 
+<!-- MODAL ZOOM FOTO LOG -->
+<div class="foto-modal-overlay" id="fotoModalOverlay" onclick="closeFotoModal(event)">
+    <button type="button" class="foto-modal-close" onclick="closeFotoModal(event)">&times;</button>
+    <img id="fotoModalImg" src="" alt="Preview foto log" onclick="event.stopPropagation()">
+</div>
+
 <script>
     function updateClock() {
         const now = new Date();
@@ -311,6 +379,36 @@
     }
     updateClock();
     setInterval(updateClock, 1000);
+
+    // ✅ Toggle foto tersembunyi: klik icon kamera → foto muncul di bawah deskripsi.
+    //    Klik lagi (atau buka icon lain) → foto disembunyikan lagi.
+    function toggleTimelinePhoto(btn) {
+        const item = btn.closest('.timeline-item');
+        const preview = item.querySelector('.timeline-photo-preview');
+        const isOpen = preview.classList.contains('show');
+
+        // tutup semua preview lain yang lagi kebuka
+        document.querySelectorAll('.timeline-photo-preview.show').forEach(p => {
+            if (p !== preview) p.classList.remove('show');
+        });
+        document.querySelectorAll('.timeline-photo-btn.open').forEach(b => {
+            if (b !== btn) b.classList.remove('open');
+        });
+
+        preview.classList.toggle('show', !isOpen);
+        btn.classList.toggle('open', !isOpen);
+    }
+
+    function openFotoModal(src) {
+        if (!src) return;
+        document.getElementById('fotoModalImg').src = src;
+        document.getElementById('fotoModalOverlay').classList.add('show');
+    }
+
+    function closeFotoModal(e) {
+        if (e) e.stopPropagation();
+        document.getElementById('fotoModalOverlay').classList.remove('show');
+    }
 </script>
 
 </body>

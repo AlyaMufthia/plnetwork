@@ -11,7 +11,7 @@
 
         body{ background:#f0f2f7; display:flex; min-height:100vh; }
 
-        /* ── SIDEBAR ── */
+        /* ── SIDEBAR (disamakan persis dengan riwayat.blade.php) ── */
         .sidebar{
             width:230px; min-height:100vh; background:#fff;
             border-right:1px solid #e5e7eb; display:flex;
@@ -21,7 +21,8 @@
             height:64px; padding:0 20px; border-bottom:1px solid #e5e7eb;
             display:flex; align-items:center; gap:10px;
         }
-        .sidebar-logo img{ height:75px; }
+        .sidebar-logo img{ height:70px; }
+        .sidebar-logo span{ font-size:15px; font-weight:700; color:#173a84; }
         .sidebar-nav{ padding:16px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
         .nav-item{
             display:flex; align-items:center; gap:12px; padding:10px 14px;
@@ -118,8 +119,6 @@
             display:flex; align-items:center; justify-content:center;
             transition:background 0.2s;
         }
-        /* ✅ tambahkan `color` di samping `stroke` supaya fill="currentColor"
-           (titik pada icon seru) ikut berubah warna, tidak cuma garisnya */
         .sc-icon-wrap svg{ width:26px; height:26px; stroke:#9ca3af; color:#9ca3af; fill:none; stroke-width:1.8; transition:stroke 0.2s, color 0.2s; }
         .sc-name{ font-size:15px; font-weight:700; color:#374151; transition:color 0.2s; }
         .sc-desc{ font-size:11.5px; color:#9ca3af; text-align:center; line-height:1.4; }
@@ -133,32 +132,23 @@
         .sc-check svg{ width:11px; height:11px; stroke:#fff; fill:none; stroke-width:3; }
         .status-card.selected .sc-check{ display:flex; }
 
-        /* ✅ FIX BUG: sebelumnya aturan warna per-status (di bawah) menang atas
-           aturan .selected di atas karena spesifisitasnya sama tapi ditulis
-           belakangan → icon jadi ketutup warna aslinya saat kartu dipilih.
-           Solusinya: tulis aturan .selected DIGABUNG dengan [data-status="..."]
-           supaya spesifisitasnya lebih tinggi dan pasti menang jadi putih. */
+        .status-card[data-status="DOWN"]:hover{ border-color:#dc2626; background:#fef2f2; }
+        .status-card[data-status="DOWN"].selected{ border-color:#dc2626; background:#fef2f2; }
+        .status-card[data-status="DOWN"].selected .sc-icon-wrap{ background:#dc2626; }
+        .status-card[data-status="DOWN"].selected .sc-name{ color:#dc2626; }
+        .status-card[data-status="DOWN"].selected .sc-check{ background:#dc2626; }
+        .status-card[data-status="DOWN"] .sc-icon-wrap{ background:#fee2e2; }
+        .status-card[data-status="DOWN"] .sc-icon-wrap svg{ stroke:#dc2626; color:#dc2626; }
+        .status-card[data-status="DOWN"].selected .sc-icon-wrap svg{ stroke:#fff; color:#fff; }
 
-        /* Warna per-status, persis gaya kartu Status Gangguan (DOWN=merah, UP=hijau) */
-        .status-card[data-status="down"]:hover{ border-color:#dc2626; background:#fef2f2; }
-        .status-card[data-status="down"].selected{ border-color:#dc2626; background:#fef2f2; }
-        .status-card[data-status="down"].selected .sc-icon-wrap{ background:#dc2626; }
-        .status-card[data-status="down"].selected .sc-name{ color:#dc2626; }
-        .status-card[data-status="down"].selected .sc-check{ background:#dc2626; }
-        .status-card[data-status="down"] .sc-icon-wrap{ background:#fee2e2; }
-        .status-card[data-status="down"] .sc-icon-wrap svg{ stroke:#dc2626; color:#dc2626; }
-        /* ✅ ini yang bikin icon putih terlihat saat DOWN dipilih (menang atas baris di atas) */
-        .status-card[data-status="down"].selected .sc-icon-wrap svg{ stroke:#fff; color:#fff; }
-
-        .status-card[data-status="up"]:hover{ border-color:#10b981; background:#ecfdf5; }
-        .status-card[data-status="up"].selected{ border-color:#10b981; background:#ecfdf5; }
-        .status-card[data-status="up"].selected .sc-icon-wrap{ background:#10b981; }
-        .status-card[data-status="up"].selected .sc-name{ color:#10b981; }
-        .status-card[data-status="up"].selected .sc-check{ background:#10b981; }
-        .status-card[data-status="up"] .sc-icon-wrap{ background:#f3f4f6; }
-        .status-card[data-status="up"] .sc-icon-wrap svg{ stroke:#10b981; color:#10b981; }
-        /* ✅ ini yang bikin icon putih terlihat saat UP dipilih (menang atas baris di atas) */
-        .status-card[data-status="up"].selected .sc-icon-wrap svg{ stroke:#fff; color:#fff; }
+        .status-card[data-status="UP"]:hover{ border-color:#10b981; background:#ecfdf5; }
+        .status-card[data-status="UP"].selected{ border-color:#10b981; background:#ecfdf5; }
+        .status-card[data-status="UP"].selected .sc-icon-wrap{ background:#10b981; }
+        .status-card[data-status="UP"].selected .sc-name{ color:#10b981; }
+        .status-card[data-status="UP"].selected .sc-check{ background:#10b981; }
+        .status-card[data-status="UP"] .sc-icon-wrap{ background:#f3f4f6; }
+        .status-card[data-status="UP"] .sc-icon-wrap svg{ stroke:#10b981; color:#10b981; }
+        .status-card[data-status="UP"].selected .sc-icon-wrap svg{ stroke:#fff; color:#fff; }
 
         /* ── STEP TRACKER ── */
         .step-section-label{
@@ -171,15 +161,15 @@
             flex:1; cursor:pointer;
         }
         .step-dot{
-            width:38px; height:38px; border-radius:50%;
+            width:34px; height:34px; border-radius:50%;
             border:2px solid #e5e7eb; background:#f3f4f6;
             display:flex; align-items:center; justify-content:center;
-            font-size:13px; font-weight:700; color:#9ca3af;
+            font-size:12px; font-weight:700; color:#9ca3af;
             transition:all 0.2s; position:relative; z-index:1;
         }
         .step-item.done .step-dot{ background:#10b981; border-color:#10b981; color:#fff; }
         .step-item.active .step-dot{ background:#173a84; border-color:#173a84; color:#fff; }
-        .step-label{ font-size:11px; color:#9ca3af; font-weight:500; text-align:center; }
+        .step-label{ font-size:10.5px; color:#9ca3af; font-weight:500; text-align:center; }
         .step-item.active .step-label{ color:#173a84; font-weight:700; }
         .step-item.done  .step-label{ color:#10b981; }
         .step-connector{ flex:1; padding-top:18px; }
@@ -209,6 +199,44 @@
             transition:border-color 0.2s, background 0.2s;
         }
         .input-text:focus{ border-color:#173a84; background:#fff; }
+
+        /* ── LOG FOTO (kecil, kayak tombol Hapus) ── */
+        .log-foto-row{
+            display:flex; align-items:center; gap:14px;
+        }
+        .log-foto-btn{
+            display:inline-flex; align-items:center; gap:6px;
+            background:none; border:none; color:#173a84; cursor:pointer;
+            font-size:12px; font-weight:600; padding:0; font-family:'Poppins',sans-serif;
+        }
+        .log-foto-btn:hover{ color:#122d6e; text-decoration:underline; }
+        .log-foto-btn svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
+        .log-foto-view-btn{
+            display:inline-flex; align-items:center; gap:6px;
+            background:none; border:none; color:#6b7280; cursor:pointer;
+            font-size:12px; font-weight:600; padding:0; font-family:'Poppins',sans-serif;
+        }
+        .log-foto-view-btn:hover{ color:#173a84; text-decoration:underline; }
+        .log-foto-view-btn svg{ width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; }
+
+        /* ── MODAL PREVIEW FOTO LOG ── */
+        .foto-modal-overlay{
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,.75);
+            align-items:center; justify-content:center; z-index:300; padding:40px;
+        }
+        .foto-modal-overlay.show{ display:flex; }
+        .foto-modal-overlay img{
+            max-width:90vw; max-height:88vh; border-radius:12px;
+            box-shadow:0 20px 60px rgba(0,0,0,.5);
+        }
+        .foto-modal-close{
+            position:absolute; top:24px; right:32px;
+            width:40px; height:40px; border-radius:50%;
+            background:rgba(255,255,255,.15); border:none; color:#fff;
+            font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition:background 0.2s;
+        }
+        .foto-modal-close:hover{ background:rgba(255,255,255,.3); }
 
         /* ── ACTION BAR ── */
         .action-bar{
@@ -332,11 +360,28 @@
         }
         .toast.show{ opacity:1; transform:translateY(0); }
         .toast svg{ width:18px; height:18px; stroke:#6ee7b7; fill:none; stroke-width:2; }
+
+        /* ── LOG ENTRY: highlight sesaat setelah dituju dari stepper ── */
+        .log-entry.just-linked{
+            animation:justLinkedPulse 1.2s ease;
+            border-radius:12px;
+        }
+        @keyframes justLinkedPulse{
+            0%   { background:#eef2ff; }
+            100% { background:transparent; }
+        }
+        .log-stage-tag{
+            display:inline-flex; align-items:center; gap:4px;
+            background:#eef2ff; color:#173a84;
+            font-size:10.5px; font-weight:700;
+            padding:2px 8px; border-radius:6px;
+            margin-left:8px; letter-spacing:.02em;
+        }
     </style>
 </head>
 <body>
 
-<!-- ── SIDEBAR ── -->
+<!-- ── SIDEBAR (disamakan persis dengan riwayat.blade.php) ── -->
 <aside class="sidebar">
     <div class="sidebar-logo">
         <img src="{{ asset('images/logo-plnetwork.png') }}" alt="PLNetwork">
@@ -402,8 +447,11 @@
                 @csrf
                 @method('PUT')
 
-                <input type="hidden" name="status"  id="inputStatus"  value="{{ $gangguan->status ?? 'down' }}">
-                <input type="hidden" name="tahapan" id="inputTahapan" value="{{ $gangguan->tahapan ?? 2 }}">
+                {{-- Field ini menampung status JARINGAN (DOWN/UP), bukan status kerja tiket.
+                     Namanya sekarang "status_jaringan" supaya cocok dengan kolom database
+                     dan validasi di controller. --}}
+                <input type="hidden" name="status_jaringan" id="inputStatus" value="{{ strtoupper($gangguan->status_jaringan ?? 'DOWN') }}">
+                <input type="hidden" name="tahapan" id="inputTahapan" value="{{ $gangguan->tahapan ?? 1 }}">
 
                 <!-- ── KOLOM KIRI ── -->
                 <div class="left-col">
@@ -418,12 +466,11 @@
 
                             <div class="field-label" style="margin-bottom:12px;">Status Saat Ini</div>
                             <div class="status-grid">
-                                <div class="status-card {{ ($gangguan->status ?? 'down') === 'down' ? 'selected' : '' }}"
-                                     data-status="down"
-                                     onclick="pickStatus(this,'down')">
+                                <div class="status-card {{ strtoupper($gangguan->status_jaringan ?? 'DOWN') === 'DOWN' ? 'selected' : '' }}"
+                                     data-status="DOWN"
+                                     onclick="pickStatus(this,'DOWN')">
                                     <div class="sc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
                                     <div class="sc-icon-wrap">
-                                        <!-- ✅ icon diganti: tanda seru bulat simpel, sama seperti gambar 2 -->
                                         <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                             <line x1="12" y1="7" x2="12" y2="13"/>
                                             <circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/>
@@ -432,9 +479,9 @@
                                     <div class="sc-name">DOWN</div>
                                     <div class="sc-desc">Layanan terputus total (Critical)</div>
                                 </div>
-                                <div class="status-card {{ ($gangguan->status ?? '') === 'up' ? 'selected' : '' }}"
-                                     data-status="up"
-                                     onclick="pickStatus(this,'up')">
+                                <div class="status-card {{ strtoupper($gangguan->status_jaringan ?? '') === 'UP' ? 'selected' : '' }}"
+                                     data-status="UP"
+                                     onclick="pickStatus(this,'UP')">
                                     <div class="sc-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
                                     <div class="sc-icon-wrap">
                                         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -444,34 +491,20 @@
                                 </div>
                             </div>
 
-                            <div class="step-section-label">TAHAPAN PENGERJAAN</div>
+                            <div class="step-section-label">TAHAPAN PENGERJAAN &mdash; klik salah satu untuk menulis catatan pada tahap itu</div>
+                            @php $tahapanNow = $gangguan->tahapan ?? 1; @endphp
                             <div class="step-row" id="stepRow">
-                                <div class="step-item {{ ($gangguan->tahapan ?? 2) > 1 ? 'done' : (($gangguan->tahapan ?? 2) == 1 ? 'active' : '') }}"
-                                     onclick="pickStep(1)">
-                                    <div class="step-dot">{{ ($gangguan->tahapan ?? 2) > 1 ? '✓' : '1' }}</div>
-                                    <div class="step-label">Persiapan</div>
-                                </div>
-                                <div class="step-connector"><div class="step-line {{ ($gangguan->tahapan ?? 2) > 1 ? 'done' : '' }}" id="sl1"></div></div>
-
-                                <div class="step-item {{ ($gangguan->tahapan ?? 2) > 2 ? 'done' : (($gangguan->tahapan ?? 2) == 2 ? 'active' : '') }}"
-                                     onclick="pickStep(2)">
-                                    <div class="step-dot">{{ ($gangguan->tahapan ?? 2) > 2 ? '✓' : '2' }}</div>
-                                    <div class="step-label">Mobilisasi</div>
-                                </div>
-                                <div class="step-connector"><div class="step-line {{ ($gangguan->tahapan ?? 2) > 3 ? 'done' : '' }}" id="sl2"></div></div>
-
-                                <div class="step-item {{ ($gangguan->tahapan ?? 2) > 3 ? 'done' : (($gangguan->tahapan ?? 2) == 3 ? 'active' : '') }}"
-                                     onclick="pickStep(3)">
-                                    <div class="step-dot">{{ ($gangguan->tahapan ?? 2) > 3 ? '✓' : '3' }}</div>
-                                    <div class="step-label">Eksekusi</div>
-                                </div>
-                                <div class="step-connector"><div class="step-line {{ ($gangguan->tahapan ?? 2) > 3 ? 'done' : '' }}" id="sl3"></div></div>
-
-                                <div class="step-item {{ ($gangguan->tahapan ?? 2) == 4 ? 'active' : '' }}"
-                                     onclick="pickStep(4)">
-                                    <div class="step-dot">4</div>
-                                    <div class="step-label">Finalisasi</div>
-                                </div>
+                                @foreach(['Down','Persiapan','Mobilisasi','Eksekusi','Finalisasi','Up'] as $idx => $label)
+                                    @php $n = $idx + 1; @endphp
+                                    <div class="step-item {{ $tahapanNow > $n ? 'done' : ($tahapanNow == $n ? 'active' : '') }}"
+                                         onclick="pickStep({{ $n }})">
+                                        <div class="step-dot">{{ $tahapanNow > $n ? '✓' : $n }}</div>
+                                        <div class="step-label">{{ $label }}</div>
+                                    </div>
+                                    @if(!$loop->last)
+                                        <div class="step-connector"><div class="step-line {{ $tahapanNow > $n ? 'done' : '' }}" id="sl{{ $n }}"></div></div>
+                                    @endif
+                                @endforeach
                             </div>
 
                         </div>
@@ -560,63 +593,97 @@
                                 </div>
                             @endif
 
+                            @php
+                                $tahapanLabelsPhp = ['','Down','Persiapan','Mobilisasi','Eksekusi','Finalisasi','Up'];
+                            @endphp
+
                             @forelse($gangguan->logs as $i => $log)
-                            <div class="log-entry" id="entry-{{ $i }}">
+                            <div class="log-entry" id="entry-{{ $i }}" data-stage="{{ $log->tahapan ?? $tahapanNow }}">
                                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                                    <div style="font-size:12px;font-weight:600;color:#173a84;">Catatan #{{ $i + 1 }}</div>
+                                    <div style="font-size:12px;font-weight:600;color:#173a84;">
+                                        Catatan #{{ $i + 1 }}
+                                        <span class="log-stage-tag" id="logstagelabel-{{ $i }}">
+                                            {{ $tahapanLabelsPhp[$log->tahapan ?? $tahapanNow] ?? '' }}
+                                        </span>
+                                    </div>
                                     <button type="button" onclick="removeEntry({{ $i }})"
                                         style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                                         Hapus
                                     </button>
                                 </div>
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                                    <div>
-                                        <div class="field-label">Tanggal</div>
-                                        <input type="date" name="logs[{{ $i }}][tanggal]"
-                                               value="{{ $log->tanggal }}" class="input-text">
-                                    </div>
-                                    <div>
-                                        <div class="field-label">Tahapan</div>
-                                        <select name="logs[{{ $i }}][tahapan]" class="input-text">
-                                            @foreach(['1'=>'Persiapan','2'=>'Mobilisasi','3'=>'Eksekusi','4'=>'Finalisasi'] as $val => $label)
-                                                <option value="{{ $val }}" {{ $log->tahapan == $val ? 'selected' : '' }}>{{ $label }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+
+                                <div style="margin-bottom:12px;">
+                                    <div class="field-label">Tanggal</div>
+                                    <input type="date" name="logs[{{ $i }}][tanggal]"
+                                           value="{{ $log->tanggal }}" class="input-text" style="max-width:260px;">
                                 </div>
+
                                 <div>
-                                    <div class="field-label">Deskripsi Kegiatan <span class="req">*</span></div>
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                        <div class="field-label" style="margin-bottom:0;">Deskripsi Kegiatan <span class="req">*</span></div>
+                                        <div class="log-foto-row" id="logfotorow-{{ $i }}">
+                                            <button type="button" class="log-foto-btn" onclick="document.getElementById('logfotoinput-{{ $i }}').click()">
+                                                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                                {{ $log->foto ? 'Ganti Foto' : 'Tambah Foto' }}
+                                            </button>
+                                            <button type="button" class="log-foto-view-btn" id="logfotoview-{{ $i }}"
+                                                    style="{{ $log->foto ? '' : 'display:none' }}"
+                                                    onclick="openFotoModal('{{ $log->foto ? asset('storage/'.$log->foto) : '' }}')">
+                                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                Lihat Foto
+                                            </button>
+                                            <input type="file" id="logfotoinput-{{ $i }}" name="logs[{{ $i }}][foto]"
+                                                   accept="image/*" style="display:none" onchange="previewLogFoto(this, {{ $i }})">
+                                            <input type="hidden" name="logs[{{ $i }}][existing_foto]" value="{{ $log->foto }}">
+                                            {{-- ✅ Tahapan milik catatan ini sendiri, diisi otomatis saat klik stepper --}}
+                                            <input type="hidden" name="logs[{{ $i }}][tahapan]" id="logtahapan-{{ $i }}" value="{{ $log->tahapan ?? $tahapanNow }}">
+                                        </div>
+                                    </div>
                                     <textarea name="logs[{{ $i }}][deskripsi]"
                                         placeholder="Tuliskan temuan lapangan dan langkah yang sudah dilakukan...">{{ $log->deskripsi }}</textarea>
                                 </div>
+
                                 <hr style="border:none;border-top:1px dashed #e5e7eb;margin:16px 0 0;">
                             </div>
                             @empty
-                            <div class="log-entry" id="entry-0">
+                            <div class="log-entry" id="entry-0" data-stage="{{ $tahapanNow }}">
                                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                                    <div style="font-size:12px;font-weight:600;color:#173a84;">Catatan #1</div>
-                                </div>
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                                    <div>
-                                        <div class="field-label">Tanggal</div>
-                                        <input type="date" name="logs[0][tanggal]" value="{{ date('Y-m-d') }}" class="input-text">
-                                    </div>
-                                    <div>
-                                        <div class="field-label">Tahapan</div>
-                                        <select name="logs[0][tahapan]" class="input-text">
-                                            <option value="1">Persiapan</option>
-                                            <option value="2" selected>Mobilisasi</option>
-                                            <option value="3">Eksekusi</option>
-                                            <option value="4">Finalisasi</option>
-                                        </select>
+                                    <div style="font-size:12px;font-weight:600;color:#173a84;">
+                                        Catatan #1
+                                        <span class="log-stage-tag" id="logstagelabel-0">
+                                            {{ $tahapanLabelsPhp[$tahapanNow] ?? '' }}
+                                        </span>
                                     </div>
                                 </div>
+
+                                <div style="margin-bottom:12px;">
+                                    <div class="field-label">Tanggal</div>
+                                    <input type="date" name="logs[0][tanggal]" value="{{ date('Y-m-d') }}" class="input-text" style="max-width:260px;">
+                                </div>
+
                                 <div>
-                                    <div class="field-label">Deskripsi Kegiatan <span class="req">*</span></div>
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                        <div class="field-label" style="margin-bottom:0;">Deskripsi Kegiatan <span class="req">*</span></div>
+                                        <div class="log-foto-row" id="logfotorow-0">
+                                            <button type="button" class="log-foto-btn" onclick="document.getElementById('logfotoinput-0').click()">
+                                                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                                Tambah Foto
+                                            </button>
+                                            <button type="button" class="log-foto-view-btn" id="logfotoview-0" style="display:none" onclick="openFotoModal('')">
+                                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                Lihat Foto
+                                            </button>
+                                            <input type="file" id="logfotoinput-0" name="logs[0][foto]"
+                                                   accept="image/*" style="display:none" onchange="previewLogFoto(this, 0)">
+                                            <input type="hidden" name="logs[0][existing_foto]" value="">
+                                            <input type="hidden" name="logs[0][tahapan]" id="logtahapan-0" value="{{ $tahapanNow }}">
+                                        </div>
+                                    </div>
                                     <textarea name="logs[0][deskripsi]"
                                         placeholder="Tuliskan temuan lapangan dan langkah yang sudah dilakukan..."></textarea>
                                 </div>
+
                                 <hr style="border:none;border-top:1px dashed #e5e7eb;margin:16px 0 0;">
                             </div>
                             @endforelse
@@ -720,6 +787,12 @@
     </div>
 </div>
 
+<!-- MODAL PREVIEW FOTO LOG -->
+<div class="foto-modal-overlay" id="fotoModalOverlay" onclick="closeFotoModal(event)">
+    <button type="button" class="foto-modal-close" onclick="closeFotoModal(event)">&times;</button>
+    <img id="fotoModalImg" src="" alt="Preview foto log" onclick="event.stopPropagation()">
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
     <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -728,6 +801,10 @@
 
 <script>
     let entryCount = {{ $gangguan->logs->count() ?: 1 }};
+
+    // Label tahapan dipakai bareng oleh addEntry(), pickStep(), dan goToStageNote()
+    const tahapanLabels = ['', 'Down', 'Persiapan', 'Mobilisasi', 'Eksekusi', 'Finalisasi', 'Up'];
+    window.currentTahapan = {{ $tahapanNow }};
 
     function previewFoto(input, dropzoneId) {
         const dz = document.getElementById(dropzoneId);
@@ -755,13 +832,41 @@
         reader.readAsDataURL(input.files[0]);
     }
 
+    function previewLogFoto(input, i) {
+        if (!input.files || !input.files[0]) return;
+        const addBtn = document.getElementById('logfotorow-' + i).querySelector('.log-foto-btn');
+        const viewBtn = document.getElementById('logfotoview-' + i);
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            viewBtn.style.display = 'inline-flex';
+            viewBtn.onclick = function () { openFotoModal(e.target.result); };
+            addBtn.lastChild.textContent = ' Ganti Foto';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function openFotoModal(src) {
+        if (!src) return;
+        document.getElementById('fotoModalImg').src = src;
+        document.getElementById('fotoModalOverlay').classList.add('show');
+    }
+
+    function closeFotoModal(e) {
+        if (e) e.stopPropagation();
+        document.getElementById('fotoModalOverlay').classList.remove('show');
+    }
+
     function addEntry() {
         const i = entryCount;
         const today = new Date().toISOString().split('T')[0];
         const html = `
-        <div class="log-entry" id="entry-${i}">
+        <div class="log-entry" id="entry-${i}" data-stage="${window.currentTahapan}">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:600;color:#173a84;">Catatan #${i + 1}</div>
+                <div style="font-size:12px;font-weight:600;color:#173a84;">
+                    Catatan #${i + 1}
+                    <span class="log-stage-tag" id="logstagelabel-${i}">${tahapanLabels[window.currentTahapan]}</span>
+                </div>
                 <button type="button" onclick="removeEntry(${i})"
                     style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
@@ -770,23 +875,29 @@
                     Hapus
                 </button>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-                <div>
-                    <div class="field-label">Tanggal</div>
-                    <input type="date" name="logs[${i}][tanggal]" value="${today}" class="input-text">
-                </div>
-                <div>
-                    <div class="field-label">Tahapan</div>
-                    <select name="logs[${i}][tahapan]" class="input-text">
-                        <option value="1">Persiapan</option>
-                        <option value="2">Mobilisasi</option>
-                        <option value="3">Eksekusi</option>
-                        <option value="4">Finalisasi</option>
-                    </select>
-                </div>
+
+            <div style="margin-bottom:12px;">
+                <div class="field-label">Tanggal</div>
+                <input type="date" name="logs[${i}][tanggal]" value="${today}" class="input-text" style="max-width:260px;">
             </div>
+
             <div>
-                <div class="field-label">Deskripsi Kegiatan <span class="req">*</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div class="field-label" style="margin-bottom:0;">Deskripsi Kegiatan <span class="req">*</span></div>
+                    <div class="log-foto-row" id="logfotorow-${i}">
+                        <button type="button" class="log-foto-btn" onclick="document.getElementById('logfotoinput-${i}').click()">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" style="width:15px;height:15px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            Tambah Foto
+                        </button>
+                        <button type="button" class="log-foto-view-btn" id="logfotoview-${i}" style="display:none" onclick="openFotoModal('')">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" style="width:15px;height:15px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Lihat Foto
+                        </button>
+                        <input type="file" id="logfotoinput-${i}" name="logs[${i}][foto]" accept="image/*" style="display:none" onchange="previewLogFoto(this, ${i})">
+                        <input type="hidden" name="logs[${i}][existing_foto]" value="">
+                        <input type="hidden" name="logs[${i}][tahapan]" id="logtahapan-${i}" value="${window.currentTahapan}">
+                    </div>
+                </div>
                 <textarea name="logs[${i}][deskripsi]"
                     placeholder="Tuliskan temuan lapangan dan langkah yang sudah dilakukan..."
                     style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:13px 15px;font-family:'Poppins',sans-serif;font-size:13px;color:#374151;background:#f9fafb;resize:vertical;min-height:100px;outline:none;line-height:1.7;"></textarea>
@@ -811,20 +922,69 @@
         document.getElementById('inputStatus').value = value;
     }
 
+    // ✅ Klik salah satu bulatan tahap di stepper:
+    //    1) update tampilan stepper (done/active) seperti sebelumnya
+    //    2) update input tersembunyi 'tahapan' tiket
+    //    3) sambungkan ke Catatan Log Aktivitas lewat goToStageNote()
     function pickStep(n) {
         const items = document.querySelectorAll('.step-item');
         items.forEach((s, i) => {
             s.classList.remove('done','active');
             const dot = s.querySelector('.step-dot');
-            if (i + 1 < n)       { s.classList.add('done');   dot.textContent = '✓'; }
+            if (i + 1 < n)        { s.classList.add('done');   dot.textContent = '✓'; }
             else if (i + 1 === n) { s.classList.add('active'); dot.textContent = i + 1; }
-            else                  { dot.textContent = i + 1; }
+            else                   { dot.textContent = i + 1; }
         });
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 5; i++) {
             const l = document.getElementById('sl' + i);
             if (l) l.classList.toggle('done', i < n);
         }
         document.getElementById('inputTahapan').value = n;
+        window.currentTahapan = n;
+
+        // ✅ "Finalisasi" (n=5) dianggap satu paket dengan "Up" (n=6) —
+        //    klik Finalisasi cuma menggeser stepper, tidak perlu bikin/buka
+        //    catatan baru. Catatan baru hanya dibuka saat "Up" yang diklik.
+        if (n === 5) return;
+
+        goToStageNote(n);
+    }
+
+    // ✅ Menyambungkan klik stepper ke form Catatan Log Aktivitas:
+    //    - Kalau catatan terakhir masih kosong (belum ditulis apa-apa), catatan itu
+    //      dipakai ulang dan dilabeli ulang sesuai tahap yang baru diklik.
+    //    - Kalau catatan terakhir sudah terisi, otomatis dibuatkan Catatan baru
+    //      khusus untuk tahap ini, supaya riwayat tiap tahap tetap terpisah.
+    //    - Textarea-nya langsung difokuskan & di-scroll ke tampilan supaya user
+    //      tinggal mengetik deskripsi kegiatan untuk tahap tersebut.
+    function goToStageNote(n) {
+        const entries = document.querySelectorAll('.log-entry');
+        const last = entries[entries.length - 1];
+        const lastTextarea = last ? last.querySelector('textarea') : null;
+
+        let targetEntry;
+        if (lastTextarea && lastTextarea.value.trim() === '') {
+            targetEntry = last;
+        } else {
+            addEntry();
+            const all = document.querySelectorAll('.log-entry');
+            targetEntry = all[all.length - 1];
+        }
+
+        const idx = targetEntry.id.replace('entry-', '');
+        const tahapanInput = document.getElementById('logtahapan-' + idx);
+        const label = document.getElementById('logstagelabel-' + idx);
+        if (tahapanInput) tahapanInput.value = n;
+        if (label) label.textContent = tahapanLabels[n];
+        targetEntry.setAttribute('data-stage', n);
+
+        targetEntry.classList.remove('just-linked');
+        void targetEntry.offsetWidth; // restart animasi highlight
+        targetEntry.classList.add('just-linked');
+
+        targetEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const ta = targetEntry.querySelector('textarea');
+        if (ta) ta.focus();
     }
 
     function showToast(msg) {
