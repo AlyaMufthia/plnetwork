@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // ✅ Validasi 1 akun statis
+    // Validasi 1 akun statis
     document.querySelector('form').addEventListener('submit', function(e) {
         e.preventDefault();
 

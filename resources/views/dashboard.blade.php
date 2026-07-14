@@ -197,7 +197,7 @@
 
         .rekapan-body{ padding:16px; }
 
-        /* ✅ Panel rekapan DOWN dibuat bisa discroll agar semua unit tampil,
+        /* Panel rekapan DOWN dibuat bisa discroll agar semua unit tampil,
               tanpa membuat halaman jadi terlalu panjang */
         .rekapan-body-scroll{
             max-height:460px;

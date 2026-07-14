@@ -637,32 +637,29 @@
         <div class="content">
 
             <!-- HEADER INFO -->
-            <div class="detail-header-card">
+            @php
+                $statusJaringan = strtoupper($gangguan->status_jaringan ?? 'DOWN');
+                $isUp = $statusJaringan === 'UP';
+
+                $statusLabel = $isUp ? 'UP' : 'DOWN';
+                $statusColor = $isUp ? '#16a34a' : '#dc2626';
+                $statusBg = $isUp ? '#f0fdf4' : '#fef2f2';
+                $statusBd = $isUp ? '#bbf7d0' : '#fecaca';
+            @endphp
+            <div class="detail-header-card" style="border-left-color: {{ $statusColor }};">
                 <div class="detail-id">NO. TIKET: {{ $gangguan->no_tiket ?? '-' }}</div>
                 <div class="detail-title-row">
                     <div class="detail-title">Gangguan {{ $gangguan->gardu_induk ?? '-' }}</div>
-                    @php
-                        $statusLabel = ['on_progress' => 'DITANGANI', 'paused' => 'DITUNDA', 'resolved' => 'SELESAI'][$gangguan->status ?? 'on_progress'] ?? 'DITANGANI';
-                        $statusColor = ['on_progress' => '#dc2626', 'paused' => '#d97706', 'resolved' => '#16a34a'][$gangguan->status ?? 'on_progress'] ?? '#dc2626';
-                        $statusBg = ['on_progress' => '#fef2f2', 'paused' => '#fffbeb', 'resolved' => '#f0fdf4'][$gangguan->status ?? 'on_progress'] ?? '#fef2f2';
-                        $statusBd = ['on_progress' => '#fecaca', 'paused' => '#fde68a', 'resolved' => '#bbf7d0'][$gangguan->status ?? 'on_progress'] ?? '#fecaca';
-                    @endphp
                     <span class="badge-ditangani"
                         style="background:{{ $statusBg }};color:{{ $statusColor }};border-color:{{ $statusBd }};">
-                        @if(($gangguan->status ?? 'on_progress') === 'resolved')
-                            {{-- Ikon centang untuk status SELESAI --}}
+                        @if($isUp)
+                            {{-- Ikon centang untuk status UP --}}
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                 <polyline points="22 4 12 14.01 9 11.01" />
                             </svg>
-                        @elseif(($gangguan->status ?? 'on_progress') === 'paused')
-                            {{-- Ikon jeda untuk status DITUNDA --}}
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="6" y="4" width="4" height="16" />
-                                <rect x="14" y="4" width="4" height="16" />
-                            </svg>
                         @else
-                            {{-- Ikon segitiga peringatan untuk status DITANGANI --}}
+                            {{-- Ikon segitiga peringatan untuk status DOWN --}}
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <path

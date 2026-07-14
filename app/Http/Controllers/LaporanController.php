@@ -137,8 +137,8 @@ class LaporanController extends Controller
         ));
     }
 
-    // ✅ Menyimpan laporan gangguan baru dari form "Input Gangguan"
-    //    lalu redirect ke halaman Riwayat.
+    // Menyimpan laporan gangguan baru dari form "Input Gangguan"
+    // lalu redirect ke halaman Riwayat.
     public function store(Request $request)
     {
         $validated = $request->validate([

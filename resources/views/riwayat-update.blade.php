@@ -636,7 +636,7 @@
                                             <input type="file" id="logfotoinput-{{ $i }}" name="logs[{{ $i }}][foto]"
                                                    accept="image/*" style="display:none" onchange="previewLogFoto(this, {{ $i }})">
                                             <input type="hidden" name="logs[{{ $i }}][existing_foto]" value="{{ $log->foto }}">
-                                            {{-- ✅ Tahapan milik catatan ini sendiri, diisi otomatis saat klik stepper --}}
+                                            {{-- Tahapan milik catatan ini sendiri, diisi otomatis saat klik stepper --}}
                                             <input type="hidden" name="logs[{{ $i }}][tahapan]" id="logtahapan-{{ $i }}" value="{{ $log->tahapan ?? $tahapanNow }}">
                                         </div>
                                     </div>
@@ -922,7 +922,7 @@
         document.getElementById('inputStatus').value = value;
     }
 
-    // ✅ Klik salah satu bulatan tahap di stepper:
+    //  Klik salah satu bulatan tahap di stepper:
     //    1) update tampilan stepper (done/active) seperti sebelumnya
     //    2) update input tersembunyi 'tahapan' tiket
     //    3) sambungkan ke Catatan Log Aktivitas lewat goToStageNote()
@@ -942,7 +942,7 @@
         document.getElementById('inputTahapan').value = n;
         window.currentTahapan = n;
 
-        // ✅ "Finalisasi" (n=5) dianggap satu paket dengan "Up" (n=6) —
+        // "Finalisasi" (n=5) dianggap satu paket dengan "Up" (n=6) —
         //    klik Finalisasi cuma menggeser stepper, tidak perlu bikin/buka
         //    catatan baru. Catatan baru hanya dibuka saat "Up" yang diklik.
         if (n === 5) return;
@@ -950,7 +950,7 @@
         goToStageNote(n);
     }
 
-    // ✅ Menyambungkan klik stepper ke form Catatan Log Aktivitas:
+    // Menyambungkan klik stepper ke form Catatan Log Aktivitas:
     //    - Kalau catatan terakhir masih kosong (belum ditulis apa-apa), catatan itu
     //      dipakai ulang dan dilabeli ulang sesuai tahap yang baru diklik.
     //    - Kalau catatan terakhir sudah terisi, otomatis dibuatkan Catatan baru

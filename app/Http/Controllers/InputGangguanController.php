@@ -22,7 +22,7 @@ class InputGangguanController extends Controller
             'penyebab.required' => 'Penyebab kendala wajib diisi.',
         ]);
 
-        // Coba ambil IP address dari string unit, misal "10.43.51.1 (GI BINJAI 150)"
+        
         preg_match('/\b\d{1,3}(?:\.\d{1,3}){3}\b/', $validated['unit'], $matches);
         $ipAddress = $matches[0] ?? null;
 
